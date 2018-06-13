@@ -124,4 +124,18 @@ public class Vector2i {
         return this.y;
     }
 
+    @Override
+    public boolean equals(final Object object) {
+        if (object instanceof Vector2i) {
+            final Vector2i vector = (Vector2i) object;
+            return this.x == vector.getX() && this.y == vector.getY();
+        }
+        return super.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) Math.pow(this.x * 0x1f1f1f1f, this.y);
+    }
+
 }

@@ -1,10 +1,15 @@
 package me.dylancurzon.nea;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import me.dylancurzon.nea.util.Vector2i;
+import me.dylancurzon.nea.world.World;
+import me.dylancurzon.nea.world.gen.Generators;
 
 public class Game extends JPanel {
 
@@ -16,6 +21,9 @@ public class Game extends JPanel {
 
     private boolean running;
     private int ticks;
+
+    private World world;
+    private Camera camera;
 
     private JFrame frame;
 
@@ -35,6 +43,10 @@ public class Game extends JPanel {
         this.frame.add(this);
         this.frame.setVisible(true);
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        final Path homePath = Paths.get(System.getProperty("user.home"));
+        this.world = new World("my_world", Generators.ROCKY, homePath.resolve(".groundcontrol"));
+        this.camera = new Camera(Vector2i.of(WIDTH, HEIGHT), this.world);
 
         this.loop();
     }
@@ -65,11 +77,6 @@ public class Game extends JPanel {
     }
 
     private void update() {
-//        this.ticks++;
-        for (int i = 0; i < this.pixels.length; i++) {
-            if (i % 3 == 0) this.pixels[i] = i + this.ticks++;
-            else this.pixels[i] = 0;
-        }
     }
 
     private void render() {
@@ -78,6 +85,8 @@ public class Game extends JPanel {
             this.frame.createBufferStrategy(2);
             bs = this.frame.getBufferStrategy();
         }
+
+        this.camera.render(this.pixels, 0, 0);
 
         final Graphics2D g = (Graphics2D) bs.getDrawGraphics();
         g.setColor(Color.BLACK);

@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.world;
+package me.dylancurzon.nea.world.tile;
 
 import com.sun.istack.internal.NotNull;
 import jdk.nashorn.internal.ir.annotations.Immutable;

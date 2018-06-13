@@ -1,9 +1,10 @@
 package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
+import java.util.Optional;
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.util.Vector2i;
-import me.dylancurzon.nea.world.Tile;
+import me.dylancurzon.nea.world.tile.Tile;
 import me.dylancurzon.nea.world.World;
 
 /**
@@ -25,7 +26,7 @@ public class Camera implements Renderable  {
     private final World world;
     // The upper-left bound of the Camera. This determines the position of the world view.
     @NotNull
-    private Vector2i boundA;
+    private Vector2i boundA = Vector2i.of(0, 0);
 
     public Camera(final Vector2i size, final World world) {
         this.size = size;
@@ -33,7 +34,7 @@ public class Camera implements Renderable  {
     }
 
     @Override
-    public void render(@NotNull final int[] pixels) {
+    public void render(@NotNull final int[] pixels, final int offsetX, final int offsetY) {
         // TODO:
         // - render world tiles which are currently visible
         final Vector2i tileMin = this.boundA
@@ -44,7 +45,10 @@ public class Camera implements Renderable  {
             .ceil().toInt();
         for (int tileX = tileMin.getX(); tileX < tileMax.getX(); tileX++) {
             for (int tileY = tileMin.getY(); tileY < tileMax.getY(); tileY++) {
-                // World.getTile(tileX, tileY).render(pixels);
+                final Optional<Tile> tile = this.world.getTile(Vector2i.of(tileX, tileY));
+                if (tile.isPresent()) {
+                    tile.get().render(pixels, tileX * Tile.TILE_WIDTH, tileY * Tile.TILE_WIDTH);
+                }
             }
         }
     }

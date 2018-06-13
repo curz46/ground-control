@@ -1,11 +1,13 @@
-package me.dylancurzon.nea.world;
+package me.dylancurzon.nea.world.tile;
 
 import com.sun.istack.internal.NotNull;
 import java.util.Optional;
 
 public interface TileTypes {
 
-    TileType UNLOADED = new TileType(0, "UNLOADED");
+    TileType UNLOADED = new TileType(0, "Unloaded");
+    TileType GRASS = new TileType(1, "Grass");
+    TileType STONE = new TileType(2, "Stone");
 
     @NotNull
     static Optional<TileType> getType(@NotNull final int id) {

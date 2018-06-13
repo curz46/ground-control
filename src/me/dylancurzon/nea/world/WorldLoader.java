@@ -2,9 +2,11 @@ package me.dylancurzon.nea.world;
 
 import com.sun.istack.internal.NotNull;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
@@ -15,6 +17,9 @@ import java.util.Optional;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.util.ByteBuf;
 import me.dylancurzon.nea.util.Vector2i;
+import me.dylancurzon.nea.world.tile.Tile;
+import me.dylancurzon.nea.world.tile.TileType;
+import me.dylancurzon.nea.world.tile.TileTypes;
 
 @Immutable
 public class WorldLoader {
@@ -23,14 +28,59 @@ public class WorldLoader {
     private final Path savePath;
     @NotNull
     private final World world;
-
-    private Path worldPath;
-    private Path chunksPath;
+    @NotNull
+    private final Path worldPath;
+    @NotNull
+    private final Path chunksPath;
 
     public WorldLoader(@NotNull final Path savePath, @NotNull final World world) {
         this.savePath = savePath;
         this.world = world;
-        this.initialize();
+        this.worldPath = this.savePath.resolve(Paths.get("worlds", this.world.getId()));
+        this.chunksPath = this.worldPath.resolve("chunks");
+    }
+
+    public void writeChunk(@NotNull final int chunkX, @NotNull final int chunkY, @NotNull Map<Vector2i, Tile> tiles) {
+        final File file = this.getChunkPath(chunkX, chunkY).toFile();
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to create the chunk file: ", e);
+            }
+        }
+        final BufferedOutputStream out;
+        try {
+            out = new BufferedOutputStream(new FileOutputStream(file));
+        } catch (final FileNotFoundException e) {
+            throw new RuntimeException("The file we just created doesn't exist... wait, what? - ", e);
+        }
+        final byte[] rawBuf = new byte[16 * 16]; // TODO: as Tile information grows, this needs to grow too
+        final ByteBuf buf = new ByteBuf(ByteBuffer.wrap(rawBuf));
+        for (int cx = 0; cx < World.CHUNK_WIDTH; cx++) {
+            for (int cy = 0; cy < World.CHUNK_WIDTH; cy++) {
+                final Tile tile = tiles.get(Vector2i.of(cx, cy));
+                buf.writeByte((byte) tile.getType().getId());
+            }
+        }
+        try {
+            out.write(rawBuf);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write to File: ", e);
+        }
+
+        try {
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @NotNull
@@ -45,8 +95,9 @@ public class WorldLoader {
         }
         final ByteBuffer buffer;
         try {
-            final byte[] buf = new byte[in.available()];
-            in.read(buf, 0, in.available());
+            final int available = in.available();
+            final byte[] buf = new byte[available];
+            in.read(buf, 0, available);
             buffer = ByteBuffer.wrap(buf);
         } catch (final IOException e) {
             throw new RuntimeException("Exception occurred when loading bytes from file: ", e);
@@ -75,15 +126,18 @@ public class WorldLoader {
                 tiles.put(Vector2i.of(cx, cy), new Tile(this.world));
             }
         }
+
+        try {
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return Optional.of(tiles);
     }
 
-    private void initialize() {
-        this.worldPath = this.savePath.resolve(Paths.get("worlds", this.world.getId()));
-        this.chunksPath = this.worldPath.resolve("chunks");
-    }
-
-    private Path getChunkPath(final int chunkX, final int chunkY) {
+    @NotNull
+    private Path getChunkPath(@NotNull final int chunkX, @NotNull final int chunkY) {
         return this.chunksPath.resolve(chunkX + "," + chunkY);
     }
 
