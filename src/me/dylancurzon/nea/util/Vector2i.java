@@ -107,6 +107,14 @@ public class Vector2i {
     }
 
     @NotNull
+    public Vector2i abs() {
+        return new Vector2i(
+            Math.abs(this.x),
+            Math.abs(this.y)
+        );
+    }
+
+    @NotNull
     public Vector2d toDouble() {
         return new Vector2d(
             this.x,

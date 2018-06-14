@@ -39,7 +39,7 @@ public class Tile implements Renderable {
                         final int xp = x + offsetX;
                         final int yp = y + offsetY;
                         final int i = xp + (yp * Game.WIDTH);
-                        if (i >= pixels.length) continue;
+                        if (i < 0 || i >= pixels.length) continue;
                         pixels[i] = i % 2 == 0 ? 0xEEEEEE : 0;
                     }
                 }
@@ -50,7 +50,7 @@ public class Tile implements Renderable {
                         final int xp = x + offsetX;
                         final int yp = y + offsetY;
                         final int i = xp + (yp * Game.WIDTH);
-                        if (i >= pixels.length) continue;
+                        if (i < 0 || i >= pixels.length) continue;
                         pixels[i] = 0xFF0000;
                     }
                 }

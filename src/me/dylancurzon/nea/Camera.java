@@ -47,10 +47,29 @@ public class Camera implements Renderable  {
             for (int tileY = tileMin.getY(); tileY < tileMax.getY(); tileY++) {
                 final Optional<Tile> tile = this.world.getTile(Vector2i.of(tileX, tileY));
                 if (tile.isPresent()) {
-                    tile.get().render(pixels, tileX * Tile.TILE_WIDTH, tileY * Tile.TILE_WIDTH);
+                    tile.get().render(
+                        pixels,
+                        (tileX * Tile.TILE_WIDTH) - this.boundA.getX(),
+                        Game.HEIGHT - ((tileY * Tile.TILE_WIDTH) - this.boundA.getY())
+                    );
                 }
             }
         }
+    }
+
+    /**
+     * Move this {@link Camera} by the specified transform. This affects {@link #boundA}.
+     * @param delta The transform to move by.
+     */
+    public void transform(final Vector2i delta) {
+        this.boundA = this.boundA.add(delta);
+    }
+
+    /**
+     * Reset this Camera to (0, 0). This affects {@link #boundA}.
+     */
+    public void reset() {
+        this.boundA = Vector2i.of(0, 0);
     }
 
     @NotNull

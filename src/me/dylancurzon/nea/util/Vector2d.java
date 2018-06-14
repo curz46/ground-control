@@ -101,6 +101,14 @@ public class Vector2d {
     }
 
     @NotNull
+    public Vector2d abs() {
+        return new Vector2d(
+            Math.abs(this.x),
+            Math.abs(this.y)
+        );
+    }
+
+    @NotNull
     public Vector2i toInt() {
         return new Vector2i(
             (int) this.x,

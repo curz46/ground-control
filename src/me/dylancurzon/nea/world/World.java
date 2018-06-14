@@ -99,7 +99,10 @@ public class World {
             this.loadOrGenerateChunk(chunkPosition);
             return Optional.of(new Tile(this));
         }
-        final Vector2i relativePosition = position.sub(chunkPosition.mul(CHUNK_WIDTH));
+        final Vector2i relativePosition = position
+            .sub(chunkPosition.mul(CHUNK_WIDTH))
+            .abs();
+
         if (!chunk.containsKey(relativePosition)) {
             // if the Tile position doesn't exist, we've failed to completely generate the chunk
             // before adding it to the map
