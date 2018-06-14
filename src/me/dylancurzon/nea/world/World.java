@@ -93,7 +93,7 @@ public class World {
     @NotNull
     public Optional<Tile> getTile(final Vector2i position) {
         final Vector2i chunkPosition = position.integerDiv(CHUNK_WIDTH);
-        Map<Vector2i, Tile> chunk = this.chunks.get(chunkPosition);
+        final Map<Vector2i, Tile> chunk = this.chunks.get(chunkPosition);
         if (chunk == null) {
             // return an Unloaded, blank tile
             this.loadOrGenerateChunk(chunkPosition);
