@@ -92,11 +92,35 @@ public class Vector2d {
         );
     }
 
+    /**
+     * @return Vector with each component rounded to the nearest integer which is the closest to
+     * zero.
+     */
+    @NotNull
+    public Vector2d floorAbs() {
+        return new Vector2d(
+            this.x >= 0 ? Math.floor(this.x) : Math.ceil(this.x),
+            this.y >= 0 ? Math.floor(this.y) : Math.ceil(this.y)
+        );
+    }
+
     @NotNull
     public Vector2d ceil() {
         return new Vector2d(
             Math.ceil(this.x),
             Math.ceil(this.y)
+        );
+    }
+
+    /**
+     * @return Vector with each component rounded to the nearest integer which is furthest away
+     * from zero.
+     */
+    @NotNull
+    public Vector2d ceilAbs() {
+        return new Vector2d(
+            this.x >= 0 ? Math.ceil(this.x) : Math.floor(this.x),
+            this.y >= 0 ? Math.ceil(this.y) : Math.floor(this.y)
         );
     }
 
@@ -136,6 +160,11 @@ public class Vector2d {
     @Override
     public int hashCode() {
         return (int) Math.pow(this.x * 0x1f1f1f1f, this.y);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("(%d, %d)", this.x, this.y);
     }
 
 }

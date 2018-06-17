@@ -40,13 +40,13 @@ public class WorldLoader {
         this.chunksPath = this.worldPath.resolve("chunks");
     }
 
-    public void writeChunk(@NotNull final int chunkX, @NotNull final int chunkY, @NotNull Map<Vector2i, Tile> tiles) {
+    public void writeChunk(@NotNull final int chunkX, @NotNull final int chunkY, @NotNull final Map<Vector2i, Tile> tiles) {
         final File file = this.getChunkPath(chunkX, chunkY).toFile();
         if (!file.exists()) {
             file.getParentFile().mkdirs();
             try {
                 file.createNewFile();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException("Failed to create the chunk file: ", e);
             }
         }
@@ -66,18 +66,18 @@ public class WorldLoader {
         }
         try {
             out.write(rawBuf);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Failed to write to File: ", e);
         }
 
         try {
             out.flush();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         } finally {
             try {
                 out.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
@@ -129,7 +129,7 @@ public class WorldLoader {
 
         try {
             in.close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
 

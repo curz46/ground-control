@@ -2,6 +2,7 @@ package me.dylancurzon.nea.world.tile;
 
 import com.sun.istack.internal.NotNull;
 import jdk.nashorn.internal.ir.annotations.Immutable;
+import me.dylancurzon.nea.gfx.Sprite;
 
 @Immutable
 public class TileType {
@@ -10,10 +11,13 @@ public class TileType {
     private final int id;
     @NotNull
     private final String displayName;
+    @NotNull
+    private final Sprite sprite;
 
-    public TileType(@NotNull final int id, @NotNull final String displayName) {
+    public TileType(@NotNull final int id, @NotNull final String displayName, @NotNull final Sprite sprite) {
         this.id = id;
         this.displayName = displayName;
+        this.sprite = sprite;
     }
 
     @NotNull
@@ -24,6 +28,11 @@ public class TileType {
     @NotNull
     public String getDisplayName() {
         return this.displayName;
+    }
+
+    @NotNull
+    public Sprite getSprite() {
+        return this.sprite;
     }
 
 }

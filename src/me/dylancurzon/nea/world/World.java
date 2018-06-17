@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import jdk.nashorn.internal.ir.annotations.Immutable;
+import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.entity.Entity;
 import me.dylancurzon.nea.world.gen.ChunkGenerator;
@@ -29,6 +30,7 @@ public class World {
 
     public static final int CHUNK_WIDTH = 16;
     private final Map<Vector2i, Map<Vector2i, Tile>> chunks = new HashMap<>();
+//    private final Chunk[][] chunks = new Chunk[][]
 
     @NotNull
     private final WorldLoader loader;
@@ -91,13 +93,14 @@ public class World {
      * a new Tile of type {@link TileTypes#UNLOADED}.
      */
     @NotNull
-    public Optional<Tile> getTile(final Vector2i position) {
-        final Vector2i chunkPosition = position.integerDiv(CHUNK_WIDTH);
+    public Tile getTile(final Vector2i position) {
+        final Vector2i chunkPosition = position.div(CHUNK_WIDTH).floor().toInt();
         final Map<Vector2i, Tile> chunk = this.chunks.get(chunkPosition);
+//        System.out.println("CHK" + chunkPosition);
         if (chunk == null) {
             // return an Unloaded, blank tile
             this.loadOrGenerateChunk(chunkPosition);
-            return Optional.of(new Tile(this));
+            return new Tile(this);
         }
         final Vector2i relativePosition = position
             .sub(chunkPosition.mul(CHUNK_WIDTH))
@@ -109,7 +112,7 @@ public class World {
             throw new RuntimeException(
                 "The chunk that contains this position is only partially loaded.");
         }
-        return Optional.of(chunk.get(relativePosition));
+        return chunk.get(relativePosition);
     }
 
     public String getId() {

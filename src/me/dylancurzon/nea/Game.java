@@ -10,21 +10,23 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import me.dylancurzon.nea.util.Keys;
+import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.World;
 import me.dylancurzon.nea.world.gen.Generators;
 
 public class Game extends JPanel {
 
-    public static final int WIDTH = 800;
+    public static final int WIDTH = 1200;
     public static final int HEIGHT = WIDTH / 16*9;
 
     private final BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-    private final int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+    private final int[] pixels = ((DataBufferInt) this.image.getRaster().getDataBuffer()).getData();
 
     private boolean running;
     private int ticks;
 
+    private final Window window = new Window(this.pixels, WIDTH, HEIGHT);
     private World world;
     private Camera camera;
 
@@ -78,7 +80,7 @@ public class Game extends JPanel {
         while (this.running) {
             if (lastSecond + 1000 < System.currentTimeMillis()) {
                 lastSecond = System.currentTimeMillis();
-                System.out.println("Ticks: " + updates + ", Frames: " + frames);
+                this.frame.setTitle("Game | Ticks: " + updates + ", Frames: " + frames);
                 frames = 0;
                 updates = 0;
             }
@@ -88,14 +90,13 @@ public class Game extends JPanel {
                 updates++;
             }
 
-            // add fps checks, add update time limiting
             this.render();
             frames++;
         }
     }
 
     private void update() {
-        final int speed = 5;
+        final int speed = 2;
         if (Keys.pressed(KeyEvent.VK_UP)) {
             this.camera.transform(Vector2i.of(0, speed));
         }
@@ -108,6 +109,15 @@ public class Game extends JPanel {
         if (Keys.pressed(KeyEvent.VK_LEFT)) {
             this.camera.transform(Vector2i.of(-speed, 0));
         }
+
+//        final Point pos = this.getMousePosition();
+//        if (pos == null) {
+//            this.camera.setMousePosition(null);
+//        } else {
+//            this.camera.setMousePosition(
+//                Vector2d.of(pos.getX(), HEIGHT + 3 - pos.getY()).toInt()
+//            );
+//        }
     }
 
     private void render() {
@@ -117,7 +127,7 @@ public class Game extends JPanel {
             bs = this.frame.getBufferStrategy();
         }
 
-        this.camera.render(this.pixels, 0, 0);
+        this.camera.render(this.window, 0, 0);
 
         final Graphics2D g = (Graphics2D) bs.getDrawGraphics();
         g.setColor(Color.BLACK);

@@ -115,6 +115,11 @@ public class Vector2i {
     }
 
     @NotNull
+    public double absv() {
+        return Math.sqrt((this.x * this.x) + (this.y * this.y));
+    }
+
+    @NotNull
     public Vector2d toDouble() {
         return new Vector2d(
             this.x,
@@ -143,7 +148,14 @@ public class Vector2i {
 
     @Override
     public int hashCode() {
-        return (int) Math.pow(this.x * 0x1f1f1f1f, this.y);
+        return this.x < this.y
+            ? this.y * this.y + this.x
+            : this.x * this.x + this.x + this.y;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("(%d, %d)", this.x, this.y);
     }
 
 }

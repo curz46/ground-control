@@ -1,11 +1,15 @@
 package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.util.Optional;
 import me.dylancurzon.nea.gfx.Renderable;
+import me.dylancurzon.nea.util.Benchmark;
+import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.tile.Tile;
 import me.dylancurzon.nea.world.World;
+import me.dylancurzon.nea.world.tile.TileTypes;
 
 /**
  * This {@link Camera} class represents the view of the world that is drawn by the game's window.
@@ -16,7 +20,7 @@ import me.dylancurzon.nea.world.World;
  * in the game's world. Note that a Camera is attached to a {@link World}, and this insatnce should
  * be destroyed and re-created when unloading the game world or loading another one.
  */
-public class Camera implements Renderable  {
+public class Camera implements Renderable {
 
     // Given the current implementation, this should just be the size of the window.
     @NotNull
@@ -34,25 +38,22 @@ public class Camera implements Renderable  {
     }
 
     @Override
-    public void render(@NotNull final int[] pixels, final int offsetX, final int offsetY) {
-        // TODO:
-        // - render world tiles which are currently visible
+    public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
         final Vector2i tileMin = this.boundA
-            .div(Tile.TILE_WIDTH)
-            .floor().toInt();
+            .div(World.CHUNK_WIDTH)
+            .floor()
+            .toInt();
         final Vector2i tileMax = this.getBoundB()
-            .div(Tile.TILE_WIDTH)
-            .ceil().toInt();
+            .div(World.CHUNK_WIDTH)
+            .ceil()
+            .toInt();
+
         for (int tileX = tileMin.getX(); tileX < tileMax.getX(); tileX++) {
             for (int tileY = tileMin.getY(); tileY < tileMax.getY(); tileY++) {
-                final Optional<Tile> tile = this.world.getTile(Vector2i.of(tileX, tileY));
-                if (tile.isPresent()) {
-                    tile.get().render(
-                        pixels,
-                        (tileX * Tile.TILE_WIDTH) - this.boundA.getX(),
-                        Game.HEIGHT - ((tileY * Tile.TILE_WIDTH) - this.boundA.getY())
-                    );
-                }
+                final Tile tile = this.world.getTile(Vector2i.of(tileX, tileY));
+                final int xa = (tileX * Tile.TILE_WIDTH) - this.boundA.getX();
+                final int ya = window.getHeight() - ((tileY * Tile.TILE_WIDTH) - this.boundA.getY());
+                tile.render(window, xa, ya);
             }
         }
     }

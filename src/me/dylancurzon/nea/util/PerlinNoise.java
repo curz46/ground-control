@@ -157,7 +157,7 @@ public class PerlinNoise {
         double frequency = this.frequency;
 
         for (int i = 0; i < this.octaves; i++) {
-            double perlinValue = generatePerlinValue(x, y, frequency);
+            final double perlinValue = this.generatePerlinValue(x, y, frequency);
             value += perlinValue * amplitude;
 
             amplitude *= this.persistence;
@@ -168,34 +168,34 @@ public class PerlinNoise {
     }
 
     public double generatePerlinValue(final int x, final int y, final double frequency) {
-        double doubleX = (double) x / this.width;
-        double doubleY = (double) y / this.height;
+        final double doubleX = (double) x / this.width;
+        final double doubleY = (double) y / this.height;
 
-        double frequencyX = (doubleX * frequency) + this.seed;
-        double frequencyY = (doubleY * frequency) + this.seed;
+        final double frequencyX = (doubleX * frequency) + this.seed;
+        final double frequencyY = (doubleY * frequency) + this.seed;
 
-        int flooredX = (int) Math.floor(frequencyX) % 256;
-        int flooredY = (int) Math.floor(frequencyY) % 256;
+        final int flooredX = (int) Math.floor(frequencyX) % 256;
+        final int flooredY = (int) Math.floor(frequencyY) % 256;
 
-        int corner1 = PERMUTATION_TABLE[PERMUTATION_TABLE[flooredX] + flooredY];
-        int corner2 = PERMUTATION_TABLE[PERMUTATION_TABLE[flooredX + 1] + flooredY];
-        int corner3 = PERMUTATION_TABLE[PERMUTATION_TABLE[flooredX] + flooredY + 1];
-        int corner4 = PERMUTATION_TABLE[PERMUTATION_TABLE[flooredX + 1] + flooredY + 1];
+        final int corner1 = PERMUTATION_TABLE[PERMUTATION_TABLE[flooredX] + flooredY];
+        final int corner2 = PERMUTATION_TABLE[PERMUTATION_TABLE[flooredX + 1] + flooredY];
+        final int corner3 = PERMUTATION_TABLE[PERMUTATION_TABLE[flooredX] + flooredY + 1];
+        final int corner4 = PERMUTATION_TABLE[PERMUTATION_TABLE[flooredX + 1] + flooredY + 1];
 
-        double adjustedX = frequencyX - Math.floor(frequencyX);
-        double adjustedY = frequencyY - Math.floor(frequencyY);
+        final double adjustedX = frequencyX - Math.floor(frequencyX);
+        final double adjustedY = frequencyY - Math.floor(frequencyY);
 
-        double dotCorner1 = calculateDotProduct(corner1, adjustedX, adjustedY);
-        double dotCorner2 = calculateDotProduct(corner2, adjustedX - 1, adjustedY);
-        double dotCorner3 = calculateDotProduct(corner3, adjustedX, adjustedY - 1);
-        double dotCorner4 = calculateDotProduct(corner4, adjustedX - 1, adjustedY - 1);
+        final double dotCorner1 = this.calculateDotProduct(corner1, adjustedX, adjustedY);
+        final double dotCorner2 = this.calculateDotProduct(corner2, adjustedX - 1, adjustedY);
+        final double dotCorner3 = this.calculateDotProduct(corner3, adjustedX, adjustedY - 1);
+        final double dotCorner4 = this.calculateDotProduct(corner4, adjustedX - 1, adjustedY - 1);
 
-        double interpolatedX = fade(adjustedX);
-        double interpolatedY = fade(adjustedY);
+        final double interpolatedX = this.fade(adjustedX);
+        final double interpolatedY = this.fade(adjustedY);
 
-        double lerpedX1 = lerp(interpolatedX, dotCorner1, dotCorner2);
-        double lerpedX2 = lerp(interpolatedX, dotCorner3, dotCorner4);
-        double lerpedY = lerp(interpolatedY, lerpedX1, lerpedX2);
+        final double lerpedX1 = this.lerp(interpolatedX, dotCorner1, dotCorner2);
+        final double lerpedX2 = this.lerp(interpolatedX, dotCorner3, dotCorner4);
+        final double lerpedY = this.lerp(interpolatedY, lerpedX1, lerpedX2);
 
         return (lerpedY + 1) / 2;
     }
