@@ -113,7 +113,7 @@ public class World {
             // instead, we should add it to a "loading queue" on a separate thread so it doesn't
             // affect rendering
             this.loadOrGenerateChunk(chunkPosition);
-            return new Tile(this);
+            return new Tile(this, TileTypes.UNLOADED);
         }
         final Vector2i relativePosition = position
             .sub(chunkPosition.mul(CHUNK_WIDTH))

@@ -16,7 +16,6 @@ public class RockyWorldGenerator implements ChunkGenerator {
 
     @Override
     public Map<Vector2i, Tile> generate(final World world, final Vector2i chunkPosition) {
-        System.out.println("Generating: " + chunkPosition);
         final int chunkX = chunkPosition.getX();
         final int chunkY = chunkPosition.getY();
         final Map<Vector2i, Tile> tiles = new HashMap<>();
@@ -30,8 +29,7 @@ public class RockyWorldGenerator implements ChunkGenerator {
                     ? (chunkY * World.CHUNK_WIDTH) + cy
                     : (chunkY * World.CHUNK_WIDTH) - cy;
                 if (worldX == 0 || worldY == 0) {
-                    System.out.println(chunkX + "," + chunkY);
-                    tiles.put(Vector2i.of(cx, cy), new Tile(world));
+                    tiles.put(Vector2i.of(cx, cy), new Tile(world, TileTypes.UNLOADED));
                     continue;
                 }
                 final double value = this.noise.generateOctaveNoiseValue(worldX * 100, worldY * 100);
@@ -43,8 +41,7 @@ public class RockyWorldGenerator implements ChunkGenerator {
                     type = TileTypes.STONE;
                 }
 
-                final Tile tile = new Tile(world);
-                tile.setType(type);
+                final Tile tile = new Tile(world, type);
                 tiles.put(Vector2i.of(cx, cy), tile);
             }
         }

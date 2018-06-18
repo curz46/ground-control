@@ -111,7 +111,7 @@ public class WorldLoader {
                 // TODO:
                 // for now, every tile consists of:
                 // - byte; tile type id
-                final Tile tile = new Tile(this.world);
+                final Tile tile = new Tile(this.world, TileTypes.UNLOADED);
 
                 final int typeId = buf.readByte();
                 final Optional<TileType> tileType = TileTypes.getType(typeId);

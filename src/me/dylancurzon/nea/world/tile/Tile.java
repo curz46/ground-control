@@ -14,10 +14,11 @@ public class Tile implements Renderable {
     @NotNull
     private final World world;
     @NotNull
-    private TileType type = TileTypes.UNLOADED;
+    private TileType type;
 
-    public Tile(final World world) {
+    public Tile(final World world, final TileType type) {
         this.world = world;
+        this.type = type;
     }
 
     @Override

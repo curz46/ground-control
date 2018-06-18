@@ -97,7 +97,7 @@ public class Game extends JPanel {
     }
 
     private void update() {
-        final int speed = 200;
+        final int speed = 5;
         if (Keys.pressed(KeyEvent.VK_UP)) {
             this.camera.transform(Vector2i.of(0, speed));
         }
