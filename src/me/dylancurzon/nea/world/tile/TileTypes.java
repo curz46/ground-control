@@ -1,16 +1,15 @@
 package me.dylancurzon.nea.world.tile;
 
-import com.sun.istack.internal.NotNull;
-import me.dylancurzon.nea.gfx.SpriteSheet;
+import static me.dylancurzon.nea.gfx.SpriteSheet.PRIMARY_SHEET;
 
+import com.sun.istack.internal.NotNull;
 import java.util.Optional;
 
 public interface TileTypes {
 
-    SpriteSheet SHEET = SpriteSheet.loadSheet("spritesheet.png");
-    TileType UNLOADED = new TileType(0, "Unloaded", SHEET.getSprite(0, 0));
-    TileType GRASS = new TileType(1, "Grass", SHEET.getSprite(1, 0));
-    TileType STONE = new TileType(2, "Stone", SHEET.getSprite(2, 0));
+    TileType UNLOADED = new TileType(0, "Unloaded", PRIMARY_SHEET.getSprite(0, 0, 16));
+    TileType GRASS = new TileType(1, "Grass", PRIMARY_SHEET.getSprite(1, 0, 16));
+    TileType STONE = new TileType(2, "Stone", PRIMARY_SHEET.getSprite(2, 0, 16));
 
     @NotNull
     static Optional<TileType> getType(@NotNull final int id) {

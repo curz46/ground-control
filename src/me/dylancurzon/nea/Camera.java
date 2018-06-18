@@ -7,6 +7,7 @@ import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
+import me.dylancurzon.nea.world.entity.ComputerCapsule;
 import me.dylancurzon.nea.world.tile.Tile;
 import me.dylancurzon.nea.world.World;
 import me.dylancurzon.nea.world.tile.TileTypes;
@@ -32,9 +33,12 @@ public class Camera implements Renderable {
     @NotNull
     private Vector2i boundA = Vector2i.of(0, 0);
 
+    private final ComputerCapsule computer;
+
     public Camera(final Vector2i size, final World world) {
         this.size = size;
         this.world = world;
+        this.computer = new ComputerCapsule(world, Vector2i.of(0, 0));
     }
 
     @Override
@@ -56,6 +60,13 @@ public class Camera implements Renderable {
                 tile.render(window, xa, ya);
             }
         }
+
+        final Vector2i pos = this.computer.getPosition();
+        this.computer.render(
+            window,
+            pos.getX() - this.boundA.getX(),
+            window.getHeight() - (pos.getY() - this.boundA.getY())
+        );
     }
 
     /**

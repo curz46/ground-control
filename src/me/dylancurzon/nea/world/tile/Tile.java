@@ -9,7 +9,7 @@ import me.dylancurzon.nea.world.World;
 
 public class Tile implements Renderable {
 
-    public static final int TILE_WIDTH = Sprite.SPRITE_WIDTH;
+    public static final int TILE_WIDTH = 16;
 
     @NotNull
     private final World world;

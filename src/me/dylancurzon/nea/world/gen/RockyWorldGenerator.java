@@ -28,10 +28,10 @@ public class RockyWorldGenerator implements ChunkGenerator {
                 final int worldY = chunkY >= 0
                     ? (chunkY * World.CHUNK_WIDTH) + cy
                     : (chunkY * World.CHUNK_WIDTH) - cy;
-                if (worldX == 0 || worldY == 0) {
-                    tiles.put(Vector2i.of(cx, cy), new Tile(world, TileTypes.UNLOADED));
-                    continue;
-                }
+//                if (worldX == 0 || worldY == 0) {
+//                    tiles.put(Vector2i.of(cx, cy), new Tile(world, TileTypes.UNLOADED));
+//                    continue;
+//                }
                 final double value = this.noise.generateOctaveNoiseValue(worldX * 100, worldY * 100);
 
                 final TileType type;
