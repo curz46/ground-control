@@ -63,6 +63,8 @@ public class World {
         final boolean loaded = this.loadChunk(position);
         if (loaded) return false;
         final Map<Vector2i, Tile> chunk = this.generator.generate(this, position);
+        // TODO: for now, just instantly write
+        this.loader.writeChunk(position.getX(), position.getY(), chunk);
         this.chunks.put(position, chunk);
         return true;
     }
@@ -86,6 +88,14 @@ public class World {
     }
 
     /**
+     * Unload all chunks that are currently cached. The chunks surrounding the player will be almost
+     * immediately loaded again from the save file (or generated if not saved).
+     */
+    public void unloadAllChunks() {
+        this.chunks.clear();
+    }
+
+    /**
      * Fetches a Tile given its World position.
      *
      * @param position The (World) position of the tile to get.
@@ -99,6 +109,9 @@ public class World {
 //        System.out.println("CHK" + chunkPosition);
         if (chunk == null) {
             // return an Unloaded, blank tile
+            // TODO:
+            // instead, we should add it to a "loading queue" on a separate thread so it doesn't
+            // affect rendering
             this.loadOrGenerateChunk(chunkPosition);
             return new Tile(this);
         }

@@ -16,6 +16,7 @@ public class RockyWorldGenerator implements ChunkGenerator {
 
     @Override
     public Map<Vector2i, Tile> generate(final World world, final Vector2i chunkPosition) {
+        System.out.println("Generating: " + chunkPosition);
         final int chunkX = chunkPosition.getX();
         final int chunkY = chunkPosition.getY();
         final Map<Vector2i, Tile> tiles = new HashMap<>();

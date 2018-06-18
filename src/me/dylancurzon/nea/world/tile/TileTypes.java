@@ -24,7 +24,9 @@ public interface TileTypes {
     @NotNull
     static TileType[] getTypes() {
         return new TileType[] {
-            UNLOADED
+            UNLOADED,
+            GRASS,
+            STONE
         };
     }
 

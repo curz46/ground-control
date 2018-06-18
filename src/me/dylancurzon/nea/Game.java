@@ -64,7 +64,8 @@ public class Game extends JPanel {
             }
         });
 
-        final Path homePath = Paths.get(System.getProperty("user.home"));
+//        final Path homePath = Paths.get(System.getProperty("user.home"));
+        final Path homePath = Paths.get("P:"); // TODO: this doesn't appear to do what it should but it's ok for now
         this.world = new World("my_world", Generators.ROCKY, homePath.resolve(".groundcontrol"));
         this.camera = new Camera(Vector2i.of(WIDTH, HEIGHT), this.world);
 
@@ -96,7 +97,7 @@ public class Game extends JPanel {
     }
 
     private void update() {
-        final int speed = 2;
+        final int speed = 200;
         if (Keys.pressed(KeyEvent.VK_UP)) {
             this.camera.transform(Vector2i.of(0, speed));
         }
@@ -108,6 +109,10 @@ public class Game extends JPanel {
         }
         if (Keys.pressed(KeyEvent.VK_LEFT)) {
             this.camera.transform(Vector2i.of(-speed, 0));
+        }
+        if (Keys.pressed(KeyEvent.VK_U)) {
+            if (this.world == null) return;
+            this.world.unloadAllChunks();
         }
 
 //        final Point pos = this.getMousePosition();

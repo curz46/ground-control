@@ -103,7 +103,7 @@ public class WorldLoader {
             throw new RuntimeException("Exception occurred when loading bytes from file: ", e);
         }
         final ByteBuf buf = new ByteBuf(buffer);
-        buf.flip();
+//        buf.flip();
 
         final Map<Vector2i, Tile> tiles = new HashMap<>();
         for (int cx = 0; cx < World.CHUNK_WIDTH; cx++) {
@@ -123,7 +123,7 @@ public class WorldLoader {
                         "WARNING: chunk contains unrecognized tile type id: " + typeId);
                 }
 
-                tiles.put(Vector2i.of(cx, cy), new Tile(this.world));
+                tiles.put(Vector2i.of(cx, cy), tile);
             }
         }
 
