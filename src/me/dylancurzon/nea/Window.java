@@ -23,7 +23,7 @@ public class Window {
                 final int xa = x + xd;
                 final int ya = y + yd;
                 if (xa < 0 || xa >= this.width || ya < 0 || ya >= this.height) continue;
-                this.pixels[xa + ya * this.width] = pixels[xd + yd * width];
+                this.pixels[xa + ( ya) * this.width] = pixels[xd + yd * width];
             }
         }
     }

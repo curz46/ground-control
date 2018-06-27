@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import jdk.nashorn.internal.ir.annotations.Immutable;
-import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.entity.Entity;
 import me.dylancurzon.nea.world.gen.ChunkGenerator;
@@ -95,6 +94,9 @@ public class World {
         this.chunks.clear();
     }
 
+    private final Tile defaultGrass = new Tile(this, TileTypes.GRASS);
+    private final Tile defaultStone = new Tile(this, TileTypes.STONE);
+
     /**
      * Fetches a Tile given its World position.
      *
@@ -104,6 +106,12 @@ public class World {
      */
     @NotNull
     public Tile getTile(final Vector2i position) {
+//        if ((position.getX() + position.getY()) % 2 == 0) {
+//            return this.defaultGrass;
+//        } else {
+//            return this.defaultStone;
+//        }
+
         final Vector2i chunkPosition = position.div(CHUNK_WIDTH).floor().toInt();
         final Map<Vector2i, Tile> chunk = this.chunks.get(chunkPosition);
 //        System.out.println("CHK" + chunkPosition);

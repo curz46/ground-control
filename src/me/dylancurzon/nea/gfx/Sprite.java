@@ -19,6 +19,10 @@ public class Sprite implements Renderable {
         window.copyPixels(offsetX, offsetY, this.width, this.content);
     }
 
+    public int[] getPixels() {
+        return this.content;
+    }
+
     public int getWidth() {
         return this.width;
     }

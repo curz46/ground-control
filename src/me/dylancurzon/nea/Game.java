@@ -2,6 +2,7 @@ package me.dylancurzon.nea;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.AffineTransform;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.*;
@@ -14,11 +15,13 @@ import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.World;
 import me.dylancurzon.nea.world.gen.Generators;
+import me.dylancurzon.nea.world.tile.Tile;
 
 public class Game extends JPanel {
 
-    public static final int WIDTH = 1200;
-    public static final int HEIGHT = WIDTH / 16*9;
+    public static final int SCALE = 3;
+    public static final int WIDTH = 1200 / SCALE;
+    public static final int HEIGHT = 720 / SCALE;
 
     private final BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     private final int[] pixels = ((DataBufferInt) this.image.getRaster().getDataBuffer()).getData();
@@ -40,7 +43,7 @@ public class Game extends JPanel {
     private void initialize() {
         this.frame = new JFrame("Game");
 
-        final Dimension dim = new Dimension(WIDTH, HEIGHT);
+        final Dimension dim = new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
         this.frame.setSize(dim);
         this.frame.setPreferredSize(dim);
         this.frame.setMinimumSize(dim);
@@ -67,7 +70,10 @@ public class Game extends JPanel {
 //        final Path homePath = Paths.get(System.getProperty("user.home"));
         final Path homePath = Paths.get("P:"); // TODO: this doesn't appear to do what it should but it's ok for now
         this.world = new World("my_world", Generators.ROCKY, homePath.resolve(".groundcontrol"));
-        this.camera = new Camera(Vector2i.of(WIDTH, HEIGHT), this.world);
+        this.camera = new Camera(
+            Vector2i.of(WIDTH / Tile.TILE_WIDTH, HEIGHT / Tile.TILE_WIDTH),
+            this.world
+        );
 
         this.loop();
     }
@@ -85,7 +91,7 @@ public class Game extends JPanel {
                 frames = 0;
                 updates = 0;
             }
-            if (lastUpdate + (1000 / 60) < System.currentTimeMillis()) {
+            if (lastUpdate + (1000.0 / 60) < System.currentTimeMillis()) {
                 lastUpdate = System.currentTimeMillis();
                 this.update();
                 updates++;
@@ -97,18 +103,18 @@ public class Game extends JPanel {
     }
 
     private void update() {
-        final int speed = 5;
+        final double speed = 1.0 / Tile.TILE_WIDTH;
         if (Keys.pressed(KeyEvent.VK_UP)) {
-            this.camera.transform(Vector2i.of(0, speed));
+            this.camera.transform(Vector2d.of(0, speed));
         }
         if (Keys.pressed(KeyEvent.VK_DOWN)) {
-            this.camera.transform(Vector2i.of(0, -speed));
+            this.camera.transform(Vector2d.of(0, -speed));
         }
         if (Keys.pressed(KeyEvent.VK_RIGHT)) {
-            this.camera.transform(Vector2i.of(speed, 0));
+            this.camera.transform(Vector2d.of(speed, 0));
         }
         if (Keys.pressed(KeyEvent.VK_LEFT)) {
-            this.camera.transform(Vector2i.of(-speed, 0));
+            this.camera.transform(Vector2d.of(-speed, 0));
         }
         if (Keys.pressed(KeyEvent.VK_U)) {
             if (this.world == null) return;
@@ -135,6 +141,13 @@ public class Game extends JPanel {
         this.camera.render(this.window, 0, 0);
 
         final Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+
+        g.scale(SCALE, SCALE);
+//        final AffineTransform at = new AffineTransform();
+//        at.concatenate(AffineTransform.getScaleInstance(1, -1));
+//        at.concatenate(AffineTransform.getTranslateInstance(0, -this.image.getHeight()));
+//        g.transform(at);
+
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, WIDTH, HEIGHT);
         g.drawImage(this.image, 0, 0, WIDTH, HEIGHT, null);

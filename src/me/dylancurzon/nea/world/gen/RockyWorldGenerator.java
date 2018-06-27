@@ -35,10 +35,10 @@ public class RockyWorldGenerator implements ChunkGenerator {
                 final double value = this.noise.generateOctaveNoiseValue(worldX * 100, worldY * 100);
 
                 final TileType type;
-                if (value >= 0.5) {
+                if (value >= 0.35) {
                     type = TileTypes.GRASS;
                 } else {
-                    type = TileTypes.STONE;
+                    type = TileTypes.WATER;
                 }
 
                 final Tile tile = new Tile(world, type);
