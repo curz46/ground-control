@@ -42,54 +42,6 @@ public class Camera implements Renderable {
 
     @Override
     public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
-//        final Vector2i tileMin = this.boundA
-//            .div(World.CHUNK_WIDTH)
-//            .floor()
-//            .toInt();
-//        final Vector2i tileMax = this.getBoundB()
-//            .div(World.CHUNK_WIDTH)
-//            .ceil()
-//            .toInt();
-
-//        System.out.println(this.boundA);
-//        System.out.println(this.getBoundB());
-//        System.out.println(tileMax.sub(tileMin));
-
-        // ratio * pixel = texel
-//        final double ratioX =
-//            ((double) ((tileMax.getX() - tileMin.getY())) * Tile.TILE_WIDTH) / width;
-//        final double ratioY =
-//            ((double) ((tileMax.getY() - tileMin.getY())) * Tile.TILE_WIDTH) / height;
-
-        // for every pixel, find containing Tile, use NEAREST_NEIGHBOUR min/mag filter
-        // TODO: potential optimization; use Tiles per screen and work in blocks to avoid many
-        // ...hash map calls
-
-//        this.render.start();
-//        for (int px = 0; px < width; px++) {
-//            final int texelX = (int) ratioX * (px + this.boundA.getX());
-//            final int tileX = (int) (((double) texelX) / Tile.TILE_WIDTH);
-//            final int texelXRel = texelX & (Tile.TILE_WIDTH - 1);
-////            final int texelX = (int) Math.floor((tileX - Math.floor(tileX)) * Tile.TILE_WIDTH);
-//            for (int py = 0; py < height; py++) {
-//                final int texelY = (int) ratioY * py + this.boundA.getX() * Tile.TILE_WIDTH;
-//                final int tileY = (int) (((double) texelY) / Tile.TILE_WIDTH);
-//                final int texelYRel = texelY & (Tile.TILE_WIDTH - 1);
-//                final Tile tile = this.world.getTile(Vector2i.of(tileX, tileY));
-//                final Sprite sprite = tile.getType().getSprite();
-////                final int texelY = (int) Math.floor((tileY - Math.floor(tileY)) * Tile.TILE_WIDTH);
-//                final int[] texels = sprite.getPixels();
-////                window.setPixel(
-////                    px,
-////                    window.getHeight() - 1 - py,
-////                    texels[texelXRel + texelYRel * Tile.TILE_WIDTH]
-////                );
-//                pixels[px + (height - 1 - py) * width] =
-//                    texels[texelXRel + texelYRel * Tile.TILE_WIDTH];
-//            }
-//        }
-//        this.render.end();
-
         final Vector2i pixelA = this.boundA.mul(Tile.TILE_WIDTH).toInt();
         final Vector2d boundB = this.getBoundB();
         for (int tileX = (int) this.boundA.getX() - 1; tileX < boundB.getX(); tileX++) {
