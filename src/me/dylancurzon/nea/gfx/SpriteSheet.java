@@ -30,7 +30,7 @@ public class SpriteSheet {
         return new SpriteSheet(pixels, width, height, spriteWidth);
     }
 
-    public Sprite getSprite(final int x, final int y, final int width, final int height) {
+    public StaticSprite getSprite(final int x, final int y, final int width, final int height) {
         final int[] spritePixels = new int[width * height];
         for (int xd = 0; xd < width; xd++) {
             for (int yd = 0; yd < height; yd++) {
@@ -38,14 +38,14 @@ public class SpriteSheet {
                     this.pixels[(x * this.spriteWidth) + xd + (y * this.spriteWidth + yd) * this.width];
             }
         }
-        return new Sprite(spritePixels, width, height);
+        return new StaticSprite(spritePixels, width, height);
     }
 
-    public Sprite getSprite(final int x, final int y, final int width) {
+    public StaticSprite getSprite(final int x, final int y, final int width) {
         return this.getSprite(x, y, width, width);
     }
 
-    public Sprite getSprite(final int x, final int y) {
+    public StaticSprite getSprite(final int x, final int y) {
         return this.getSprite(x, y, this.spriteWidth, this.spriteWidth);
     }
 

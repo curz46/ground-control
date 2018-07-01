@@ -74,6 +74,7 @@ public class Game extends JPanel {
             Vector2i.of(WIDTH / Tile.TILE_WIDTH, HEIGHT / Tile.TILE_WIDTH),
             this.world
         );
+        this.camera.transform(Vector2d.of(-5, -5));
 
         this.loop();
     }
@@ -103,6 +104,8 @@ public class Game extends JPanel {
     }
 
     private void update() {
+        this.camera.tick();
+
         final double speed = 1.0 / Tile.TILE_WIDTH;
         if (Keys.pressed(KeyEvent.VK_UP)) {
             this.camera.transform(Vector2d.of(0, speed));

@@ -17,6 +17,9 @@ public class ComputerCapsule extends Entity {
     }
 
     @Override
+    public void tick() {}
+
+    @Override
     public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
         COMPUTER.render(window, offsetX, offsetY - 32);
     }

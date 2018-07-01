@@ -11,12 +11,12 @@ public class ImageUtil {
 
     @NotNull
     public static BufferedImage loadResource(final String resourceName) {
-        final InputStream stream = SpriteSheet.class.getClassLoader().getResourceAsStream(resourceName);
+        final InputStream stream = ImageUtil.class.getClassLoader().getResourceAsStream(resourceName);
         final BufferedImage image;
         try {
             image = ImageIO.read(stream);
         } catch (final IOException |IllegalArgumentException e) {
-            throw new RuntimeException("Failed to load SpriteSheet: " + resourceName, e);
+            throw new RuntimeException("Failed to load Sprite: " + resourceName, e);
         }
         return image;
     }

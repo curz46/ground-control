@@ -3,9 +3,10 @@ package me.dylancurzon.nea.world.entity;
 import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.util.Vector2i;
+import me.dylancurzon.nea.world.Tickable;
 import me.dylancurzon.nea.world.World;
 
-public abstract class Entity implements Renderable {
+public abstract class Entity implements Tickable, Renderable {
 
     // TODO: determine whether or not this should be final
     @NotNull

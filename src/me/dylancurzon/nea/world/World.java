@@ -25,7 +25,7 @@ import me.dylancurzon.nea.world.tile.TileTypes;
  * |- /...
  */
 @Immutable
-public class World {
+public class World implements Tickable {
 
     public static final int CHUNK_WIDTH = 16;
     private final Map<Vector2i, Map<Vector2i, Tile>> chunks = new HashMap<>();
@@ -49,6 +49,15 @@ public class World {
         this.id = id;
         this.generator = generator;
         this.loader = new WorldLoader(savePath, this);
+    }
+
+    /**
+     * Update this {@link World} instance. This involves updating all {@link Tickable} tiles and all currently loaded
+     * entities.
+     */
+    @Override
+    public void tick() {
+        //
     }
 
     /**

@@ -43,6 +43,12 @@ public class Camera implements Renderable {
         this.worker = new Worker(world, Vector2i.of(3, 3));
     }
 
+    // temp
+    public void tick() {
+        this.worker.tick();
+    }
+
+
     @Override
     public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
         // reset pixels
