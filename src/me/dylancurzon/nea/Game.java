@@ -44,9 +44,12 @@ public class Game extends JPanel {
         this.frame = new JFrame("Game");
 
         final Dimension dim = new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
-        this.frame.setSize(dim);
-        this.frame.setPreferredSize(dim);
+//        this.frame.setSize(dim);
         this.frame.setMinimumSize(dim);
+        this.frame.setPreferredSize(dim);
+        this.frame.setMaximumSize(dim);
+        this.frame.pack();
+        this.frame.setResizable(false);
 
         this.frame.add(this);
         this.frame.setVisible(true);

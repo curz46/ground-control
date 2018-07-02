@@ -2,6 +2,7 @@ package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.AnimatedSprite;
+import me.dylancurzon.nea.gfx.GUIs;
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.gfx.TextType;
 import me.dylancurzon.nea.gfx.TextTypes;
@@ -94,6 +95,9 @@ public class Camera implements Renderable {
                 pos1.getX() - (int) (this.boundA.getX() * Tile.TILE_WIDTH),
                 window.getHeight() - 1 - (pos1.getY() - (int) (this.boundA.getY() * Tile.TILE_WIDTH))
             );
+
+        GUIs.LARGE.render(window, 240, 15);
+
 
         // render GUI
 //        final int minX = pos1.getX() * Tile.TILE_WIDTH - 3;

@@ -1,8 +1,10 @@
 package me.dylancurzon.nea.gfx;
 
 import com.sun.istack.internal.NotNull;
+import java.awt.image.BufferedImage;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.Window;
+import me.dylancurzon.nea.util.ImageUtil;
 
 @Immutable
 public class StaticSprite implements Sprite {
@@ -16,6 +18,16 @@ public class StaticSprite implements Sprite {
         this.content = content;
         this.width = width;
         this.height = height;
+    }
+
+    @NotNull
+    public static StaticSprite loadSprite(final String resourceName) {
+        final BufferedImage image = ImageUtil.loadResource(resourceName);
+        final int width = image.getWidth();
+        final int height = image.getHeight();
+
+        final int[] data = image.getRGB(0, 0, width, height, null, 0, width);
+        return new StaticSprite(data, width, height);
     }
 
     public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
