@@ -2,7 +2,10 @@ package me.dylancurzon.nea.world.tile;
 
 import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.Window;
+import me.dylancurzon.nea.gfx.AnimatedSprite;
 import me.dylancurzon.nea.gfx.Renderable;
+import me.dylancurzon.nea.gfx.Sprite;
+import me.dylancurzon.nea.world.Tickable;
 import me.dylancurzon.nea.world.World;
 
 public class Tile implements Renderable {

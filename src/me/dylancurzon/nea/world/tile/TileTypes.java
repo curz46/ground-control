@@ -4,13 +4,20 @@ import static me.dylancurzon.nea.gfx.SpriteSheet.PRIMARY_SHEET;
 
 import com.sun.istack.internal.NotNull;
 import java.util.Optional;
+import me.dylancurzon.nea.gfx.AnimatedSprite;
 
 public interface TileTypes {
 
     TileType UNLOADED = new TileType(0, "Unloaded", PRIMARY_SHEET.getSprite(0, 0, 16));
     TileType GRASS = new TileType(1, "Grass", PRIMARY_SHEET.getSprite(1, 0, 16));
     TileType STONE = new TileType(2, "Stone", PRIMARY_SHEET.getSprite(2, 0, 16));
-    TileType WATER = new TileType(3, "Water", PRIMARY_SHEET.getSprite(3, 0, 16));
+    TileType WATER = new TileType(
+        3,
+        "Water",
+        AnimatedSprite
+            .loadAnimatedSprite("water.png", 16, 2)
+            .createContainer()
+    );
 
     @NotNull
     static Optional<TileType> getType(@NotNull final int id) {

@@ -67,8 +67,8 @@ public class Game extends JPanel {
             }
         });
 
-        final Path homePath = Paths.get(System.getProperty("user.home"));
-//        final Path homePath = Paths.get("P:"); // TODO: this doesn't appear to do what it should but it's ok for now
+//        final Path homePath = Paths.get(System.getProperty("user.home"));
+        final Path homePath = Paths.get("P:"); // TODO: this doesn't appear to do what it should but it's ok for now
         this.world = new World("my_world", Generators.ROCKY, homePath.resolve(".groundcontrol"));
         this.camera = new Camera(
             Vector2i.of(WIDTH / Tile.TILE_WIDTH, HEIGHT / Tile.TILE_WIDTH),
@@ -104,6 +104,7 @@ public class Game extends JPanel {
     }
 
     private void update() {
+        this.world.tick();
         this.camera.tick();
 
         final double speed = 1.0 / Tile.TILE_WIDTH;

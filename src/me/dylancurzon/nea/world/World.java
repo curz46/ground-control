@@ -57,7 +57,9 @@ public class World implements Tickable {
      */
     @Override
     public void tick() {
-        //
+//        this.chunks.forEach((cpos, chunk) -> {
+//            chunk.forEach((relpos, tile) -> tile.tick());
+//        });
     }
 
     /**

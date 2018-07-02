@@ -1,7 +1,10 @@
 package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
+import me.dylancurzon.nea.gfx.AnimatedSprite;
 import me.dylancurzon.nea.gfx.Renderable;
+import me.dylancurzon.nea.gfx.TextType;
+import me.dylancurzon.nea.gfx.TextTypes;
 import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
@@ -9,6 +12,7 @@ import me.dylancurzon.nea.world.World;
 import me.dylancurzon.nea.world.entity.ComputerCapsule;
 import me.dylancurzon.nea.world.entity.Worker;
 import me.dylancurzon.nea.world.tile.Tile;
+import me.dylancurzon.nea.world.tile.TileTypes;
 
 /**
  * This {@link Camera} class represents the view of the world that is drawn by the game's window.
@@ -46,6 +50,7 @@ public class Camera implements Renderable {
     // temp
     public void tick() {
         this.worker.tick();
+        ((AnimatedSprite.TickContainer) TileTypes.WATER.getSprite()).tick();
     }
 
 
@@ -81,6 +86,14 @@ public class Camera implements Renderable {
             (int) ((pos2.getX() - this.boundA.getX()) * Tile.TILE_WIDTH),
             window.getHeight() - 1 - ((int) ((pos2.getY() - this.boundA.getY()) * Tile.TILE_WIDTH))
         );
+
+        TextTypes.SMALL
+            .getText("Computer", 2)
+            .render(
+                window,
+                pos1.getX() - (int) (this.boundA.getX() * Tile.TILE_WIDTH),
+                window.getHeight() - 1 - (pos1.getY() - (int) (this.boundA.getY() * Tile.TILE_WIDTH))
+            );
 
         // render GUI
 //        final int minX = pos1.getX() * Tile.TILE_WIDTH - 3;

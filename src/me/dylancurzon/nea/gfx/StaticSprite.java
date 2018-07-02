@@ -5,7 +5,7 @@ import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.Window;
 
 @Immutable
-public class StaticSprite implements Renderable {
+public class StaticSprite implements Sprite {
 
 //    public static final int SPRITE_WIDTH = 16;
     private final int[] content;
