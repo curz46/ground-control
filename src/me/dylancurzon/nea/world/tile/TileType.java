@@ -2,8 +2,7 @@ package me.dylancurzon.nea.world.tile;
 
 import com.sun.istack.internal.NotNull;
 import jdk.nashorn.internal.ir.annotations.Immutable;
-import me.dylancurzon.nea.gfx.Sprite;
-import me.dylancurzon.nea.gfx.StaticSprite;
+import me.dylancurzon.nea.gfx.sprite.Sprite;
 
 @Immutable
 public class TileType {

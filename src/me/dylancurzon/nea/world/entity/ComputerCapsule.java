@@ -1,10 +1,10 @@
 package me.dylancurzon.nea.world.entity;
 
-import static me.dylancurzon.nea.gfx.SpriteSheet.PRIMARY_SHEET;
+import static me.dylancurzon.nea.gfx.sprite.SpriteSheet.PRIMARY_SHEET;
 
 import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.Window;
-import me.dylancurzon.nea.gfx.StaticSprite;
+import me.dylancurzon.nea.gfx.sprite.StaticSprite;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.World;
 

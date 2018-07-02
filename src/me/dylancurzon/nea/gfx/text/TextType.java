@@ -1,9 +1,10 @@
-package me.dylancurzon.nea.gfx;
+package me.dylancurzon.nea.gfx.text;
 
 import com.sun.istack.internal.NotNull;
 import java.awt.image.BufferedImage;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.Window;
+import me.dylancurzon.nea.gfx.sprite.Sprite;
 import me.dylancurzon.nea.util.ImageUtil;
 
 @Immutable
@@ -88,9 +89,11 @@ public class TextType {
         public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
             int i = 0;
             for (final char c : this.content.toCharArray()) {
-                final int[] data = this.type.getCharacterData(c);
-                final int x = offsetX + (this.type.getWidth() + this.margin) * i;
-                window.copyPixels(x, offsetY, this.type.getWidth(), data);
+                if (c != ' ') {
+                    final int[] data = this.type.getCharacterData(c);
+                    final int x = offsetX + (this.type.getWidth() + this.margin) * i;
+                    window.copyPixels(x, offsetY, this.type.getWidth(), data);
+                }
                 i++;
             }
         }

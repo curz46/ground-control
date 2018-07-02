@@ -2,7 +2,7 @@ package me.dylancurzon.nea.world.entity;
 
 import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.Window;
-import me.dylancurzon.nea.gfx.AnimatedSprite;
+import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.World;
 

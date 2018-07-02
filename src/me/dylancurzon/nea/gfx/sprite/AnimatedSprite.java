@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.gfx;
+package me.dylancurzon.nea.gfx.sprite;
 
 import com.sun.istack.internal.NotNull;
 import jdk.nashorn.internal.ir.annotations.Immutable;

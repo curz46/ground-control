@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.gfx;
+package me.dylancurzon.nea.gfx.sprite;
 
 import java.awt.image.BufferedImage;
 import jdk.nashorn.internal.ir.annotations.Immutable;

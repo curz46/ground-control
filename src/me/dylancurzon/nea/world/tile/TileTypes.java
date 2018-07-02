@@ -1,10 +1,10 @@
 package me.dylancurzon.nea.world.tile;
 
-import static me.dylancurzon.nea.gfx.SpriteSheet.PRIMARY_SHEET;
+import static me.dylancurzon.nea.gfx.sprite.SpriteSheet.PRIMARY_SHEET;
 
 import com.sun.istack.internal.NotNull;
 import java.util.Optional;
-import me.dylancurzon.nea.gfx.AnimatedSprite;
+import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 
 public interface TileTypes {
 

@@ -1,11 +1,10 @@
 package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
-import me.dylancurzon.nea.gfx.AnimatedSprite;
-import me.dylancurzon.nea.gfx.GUIs;
+import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
+import me.dylancurzon.nea.gfx.gui.GUITypes;
 import me.dylancurzon.nea.gfx.Renderable;
-import me.dylancurzon.nea.gfx.TextType;
-import me.dylancurzon.nea.gfx.TextTypes;
+import me.dylancurzon.nea.gfx.text.TextTypes;
 import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
@@ -88,15 +87,15 @@ public class Camera implements Renderable {
             window.getHeight() - 1 - ((int) ((pos2.getY() - this.boundA.getY()) * Tile.TILE_WIDTH))
         );
 
-        TextTypes.SMALL
-            .getText("Computer", 2)
+        TextTypes.TINY
+            .getText("look emma its tiny and small", 2)
             .render(
                 window,
                 pos1.getX() - (int) (this.boundA.getX() * Tile.TILE_WIDTH),
                 window.getHeight() - 1 - (pos1.getY() - (int) (this.boundA.getY() * Tile.TILE_WIDTH))
             );
 
-        GUIs.LARGE.render(window, 240, 15);
+        GUITypes.LARGE.render(window, 240, 15);
 
 
         // render GUI
