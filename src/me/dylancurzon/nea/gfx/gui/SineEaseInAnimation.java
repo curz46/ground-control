@@ -1,11 +1,11 @@
 package me.dylancurzon.nea.gfx.gui;
 
-public class SineAnimation extends Animation {
+public class SineEaseInAnimation extends Animation {
 
     /**
-     * See {@link Animation} for information on this class' parameters.
+     * @see Animation for information on this class' parameters.
      */
-    public SineAnimation(final double min, final double max, final int duration) {
+    public SineEaseInAnimation(final double min, final double max, final int duration) {
         super(min, max, duration);
     }
 
@@ -17,14 +17,6 @@ public class SineAnimation extends Animation {
         // proceeding calculation expands and offsets this range to the desired minimum and maximum
         // values.
         return (super.max - super.min) * Math.sin(x) + super.min;
-    }
-
-    @Override
-    public void tick() {
-        if (super.completed) return;
-        if (super.ticks++ >= super.duration) {
-            super.completed = true;
-        }
     }
 
 }

@@ -33,6 +33,17 @@ public abstract class Animation implements Tickable {
     public abstract double determineValue();
 
     /**
+     * Default way to deal with ticking for an {@link Animation}.
+     */
+    @Override
+    public void tick() {
+        if (this.completed) return;
+        if (this.ticks++ >= this.duration) {
+            this.completed = true;
+        }
+    }
+
+    /**
      * @return true if {@link this#ticks} {@code =} {@link this#duration}.
      */
     public boolean isCompleted() {

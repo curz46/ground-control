@@ -50,6 +50,7 @@ public class Game extends JPanel {
         this.frame.setMaximumSize(dim);
         this.frame.pack();
         this.frame.setResizable(false);
+        this.frame.setLocationRelativeTo(null);
 
         this.frame.add(this);
         this.frame.setVisible(true);
@@ -106,6 +107,8 @@ public class Game extends JPanel {
         }
     }
 
+    private long lastToggle;
+
     private void update() {
         this.world.tick();
         this.camera.tick();
@@ -123,9 +126,14 @@ public class Game extends JPanel {
         if (Keys.pressed(KeyEvent.VK_LEFT)) {
             this.camera.transform(Vector2d.of(-speed, 0));
         }
+        if (this.world == null) return;
         if (Keys.pressed(KeyEvent.VK_U)) {
-            if (this.world == null) return;
             this.world.unloadAllChunks();
+        }
+        if (Keys.pressed(KeyEvent.VK_T)) {
+            if (System.currentTimeMillis() - 300 < this.lastToggle) return;
+            this.camera.toggleTransform();
+            this.lastToggle = System.currentTimeMillis();
         }
 
 //        final Point pos = this.getMousePosition();

@@ -2,12 +2,10 @@ package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
 import java.util.Arrays;
-import me.dylancurzon.nea.gfx.gui.GUI;
-import me.dylancurzon.nea.gfx.gui.SineAnimation;
+
+import me.dylancurzon.nea.gfx.gui.*;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
-import me.dylancurzon.nea.gfx.gui.GUITypes;
 import me.dylancurzon.nea.gfx.Renderable;
-import me.dylancurzon.nea.gfx.text.TextTypes;
 import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
@@ -47,6 +45,7 @@ public class Camera implements Renderable {
         GUI.builder()
             .setBackground(GUITypes.LARGE)
             .setPosition(Vector2i.of(400, 15))
+//            .setPosition(Vector2i.of(240, 15))
             .setMargin(Vector2i.of(10, 10))
             .setPadding(20)
             .setHeader("How are you?")
@@ -57,15 +56,18 @@ public class Camera implements Renderable {
             ))
             .build();
 
+    private boolean toggle;
+
     public Camera(final Vector2i size, final World world) {
         this.size = size;
         this.world = world;
         this.computer = new ComputerCapsule(world, Vector2i.of(0, 0));
         this.worker = new Worker(world, Vector2i.of(3, 3));
-        this.activeGUI.transform(
-            Vector2i.of(240, 15),
-            new SineAnimation(0, 1, 20)
-        );
+//        this.activeGUI.transform(
+//            Vector2i.of(240, 15),
+////            Vector2i.of(400, 15),
+//            new QuarticEaseInAnimation(0, 1, 30)
+//        );
     }
 
     // temp
@@ -75,6 +77,20 @@ public class Camera implements Renderable {
         this.activeGUI.tick();
     }
 
+    public void toggleTransform() {
+        this.toggle = !this.toggle;
+        if (this.toggle) {
+            this.activeGUI.transform(
+                Vector2i.of(240, 15),
+                new QuarticEaseInAnimation(0, 1, 30)
+            );
+        } else {
+            this.activeGUI.transform(
+                Vector2i.of(400, 15),
+                new SineEaseOutAnimation(0, 1, 30)
+            );
+        }
+    }
 
     @Override
     public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
