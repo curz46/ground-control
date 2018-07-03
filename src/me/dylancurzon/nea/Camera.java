@@ -1,6 +1,9 @@
 package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
+import java.util.Arrays;
+import me.dylancurzon.nea.gfx.gui.GUI;
+import me.dylancurzon.nea.gfx.gui.SineAnimation;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 import me.dylancurzon.nea.gfx.gui.GUITypes;
 import me.dylancurzon.nea.gfx.Renderable;
@@ -40,17 +43,36 @@ public class Camera implements Renderable {
     private final ComputerCapsule computer;
     private final Worker worker;
 
+    private final GUI activeGUI =
+        GUI.builder()
+            .setBackground(GUITypes.LARGE)
+            .setPosition(Vector2i.of(400, 15))
+            .setMargin(Vector2i.of(10, 10))
+            .setPadding(20)
+            .setHeader("How are you?")
+            .addLines(Arrays.asList(
+                "Hello Charlie",
+                "How are you finding",
+                "further maths?"
+            ))
+            .build();
+
     public Camera(final Vector2i size, final World world) {
         this.size = size;
         this.world = world;
         this.computer = new ComputerCapsule(world, Vector2i.of(0, 0));
         this.worker = new Worker(world, Vector2i.of(3, 3));
+        this.activeGUI.transform(
+            Vector2i.of(240, 15),
+            new SineAnimation(0, 1, 20)
+        );
     }
 
     // temp
     public void tick() {
         this.worker.tick();
         ((AnimatedSprite.TickContainer) TileTypes.WATER.getSprite()).tick();
+        this.activeGUI.tick();
     }
 
 
@@ -87,16 +109,18 @@ public class Camera implements Renderable {
             window.getHeight() - 1 - ((int) ((pos2.getY() - this.boundA.getY()) * Tile.TILE_WIDTH))
         );
 
-        TextTypes.TINY
-            .getText("look emma its tiny and small", 2)
-            .render(
-                window,
-                pos1.getX() - (int) (this.boundA.getX() * Tile.TILE_WIDTH),
-                window.getHeight() - 1 - (pos1.getY() - (int) (this.boundA.getY() * Tile.TILE_WIDTH))
-            );
+//        TextTypes.TINY
+//            .getText("look emma its tiny and small", 2)
+//            .render(
+//                window,
+//                pos1.getX() - (int) (this.boundA.getX() * Tile.TILE_WIDTH),
+//                window.getHeight() - 1 - (pos1.getY() - (int) (this.boundA.getY() * Tile.TILE_WIDTH))
+//            );
+//
+//        GUITypes.LARGE.render(window, 240, 15);
 
-        GUITypes.LARGE.render(window, 240, 15);
 
+        this.activeGUI.render(window, 0, 0);
 
         // render GUI
 //        final int minX = pos1.getX() * Tile.TILE_WIDTH - 3;

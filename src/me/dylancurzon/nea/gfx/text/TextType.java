@@ -10,7 +10,7 @@ import me.dylancurzon.nea.util.ImageUtil;
 @Immutable
 public class TextType {
 
-    private static final char[] characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+    private static final char[] characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ?".toCharArray();
     @NotNull
     private final int[][] characterData;
     @NotNull

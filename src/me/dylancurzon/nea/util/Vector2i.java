@@ -115,6 +115,15 @@ public class Vector2i {
     }
 
     @NotNull
+    public Vector2d normalize() {
+        final double value = this.absv();
+        return new Vector2d(
+            ((double) this.x) / value,
+            ((double) this.y) / value
+        );
+    }
+
+    @NotNull
     public double absv() {
         return Math.sqrt((this.x * this.x) + (this.y * this.y));
     }
