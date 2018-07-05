@@ -4,13 +4,10 @@ import com.sun.istack.internal.NotNull;
 
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.gui.*;
-import me.dylancurzon.nea.gfx.gui3.ImmutableContainer;
-import me.dylancurzon.nea.gfx.gui3.Spacing;
-import me.dylancurzon.nea.gfx.gui3.MutableElement;
-import me.dylancurzon.nea.gfx.gui3.PageTemplate;
-import me.dylancurzon.nea.gfx.gui3.TextImmutableElement;
+import me.dylancurzon.nea.gfx.gui3.*;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 import me.dylancurzon.nea.gfx.Renderable;
+import me.dylancurzon.nea.gfx.text.TextType;
 import me.dylancurzon.nea.gfx.text.TextTypes;
 import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.Vector2d;
@@ -47,35 +44,16 @@ public class Camera implements Renderable {
     private final ComputerCapsule computer;
     private final Worker worker;
 
-//    private final GUI activeGUI =
-//        GUI.builder()
-//            .setBackground(GUITypes.LARGE)
-//            .setPosition(Vector2i.of(400, 15))
-////            .setPosition(Vector2i.of(240, 15))
-//            .setMargin(Vector2i.of(10, 10))
-//            .setPadding(20)
-//            .setHeader("How are you?")
-//            .addLines(Arrays.asList(
-//                "Hello Charlie",
-//                "How are you finding",
-//                "further maths?"
-//            ))
-//            .build();
-
     private static final ImmutableContainer TEMPLATE = (new PageTemplate.Builder())
         .setBackground(GUITypes.LARGE)
         .setPosition(Vector2i.of(240, 15))
-//        .setCentering(true)
-        .add((new ImmutableContainer.Builder())
+        .add(ImmutableContainer.builder()
             .setSize(Vector2i.of(150, 220))
             .setPadding(Spacing.of(10))
-            .add((new TextImmutableElement.Builder())
-                .setMargin(Spacing.of(10))
-                .setText(TextTypes.SMALL.getText("Some text", 2))
-                .build())
-            .add((new TextImmutableElement.Builder())
-                .setMargin(Spacing.of(5))
-                .setText(TextTypes.TINY.getText("Heres some more text", 2))
+            .setCentering(true)
+            .setInline(true)
+            .add(TextImmutableElement.builder()
+                .setText(TextTypes.SMALL.getText("Hi", 2))
                 .build())
             .build())
         .build();

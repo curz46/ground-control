@@ -114,7 +114,7 @@ public class TextType {
         @NotNull
         public Vector2i getSize() {
             return Vector2i.of(
-                this.content.length() * (this.type.getWidth() + this.margin),
+                this.content.length() * this.type.getWidth() + (this.content.length() - 1) * this.margin,
                 this.type.getHeight()
             );
         }

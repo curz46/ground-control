@@ -12,11 +12,16 @@ public class PageTemplate extends ImmutableContainer {
     private final Vector2i position;
 
     protected PageTemplate(final Spacing margin, final List<ImmutableElement> elements,
-        final Vector2i size, final Spacing padding, final boolean centering, final Sprite backgroundSprite,
-        final Vector2i position) {
-        super(margin, elements, size, padding, centering);
+                           final Vector2i size, final Spacing padding, final boolean inline, final boolean centering,
+                           final Sprite backgroundSprite, final Vector2i position) {
+        super(margin, elements, size, padding, centering, inline);
         this.backgroundSprite = backgroundSprite;
         this.position = position;
+    }
+
+    @NotNull
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Override
@@ -94,6 +99,7 @@ public class PageTemplate extends ImmutableContainer {
                     this.backgroundSprite.getHeight()
                 ),
                 super.padding,
+                super.inline,
                 super.centering,
                 this.backgroundSprite,
                 this.position

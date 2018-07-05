@@ -15,7 +15,7 @@ public abstract class MutableElement implements Renderable  {
     }
 
     @NotNull
-    public Vector2i getEffectiveSize() {
+    public Vector2i getMarginedSize() {
         return this.getSize().add(
             Vector2i.of(
                 this.margin.getLeft() + this.margin.getRight(),

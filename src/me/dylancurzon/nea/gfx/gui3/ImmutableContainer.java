@@ -15,10 +15,12 @@ public class ImmutableContainer extends ImmutableElement {
     protected final List<ImmutableElement> elements;
     protected final Vector2i size;
     protected final Spacing padding;
+    protected final boolean inline;
     protected final boolean centering;
 
     protected ImmutableContainer(final Spacing margin, final List<ImmutableElement> elements,
-        final Vector2i size, final Spacing padding, final boolean centering) {
+                                 final Vector2i size, final Spacing padding, final boolean inline,
+                                 final boolean centering) {
         super(margin);
         this.elements = elements;
         this.size = size;
@@ -27,7 +29,13 @@ public class ImmutableContainer extends ImmutableElement {
         } else {
             this.padding = padding;
         }
+        this.inline = inline;
         this.centering = centering;
+    }
+
+    @NotNull
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Override
@@ -39,12 +47,16 @@ public class ImmutableContainer extends ImmutableElement {
         return new MutableElement(super.margin) {
             @Override
             public Vector2i getSize() {
-//                Vector2i size = Vector2i.of(0, 0);
-//                for (final MutableElement mut : mutableElements) {
-//                    final Vector2i elementSize = mut.getSize();
-//                    size = size.add(Vector2i.of(0, elementSize.getY()));
-//                }
-                return ImmutableContainer.this.size;
+                if (ImmutableContainer.this.size == null) {
+                    Vector2i size = Vector2i.of(0, 0);
+                    for (final MutableElement mut : mutableElements) {
+                        final Vector2i elementSize = mut.getSize();
+                        size = size.add(Vector2i.of(0, elementSize.getY()));
+                    }
+                    return size;
+                } else {
+                    return ImmutableContainer.this.size;
+                }
             }
 
             @Override
@@ -88,7 +100,11 @@ public class ImmutableContainer extends ImmutableElement {
                             elementSize.getX(),
                             elementContainer.getPixels()
                         );
-                        pos = pos.add(Vector2i.of(0, mut.getEffectiveSize().getY()));
+                        if (ImmutableContainer.this.inline) {
+                            pos = pos.add(Vector2i.of(mut.getMarginedSize().getX(), 0));
+                        } else {
+                            pos = pos.add(Vector2i.of(0, mut.getMarginedSize().getY()));
+                        }
                     }
                 }
             }
@@ -100,6 +116,7 @@ public class ImmutableContainer extends ImmutableElement {
         protected final List<ImmutableElement> elements = new ArrayList<>();
         protected Vector2i size;
         protected Spacing padding;
+        protected boolean inline;
         protected boolean centering;
 
         @NotNull
@@ -133,6 +150,12 @@ public class ImmutableContainer extends ImmutableElement {
         }
 
         @NotNull
+        public Builder setInline(final boolean inline) {
+            this.inline = inline;
+            return this;
+        }
+
+        @NotNull
         public Builder setCentering(final boolean centering) {
             this.centering = centering;
             return this;
@@ -160,8 +183,8 @@ public class ImmutableContainer extends ImmutableElement {
                 this.elements,
                 this.size,
                 this.padding,
-                this.centering
-            );
+                this.centering,
+                inline);
         }
 
     }

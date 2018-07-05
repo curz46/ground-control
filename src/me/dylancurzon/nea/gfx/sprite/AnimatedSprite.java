@@ -33,10 +33,6 @@ public class AnimatedSprite {
             );
         }
 
-        System.out.println("Width: " + width);
-        System.out.println("Height: " + height);
-        System.out.println("Frame count: " + frameCount);
-
         final int[] data = image.getRGB(0, 0, width, image.getHeight(), null, 0, width);
         final int[][] frames = new int[frameCount][width * height];
 

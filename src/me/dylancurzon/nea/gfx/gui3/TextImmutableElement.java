@@ -16,13 +16,17 @@ public class TextImmutableElement extends ImmutableElement {
         this.sprite = sprite;
     }
 
+    @NotNull
+    public static Builder builder() {
+        return new Builder();
+    }
+
     @Override
     @NotNull
     public MutableElement asMutable() {
         return new MutableElement(super.margin) {
             @Override
             public Vector2i getSize() {
-                System.out.println(TextImmutableElement.this.sprite.getSize());
                 return TextImmutableElement.this.sprite.getSize();
             }
 
