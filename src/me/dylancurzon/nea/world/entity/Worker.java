@@ -1,7 +1,7 @@
 package me.dylancurzon.nea.world.entity;
 
 import com.sun.istack.internal.NotNull;
-import me.dylancurzon.nea.Window;
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.World;
@@ -25,7 +25,7 @@ public class Worker extends Entity {
     }
 
     @Override
-    public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
+    public void render(@NotNull final PixelContainer window, final int offsetX, final int offsetY) {
         this.sprite.render(window, offsetX, offsetY);
     }
 

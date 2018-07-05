@@ -2,7 +2,6 @@ package me.dylancurzon.nea;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.geom.AffineTransform;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.*;
@@ -10,6 +9,7 @@ import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.util.Keys;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
@@ -29,7 +29,7 @@ public class Game extends JPanel {
     private boolean running;
     private int ticks;
 
-    private final Window window = new Window(this.pixels, WIDTH, HEIGHT);
+    private final PixelContainer window = new PixelContainer(this.pixels, WIDTH, HEIGHT);
     private World world;
     private Camera camera;
 

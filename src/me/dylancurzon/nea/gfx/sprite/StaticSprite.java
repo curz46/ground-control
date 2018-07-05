@@ -3,7 +3,7 @@ package me.dylancurzon.nea.gfx.sprite;
 import com.sun.istack.internal.NotNull;
 import java.awt.image.BufferedImage;
 import jdk.nashorn.internal.ir.annotations.Immutable;
-import me.dylancurzon.nea.Window;
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.util.ImageUtil;
 
 @Immutable
@@ -30,7 +30,7 @@ public class StaticSprite implements Sprite {
         return new StaticSprite(data, width, height);
     }
 
-    public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
+    public void render(@NotNull final PixelContainer window, final int offsetX, final int offsetY) {
         window.copyPixels(offsetX, offsetY, this.width, this.content);
     }
 
@@ -38,10 +38,12 @@ public class StaticSprite implements Sprite {
         return this.content;
     }
 
+    @Override
     public int getWidth() {
         return this.width;
     }
 
+    @Override
     public int getHeight() {
         return this.height;
     }

@@ -3,7 +3,7 @@ package me.dylancurzon.nea.world.entity;
 import static me.dylancurzon.nea.gfx.sprite.SpriteSheet.PRIMARY_SHEET;
 
 import com.sun.istack.internal.NotNull;
-import me.dylancurzon.nea.Window;
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.sprite.StaticSprite;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.World;
@@ -20,7 +20,7 @@ public class ComputerCapsule extends Entity {
     public void tick() {}
 
     @Override
-    public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
+    public void render(@NotNull final PixelContainer window, final int offsetX, final int offsetY) {
         COMPUTER.render(window, offsetX, offsetY - 32);
     }
 

@@ -1,11 +1,17 @@
 package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
-import java.util.Arrays;
 
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.gui.*;
+import me.dylancurzon.nea.gfx.gui3.ImmutableContainer;
+import me.dylancurzon.nea.gfx.gui3.Spacing;
+import me.dylancurzon.nea.gfx.gui3.MutableElement;
+import me.dylancurzon.nea.gfx.gui3.PageTemplate;
+import me.dylancurzon.nea.gfx.gui3.TextImmutableElement;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 import me.dylancurzon.nea.gfx.Renderable;
+import me.dylancurzon.nea.gfx.text.TextTypes;
 import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
@@ -41,20 +47,39 @@ public class Camera implements Renderable {
     private final ComputerCapsule computer;
     private final Worker worker;
 
-    private final GUI activeGUI =
-        GUI.builder()
-            .setBackground(GUITypes.LARGE)
-            .setPosition(Vector2i.of(400, 15))
-//            .setPosition(Vector2i.of(240, 15))
-            .setMargin(Vector2i.of(10, 10))
-            .setPadding(20)
-            .setHeader("How are you?")
-            .addLines(Arrays.asList(
-                "Hello Charlie",
-                "How are you finding",
-                "further maths?"
-            ))
-            .build();
+//    private final GUI activeGUI =
+//        GUI.builder()
+//            .setBackground(GUITypes.LARGE)
+//            .setPosition(Vector2i.of(400, 15))
+////            .setPosition(Vector2i.of(240, 15))
+//            .setMargin(Vector2i.of(10, 10))
+//            .setPadding(20)
+//            .setHeader("How are you?")
+//            .addLines(Arrays.asList(
+//                "Hello Charlie",
+//                "How are you finding",
+//                "further maths?"
+//            ))
+//            .build();
+
+    private static final ImmutableContainer TEMPLATE = (new PageTemplate.Builder())
+        .setBackground(GUITypes.LARGE)
+        .setPosition(Vector2i.of(240, 15))
+//        .setCentering(true)
+        .add((new ImmutableContainer.Builder())
+            .setSize(Vector2i.of(150, 220))
+            .setPadding(Spacing.of(10))
+            .add((new TextImmutableElement.Builder())
+                .setMargin(Spacing.of(10))
+                .setText(TextTypes.SMALL.getText("Some text", 2))
+                .build())
+            .add((new TextImmutableElement.Builder())
+                .setMargin(Spacing.of(5))
+                .setText(TextTypes.TINY.getText("Heres some more text", 2))
+                .build())
+            .build())
+        .build();
+    private final MutableElement page = TEMPLATE.asMutable();
 
     private boolean toggle;
 
@@ -74,26 +99,26 @@ public class Camera implements Renderable {
     public void tick() {
         this.worker.tick();
         ((AnimatedSprite.TickContainer) TileTypes.WATER.getSprite()).tick();
-        this.activeGUI.tick();
+//        this.activeGUI.tick();
     }
 
     public void toggleTransform() {
         this.toggle = !this.toggle;
-        if (this.toggle) {
-            this.activeGUI.transform(
-                Vector2i.of(240, 15),
-                new QuarticEaseInAnimation(0, 1, 30)
-            );
-        } else {
-            this.activeGUI.transform(
-                Vector2i.of(400, 15),
-                new SineEaseOutAnimation(0, 1, 30)
-            );
-        }
+//        if (this.toggle) {
+//            this.activeGUI.transform(
+//                Vector2i.of(240, 15),
+//                new QuarticEaseInAnimation(0, 1, 30)
+//            );
+//        } else {
+//            this.activeGUI.transform(
+//                Vector2i.of(400, 15),
+//                new SineEaseOutAnimation(0, 1, 30)
+//            );
+//        }
     }
 
     @Override
-    public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
+    public void render(@NotNull final PixelContainer window) {
         // reset pixels
         for (int i = 0; i < window.getWidth() * window.getHeight(); i++) {
             window.getPixels()[i] = 0;
@@ -125,6 +150,8 @@ public class Camera implements Renderable {
             window.getHeight() - 1 - ((int) ((pos2.getY() - this.boundA.getY()) * Tile.TILE_WIDTH))
         );
 
+        this.page.render(window);
+
 //        TextTypes.TINY
 //            .getText("look emma its tiny and small", 2)
 //            .render(
@@ -136,7 +163,7 @@ public class Camera implements Renderable {
 //        GUITypes.LARGE.render(window, 240, 15);
 
 
-        this.activeGUI.render(window, 0, 0);
+//        this.activeGUI.render(window, 0, 0);
 
         // render GUI
 //        final int minX = pos1.getX() * Tile.TILE_WIDTH - 3;

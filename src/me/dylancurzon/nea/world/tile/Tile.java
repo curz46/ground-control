@@ -1,11 +1,11 @@
 package me.dylancurzon.nea.world.tile;
 
 import com.sun.istack.internal.NotNull;
-import me.dylancurzon.nea.Window;
-import me.dylancurzon.nea.gfx.Renderable;
+import me.dylancurzon.nea.gfx.OffsetRenderable;
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.world.World;
 
-public class Tile implements Renderable {
+public class Tile implements OffsetRenderable {
 
     public static final int TILE_WIDTH = 16;
 
@@ -20,7 +20,7 @@ public class Tile implements Renderable {
     }
 
     @Override
-    public void render(final Window window, final int offsetX, final int offsetY) {
+    public void render(final PixelContainer window, final int offsetX, final int offsetY) {
         this.type.getSprite().render(window, offsetX, offsetY);
     }
 

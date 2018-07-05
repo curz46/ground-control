@@ -2,7 +2,7 @@ package me.dylancurzon.nea.gfx.sprite;
 
 import com.sun.istack.internal.NotNull;
 import jdk.nashorn.internal.ir.annotations.Immutable;
-import me.dylancurzon.nea.Window;
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.util.ImageUtil;
 
 import java.awt.image.BufferedImage;
@@ -96,11 +96,21 @@ public class AnimatedSprite {
         }
 
         @Override
-        public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
+        public void render(@NotNull final PixelContainer window, final int offsetX, final int offsetY) {
             final int rate = this.sprite.getTicksPerFrame();
             // Calculate effective ticks by dividing by the number of ticks that should occur per frame.
             final int index = (this.ticks / rate) % this.sprite.getFrameCount();
             window.copyPixels(offsetX, offsetY, this.sprite.getWidth(), this.sprite.getFrame(index));
+        }
+
+        @Override
+        public int getWidth() {
+            return this.sprite.getWidth();
+        }
+
+        @Override
+        public int getHeight() {
+            return this.sprite.getHeight();
         }
 
     }

@@ -3,7 +3,7 @@ package me.dylancurzon.nea.gfx.text;
 import com.sun.istack.internal.NotNull;
 import java.awt.image.BufferedImage;
 import jdk.nashorn.internal.ir.annotations.Immutable;
-import me.dylancurzon.nea.Window;
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.sprite.Sprite;
 import me.dylancurzon.nea.util.ImageUtil;
 import me.dylancurzon.nea.util.Vector2i;
@@ -99,7 +99,7 @@ public class TextType {
         }
 
         @Override
-        public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
+        public void render(@NotNull final PixelContainer window, final int offsetX, final int offsetY) {
             int i = 0;
             for (final char c : this.content.toCharArray()) {
                 if (c != ' ') {
@@ -117,6 +117,16 @@ public class TextType {
                 this.content.length() * (this.type.getWidth() + this.margin),
                 this.type.getHeight()
             );
+        }
+
+        @Override
+        public int getWidth() {
+            return this.getSize().getX();
+        }
+
+        @Override
+        public int getHeight() {
+            return this.getSize().getY();
         }
 
     }

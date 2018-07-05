@@ -2,7 +2,7 @@ package me.dylancurzon.nea.gfx.gui2;
 
 import com.sun.istack.internal.NotNull;
 import jdk.nashorn.internal.ir.annotations.Immutable;
-import me.dylancurzon.nea.Window;
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.util.Vector2i;
 
 @Immutable
@@ -51,7 +51,7 @@ public class MarginedElement extends Element {
     }
 
     @Override
-    public void render(@NotNull final Window window, final int offsetX, final int offsetY) {
+    public void render(@NotNull final PixelContainer window, final int offsetX, final int offsetY) {
         this.wrappedElement.render(
             window,
             offsetX + this.marginLeft,

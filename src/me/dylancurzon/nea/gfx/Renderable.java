@@ -1,9 +1,13 @@
 package me.dylancurzon.nea.gfx;
 
-import me.dylancurzon.nea.Window;
+public interface Renderable extends OffsetRenderable {
 
-public interface Renderable {
+//    void render(final PixelContainer window, final int offsetX, final int offsetY);
 
-    void render(final Window window, final int offsetX, final int offsetY);
+    default void render(final PixelContainer container, final int offsetX, final int offsetY) {
+        this.render(container);
+    }
+
+    void render(final PixelContainer container);
 
 }

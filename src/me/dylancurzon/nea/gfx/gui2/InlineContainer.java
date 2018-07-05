@@ -3,7 +3,7 @@ package me.dylancurzon.nea.gfx.gui2;
 import com.sun.istack.internal.NotNull;
 import java.util.Arrays;
 import java.util.List;
-import me.dylancurzon.nea.Window;
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.util.Vector2i;
 
 public class InlineContainer extends MarginableElement {
@@ -34,7 +34,7 @@ public class InlineContainer extends MarginableElement {
     }
 
     @Override
-    public void render(@NotNull final Window window, int offsetX, final int offsetY) {
+    public void render(@NotNull final PixelContainer window, int offsetX, final int offsetY) {
         for (final Element element : this.elements) {
             element.render(window, offsetX, offsetY);
 

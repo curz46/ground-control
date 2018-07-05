@@ -1,7 +1,7 @@
 package me.dylancurzon.nea.gfx.gui;
 
 import com.sun.istack.internal.NotNull;
-import me.dylancurzon.nea.Window;
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.gfx.sprite.StaticSprite;
 import me.dylancurzon.nea.gfx.text.TextTypes;
@@ -66,7 +66,7 @@ public class GUI implements Tickable, Renderable {
     }
 
     @Override
-    public void render(final Window window, final int offsetX, final int offsetY) {
+    public void render(final PixelContainer window) {
         final Vector2i pos = this.screenPosition;
         this.backgroundSprite.render(window, pos.getX(), pos.getY());
         Vector2i offset = this.screenPosition.add(this.margin);
