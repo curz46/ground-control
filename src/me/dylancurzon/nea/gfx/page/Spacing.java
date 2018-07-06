@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.gfx.gui3;
+package me.dylancurzon.nea.gfx.page;
 
 public class Spacing {
 

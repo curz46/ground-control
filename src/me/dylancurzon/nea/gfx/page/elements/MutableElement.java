@@ -1,11 +1,12 @@
-package me.dylancurzon.nea.gfx.gui3;
+package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
+import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.util.Vector2i;
 
-public abstract class MutableElement implements Renderable  {
+public abstract class MutableElement implements Renderable {
 
     @NotNull
     protected final Spacing margin;
@@ -24,10 +25,10 @@ public abstract class MutableElement implements Renderable  {
         );
     }
 
-    public void tick() {}
-
     @NotNull
     public abstract Vector2i getSize();
+
+    public void tick() {}
 
     public abstract void render(@NotNull final PixelContainer container);
 

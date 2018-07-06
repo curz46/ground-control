@@ -3,11 +3,13 @@ package me.dylancurzon.nea;
 import com.sun.istack.internal.NotNull;
 
 import me.dylancurzon.nea.gfx.PixelContainer;
-import me.dylancurzon.nea.gfx.gui.*;
-import me.dylancurzon.nea.gfx.gui3.*;
+import me.dylancurzon.nea.gfx.page.*;
+import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
+import me.dylancurzon.nea.gfx.page.animation.SineEaseOutAnimation;
+import me.dylancurzon.nea.gfx.page.elements.ImmutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.TextImmutableElement;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 import me.dylancurzon.nea.gfx.Renderable;
-import me.dylancurzon.nea.gfx.text.TextType;
 import me.dylancurzon.nea.gfx.text.TextTypes;
 import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.Vector2d;
@@ -44,9 +46,9 @@ public class Camera implements Renderable {
     private final ComputerCapsule computer;
     private final Worker worker;
 
-    private static final ImmutableContainer TEMPLATE = (new PageTemplate.Builder())
+    private static final PageTemplate TEMPLATE = PageTemplate.builder()
         .setBackground(GUITypes.LARGE)
-        .setPosition(Vector2i.of(240, 15))
+        .setPosition(Vector2i.of(400, 15))
         .add(ImmutableContainer.builder()
             .setSize(Vector2i.of(150, 220))
             .setPadding(Spacing.of(10))
@@ -57,7 +59,7 @@ public class Camera implements Renderable {
                 .build())
             .build())
         .build();
-    private final MutableElement page = TEMPLATE.asMutable();
+    private final Page page = TEMPLATE.asMutable();
 
     private boolean toggle;
 
@@ -66,33 +68,32 @@ public class Camera implements Renderable {
         this.world = world;
         this.computer = new ComputerCapsule(world, Vector2i.of(0, 0));
         this.worker = new Worker(world, Vector2i.of(3, 3));
-//        this.activeGUI.transform(
-//            Vector2i.of(240, 15),
-////            Vector2i.of(400, 15),
-//            new QuarticEaseInAnimation(0, 1, 30)
-//        );
+        this.page.transform(
+            Vector2i.of(240, 15),
+            new QuarticEaseInAnimation(0, 1, 30)
+        );
     }
 
     // temp
     public void tick() {
         this.worker.tick();
         ((AnimatedSprite.TickContainer) TileTypes.WATER.getSprite()).tick();
-//        this.activeGUI.tick();
+        this.page.tick();
     }
 
     public void toggleTransform() {
         this.toggle = !this.toggle;
-//        if (this.toggle) {
-//            this.activeGUI.transform(
-//                Vector2i.of(240, 15),
-//                new QuarticEaseInAnimation(0, 1, 30)
-//            );
-//        } else {
-//            this.activeGUI.transform(
-//                Vector2i.of(400, 15),
-//                new SineEaseOutAnimation(0, 1, 30)
-//            );
-//        }
+        if (this.toggle) {
+            this.page.transform(
+                Vector2i.of(240, 15),
+                new QuarticEaseInAnimation(0, 1, 30)
+            );
+        } else {
+            this.page.transform(
+                Vector2i.of(400, 15),
+                new SineEaseOutAnimation(0, 1, 30)
+            );
+        }
     }
 
     @Override

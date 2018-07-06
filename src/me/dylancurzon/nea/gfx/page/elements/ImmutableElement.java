@@ -1,7 +1,8 @@
-package me.dylancurzon.nea.gfx.gui3;
+package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
 import jdk.nashorn.internal.ir.annotations.Immutable;
+import me.dylancurzon.nea.gfx.page.Spacing;
 
 @Immutable
 public abstract class ImmutableElement {
@@ -18,6 +19,11 @@ public abstract class ImmutableElement {
 
     @NotNull
     public abstract MutableElement asMutable();
+
+    @NotNull
+    public Spacing getMargin() {
+        return this.margin;
+    }
 
     public static abstract class Builder<T extends ImmutableElement, B extends Builder> {
 

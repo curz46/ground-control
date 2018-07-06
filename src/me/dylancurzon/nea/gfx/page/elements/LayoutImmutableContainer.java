@@ -1,8 +1,9 @@
-package me.dylancurzon.nea.gfx.gui3;
+package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
 import javafx.util.Pair;
 import me.dylancurzon.nea.gfx.PixelContainer;
+import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 

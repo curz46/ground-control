@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.gfx.gui;
+package me.dylancurzon.nea.gfx.page.animation;
 
 public class SineEaseInAnimation extends Animation {
 

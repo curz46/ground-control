@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.gfx.gui;
+package me.dylancurzon.nea.gfx.page;
 
 import me.dylancurzon.nea.gfx.sprite.StaticSprite;
 

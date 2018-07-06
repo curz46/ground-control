@@ -1,8 +1,10 @@
-package me.dylancurzon.nea.gfx.gui3;
+package me.dylancurzon.nea.gfx.page;
 
 import com.sun.istack.internal.NotNull;
 import java.util.List;
-import me.dylancurzon.nea.gfx.PixelContainer;
+import me.dylancurzon.nea.gfx.page.elements.ImmutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.ImmutableElement;
+import me.dylancurzon.nea.gfx.page.elements.MutableElement;
 import me.dylancurzon.nea.gfx.sprite.Sprite;
 import me.dylancurzon.nea.util.Vector2i;
 
@@ -26,40 +28,22 @@ public class PageTemplate extends ImmutableContainer {
 
     @Override
     @NotNull
-    public MutableElement asMutable() {
+    public Page asMutable() {
         final MutableElement container = super.asMutable();
-        return new MutableElement(super.margin) {
-            @Override
-            public Vector2i getSize() {
-                return PageTemplate.this.size;
-            }
-
-            @Override
-            public void render(final PixelContainer window) {
-                final Vector2i pos = PageTemplate.this.position;
-                final Vector2i size = PageTemplate.super.size;
-                PageTemplate.this.backgroundSprite.render(
-                    window,
-                    PageTemplate.this.position.getX(),
-                    PageTemplate.this.position.getY()
-                );
-                final PixelContainer pixelContainer = new PixelContainer(
-                    new int[size.getX() * size.getY()],
-                    size.getX(),
-                    size.getY()
-                );
-                container.render(pixelContainer);
-                window.copyPixels(
-                    pos.getX(),
-                    pos.getY(),
-                    size.getX(),
-                    pixelContainer.getPixels()
-                );
-            }
-        };
+        return new Page(this, container);
     }
 
-    public static class Builder extends ImmutableContainer.Builder {
+    @NotNull
+    public Sprite getBackgroundSprite() {
+        return this.backgroundSprite;
+    }
+
+    @NotNull
+    public Vector2i getPosition() {
+        return this.position;
+    }
+
+    public static class Builder extends ImmutableContainer.Builder<Builder> {
 
         private Sprite backgroundSprite;
         private Vector2i position;
@@ -73,6 +57,11 @@ public class PageTemplate extends ImmutableContainer {
         @NotNull
         public Builder setPosition(final Vector2i position) {
             this.position = position;
+            return this;
+        }
+
+        @Override
+        public Builder self() {
             return this;
         }
 

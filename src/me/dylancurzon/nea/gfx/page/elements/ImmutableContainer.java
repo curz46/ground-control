@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.gfx.gui3;
+package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
 import java.util.ArrayList;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.gfx.PixelContainer;
+import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.util.Vector2i;
 
 @Immutable
@@ -35,7 +36,7 @@ public class ImmutableContainer extends ImmutableElement {
 
     @NotNull
     public static Builder builder() {
-        return new Builder();
+        return new ContainerBuilder();
     }
 
     @Override
@@ -111,7 +112,39 @@ public class ImmutableContainer extends ImmutableElement {
         };
     }
 
-    public static class Builder extends ImmutableElement.Builder<ImmutableContainer, Builder> {
+    @NotNull
+    public List<ImmutableElement> getElements() {
+        return this.elements;
+    }
+
+    @NotNull
+    public Vector2i getSize() {
+        return this.size;
+    }
+
+    @NotNull
+    public Spacing getPadding() {
+        return this.padding;
+    }
+
+    public boolean isInline() {
+        return this.inline;
+    }
+
+    public boolean isCentering() {
+        return this.centering;
+    }
+
+    public static class ContainerBuilder extends Builder<ContainerBuilder> {
+
+        @Override
+        public ContainerBuilder self() {
+            return this;
+        }
+
+    }
+
+    public static abstract class Builder<T extends Builder> extends ImmutableElement.Builder<ImmutableContainer, T> {
 
         protected final List<ImmutableElement> elements = new ArrayList<>();
         protected Vector2i size;
@@ -120,27 +153,27 @@ public class ImmutableContainer extends ImmutableElement {
         protected boolean centering;
 
         @NotNull
-        public Builder add(final ImmutableElement element) {
+        public T add(final ImmutableElement element) {
             this.elements.add(element);
-            return this;
+            return this.self();
         }
 
         @NotNull
-        public Builder add(final ImmutableElement... elements) {
+        public T add(final ImmutableElement... elements) {
             this.elements.addAll(Arrays.asList(elements));
-            return this;
+            return this.self();
         }
 
         @NotNull
-        public Builder add(final List<ImmutableElement> elements) {
+        public T add(final List<ImmutableElement> elements) {
             this.elements.addAll(elements);
-            return this;
+            return this.self();
         }
 
         @NotNull
-        public Builder setSize(final Vector2i size) {
+        public T setSize(final Vector2i size) {
             this.size = size;
-            return this;
+            return this.self();
         }
 
         @NotNull
@@ -150,21 +183,15 @@ public class ImmutableContainer extends ImmutableElement {
         }
 
         @NotNull
-        public Builder setInline(final boolean inline) {
+        public T setInline(final boolean inline) {
             this.inline = inline;
-            return this;
+            return this.self();
         }
 
         @NotNull
-        public Builder setCentering(final boolean centering) {
+        public T setCentering(final boolean centering) {
             this.centering = centering;
-            return this;
-        }
-
-        @Override
-        @NotNull
-        public Builder self() {
-            return this;
+            return this.self();
         }
 
         @Override
@@ -184,7 +211,8 @@ public class ImmutableContainer extends ImmutableElement {
                 this.size,
                 this.padding,
                 this.centering,
-                inline);
+                this.inline
+            );
         }
 
     }

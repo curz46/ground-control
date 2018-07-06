@@ -1,8 +1,9 @@
-package me.dylancurzon.nea.gfx.gui3;
+package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.gfx.PixelContainer;
+import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.text.TextType.TextSprite;
 import me.dylancurzon.nea.util.Vector2i;
 
