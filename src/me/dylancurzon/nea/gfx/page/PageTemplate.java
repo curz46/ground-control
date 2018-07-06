@@ -18,7 +18,7 @@ public class PageTemplate extends DefaultImmutableContainer {
     protected PageTemplate(final Spacing margin, final List<Function<ImmutableContainer, ImmutableElement>> elements,
                            final Vector2i size, final Spacing padding, final boolean inline, final boolean centering,
                            final Sprite backgroundSprite, final Vector2i position) {
-        super(margin, elements, size, padding, centering, inline);
+        super(margin, elements, size, padding, inline, centering);
         this.backgroundSprite = backgroundSprite;
         this.position = position;
     }

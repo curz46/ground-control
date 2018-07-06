@@ -49,20 +49,17 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
         final List<ImmutableElement> wrappedElements = this.elements.stream()
             .map(pair -> DefaultImmutableContainer.builder()
                 .setCentering(this.centering)
-//                .setInline(this.inline) // shouldn't have an effect
                 .setSize((this.inline
                     ? this.size.toDouble().mul(Vector2d.of(((double) pair.getKey()) / total, 1))
                     : this.size.toDouble().mul(Vector2d.of(1, ((double) pair.getKey()) / total)))
                     .ceil().toInt())
                 .add(pair.getValue())
                 .build())
-//            .map(ImmutableElement::asMutable)
             .collect(Collectors.toList());
         return DefaultImmutableContainer.builder()
             .setSize(this.size)
-//            .setInline(this.inline)
             .setPadding(this.padding)
-//            .setMargin(this.margin)
+            .setInline(this.inline)
             .add(wrappedElements)
             .build()
             .asMutable();

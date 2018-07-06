@@ -81,8 +81,6 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                         .div(2)
                         .sub(elementSize.div(2))
                         .floor().toInt();
-                    System.out.println(DefaultImmutableContainer.this.size);
-                    System.out.println("Centered: " + centered);
                     container.copyPixels(
                         centered.getX(),
                         centered.getY(),
@@ -210,9 +208,9 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
         }
 
         @NotNull
-        public Builder setPadding(final Spacing padding) {
+        public T setPadding(final Spacing padding) {
             this.padding = padding;
-            return this;
+            return this.self();
         }
 
         @NotNull
