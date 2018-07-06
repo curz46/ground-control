@@ -2,10 +2,12 @@ package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
 
+import java.util.function.Function;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.*;
 import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
 import me.dylancurzon.nea.gfx.page.animation.SineEaseOutAnimation;
+import me.dylancurzon.nea.gfx.page.elements.ImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.LayoutImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.TextImmutableElement;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
@@ -46,20 +48,40 @@ public class Camera implements Renderable {
     private final ComputerCapsule computer;
     private final Worker worker;
 
+    private static final Function<ImmutableContainer, LayoutImmutableContainer> ABCDE =
+        page -> LayoutImmutableContainer.builder()
+            .setSize(page.getSize())
+            .setPadding(Spacing.of(10))
+            .setCentering(true)
+//            .setInline(true)
+            .add(1, TextImmutableElement.builder()
+                .setText(TextTypes.SMALL.getText("A", 2))
+                .build())
+            .add(1, TextImmutableElement.builder()
+                .setText(TextTypes.SMALL.getText("B", 2))
+                .build())
+            .add(1, TextImmutableElement.builder()
+                .setText(TextTypes.SMALL.getText("C", 2))
+                .build())
+            .add(1, TextImmutableElement.builder()
+                .setText(TextTypes.SMALL.getText("D", 2))
+                .build())
+            .add(1, TextImmutableElement.builder()
+                .setText(TextTypes.SMALL.getText("E", 2))
+                .build())
+            .build();
+
     private static final PageTemplate TEMPLATE = PageTemplate.builder()
         .setBackground(GUITypes.LARGE)
         .setPosition(Vector2i.of(400, 15))
         .add(page -> LayoutImmutableContainer.builder()
             .setSize(page.getSize())
-            .setPadding(Spacing.of(10))
-            .setCentering(true)
-            .add(1, TextImmutableElement.builder()
-                .setText(TextTypes.SMALL.getText("Hi", 2))
-                .build())
-            .add(1, TextImmutableElement.builder()
-                .setText(TextTypes.SMALL.getText("How are you", 2))
-                .build())
+            .add(1, ABCDE::apply)
+            .add(1, ABCDE::apply)
+            .add(1, ABCDE::apply)
+            .add(1, ABCDE::apply)
             .build())
+
         .build();
     private final Page page = TEMPLATE.asMutable();
 

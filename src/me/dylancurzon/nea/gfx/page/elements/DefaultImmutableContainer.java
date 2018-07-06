@@ -1,6 +1,7 @@
 package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
+import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -80,6 +81,8 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                         .div(2)
                         .sub(elementSize.div(2))
                         .floor().toInt();
+                    System.out.println(DefaultImmutableContainer.this.size);
+                    System.out.println("Centered: " + centered);
                     container.copyPixels(
                         centered.getX(),
                         centered.getY(),
@@ -240,8 +243,8 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                 this.elements,
                 this.size,
                 this.padding,
-                this.centering,
-                this.inline
+                this.inline,
+                this.centering
             );
         }
 

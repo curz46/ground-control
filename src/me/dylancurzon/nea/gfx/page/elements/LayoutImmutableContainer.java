@@ -44,9 +44,29 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
     @Override
     @NotNull
     public MutableElement asMutable() {
-        final List<Pair<Integer, MutableElement>> mutableElements = this.elements.stream()
-            .map(pair -> new Pair<>(pair.getKey(), pair.getValue().apply(this).asMutable()))
+        final int total = this.elements.stream()
+            .map(Pair::getKey).mapToInt(Integer::intValue).sum();
+        final List<ImmutableElement> wrappedElements = this.elements.stream()
+            .map(pair -> DefaultImmutableContainer.builder()
+                .setCentering(this.centering)
+//                .setInline(this.inline) // shouldn't have an effect
+                .setSize((this.inline
+                    ? this.size.toDouble().mul(Vector2d.of(((double) pair.getKey()) / total, 1))
+                    : this.size.toDouble().mul(Vector2d.of(1, ((double) pair.getKey()) / total)))
+                    .ceil().toInt())
+                .add(pair.getValue())
+                .build())
+//            .map(ImmutableElement::asMutable)
             .collect(Collectors.toList());
+        return DefaultImmutableContainer.builder()
+            .setSize(this.size)
+//            .setInline(this.inline)
+            .setPadding(this.padding)
+//            .setMargin(this.margin)
+            .add(wrappedElements)
+            .build()
+            .asMutable();
+            /*
         return new MutableElement(super.margin) {
             @Override
             @NotNull
@@ -65,50 +85,57 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
 
             @Override
             public void render(@NotNull final PixelContainer container) {
-                final int ratioTotal = mutableElements.stream()
-                    .map(Pair::getKey).mapToInt(Integer::intValue).sum();
-                final Spacing padding = LayoutImmutableContainer.this.padding;
-                Vector2i pos = Vector2i.of(padding.getLeft(), padding.getTop());
-                for (final Pair<Integer, MutableElement> pair : mutableElements) {
-                    final int ratio = pair.getKey();
-                    final MutableElement mut = pair.getValue();
 
-                    final Vector2i elementSize = mut.getSize();
-                    final PixelContainer elementContainer = new PixelContainer(
-                        new int[elementSize.getX() * elementSize.getY()],
-                        elementSize.getX(),
-                        elementSize.getY()
-                    );
-                    mut.render(elementContainer);
 
-                    final Vector2i paddedSize = this.getPaddedSize();
-                    final Vector2d delta = (LayoutImmutableContainer.this.inline
-                        ? Vector2i.of(paddedSize.getX(), 0)
-                        : Vector2i.of(0, paddedSize.getY()))
-                        .toDouble()
-                        .mul(((double) ratio) / ratioTotal);
 
-                    Vector2i correctedPos = pos;
-                    if (LayoutImmutableContainer.this.centering) {
-                        final Vector2i affectingSize = LayoutImmutableContainer.this.inline
-                            ? Vector2i.of(elementSize.getX(), 0)
-                            : Vector2i.of(0, elementSize.getY());
-                        correctedPos = pos.toDouble()
-                            .add(delta.div(2))
-                            .sub(affectingSize.div(2))
-                            .floor().toInt();
-                    }
-                    container.copyPixels(
-                        correctedPos.getX(),
-                        correctedPos.getY(),
-                        elementSize.getX(),
-                        elementContainer.getPixels()
-                    );
-
-                    pos = pos.add(delta.floor().toInt());
-                }
+//                final int ratioTotal = mutableElements.stream()
+//                    .map(Pair::getKey).mapToInt(Integer::intValue).sum();
+//                final Spacing padding = LayoutImmutableContainer.this.padding;
+//                Vector2i pos = Vector2i.of(padding.getLeft(), padding.getTop());
+//                for (final Pair<Integer, MutableElement> pair : mutableElements) {
+//                    final int ratio = pair.getKey();
+//                    final MutableElement mut = pair.getValue();
+//
+//                    final Vector2i elementSize = mut.getSize();
+//                    final PixelContainer elementContainer = new PixelContainer(
+//                        new int[elementSize.getX() * elementSize.getY()],
+//                        elementSize.getX(),
+//                        elementSize.getY()
+//                    );
+//                    mut.render(elementContainer);
+//
+//                    final Vector2i paddedSize = this.getPaddedSize();
+//                    final Vector2d delta = paddedSize
+//                        .toDouble()
+//                        .mul(((double) ratio) / ratioTotal);
+//
+//                    Vector2i correctedPos = pos;
+//                    if (LayoutImmutableContainer.this.centering) {
+//                        correctedPos = pos.toDouble()
+//                            .add(LayoutImmutableContainer.this.inline
+//                                ? Vector2d.of(delta.div(2).getX(), paddedSize.div(2).getY())
+//                                : Vector2d.of(paddedSize.div(2).getX(), delta.div(2).getY()))
+//                            .sub(elementSize.div(2))
+//                            .floor().toInt();
+//                    }
+//                    container.copyPixels(
+//                        correctedPos.getX(),
+//                        correctedPos.getY(),
+//                        elementSize.getX(),
+//                        elementContainer.getPixels()
+//                    );
+//
+//                    pos = pos.add(
+//                        delta
+//                            .mul(LayoutImmutableContainer.this.inline
+//                                ? Vector2d.of(1, 0)
+//                                : Vector2d.of(0, 1))
+//                            .floor().toInt()
+//                    );
+//                }
             }
         };
+        */
     }
 
     @Override
