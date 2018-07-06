@@ -6,7 +6,7 @@ import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.*;
 import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
 import me.dylancurzon.nea.gfx.page.animation.SineEaseOutAnimation;
-import me.dylancurzon.nea.gfx.page.elements.ImmutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.LayoutImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.TextImmutableElement;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 import me.dylancurzon.nea.gfx.Renderable;
@@ -49,13 +49,15 @@ public class Camera implements Renderable {
     private static final PageTemplate TEMPLATE = PageTemplate.builder()
         .setBackground(GUITypes.LARGE)
         .setPosition(Vector2i.of(400, 15))
-        .add(ImmutableContainer.builder()
-            .setSize(Vector2i.of(150, 220))
+        .add(page -> LayoutImmutableContainer.builder()
+            .setSize(page.getSize())
             .setPadding(Spacing.of(10))
             .setCentering(true)
-            .setInline(true)
-            .add(TextImmutableElement.builder()
+            .add(1, TextImmutableElement.builder()
                 .setText(TextTypes.SMALL.getText("Hi", 2))
+                .build())
+            .add(1, TextImmutableElement.builder()
+                .setText(TextTypes.SMALL.getText("How are you", 2))
                 .build())
             .build())
         .build();

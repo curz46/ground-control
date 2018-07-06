@@ -1,6 +1,7 @@
 package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
+import java.util.function.Function;
 import javafx.util.Pair;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.Spacing;
@@ -11,17 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LayoutImmutableContainer extends ImmutableElement {
+public class LayoutImmutableContainer extends ImmutableElement implements ImmutableContainer {
 
-    private final List<Pair<Integer, ImmutableElement>> elements;
+    private final List<Pair<Integer, Function<ImmutableContainer, ImmutableElement>>> elements;
     private final Vector2i size;
     private final Spacing padding;
     private final boolean inline;
     private final boolean centering;
 
-    private LayoutImmutableContainer(final Spacing margin, final List<Pair<Integer, ImmutableElement>> elements,
-                                     final Vector2i size, final Spacing padding, final boolean inline,
-                                     final boolean centering) {
+    private LayoutImmutableContainer(final Spacing margin,
+                                     final List<Pair<Integer, Function<ImmutableContainer, ImmutableElement>>> elements,
+                                     final Vector2i size, final Spacing padding,
+                                     final boolean inline, final boolean centering) {
         super(margin);
         this.elements = elements;
         this.size = size;
@@ -43,7 +45,7 @@ public class LayoutImmutableContainer extends ImmutableElement {
     @NotNull
     public MutableElement asMutable() {
         final List<Pair<Integer, MutableElement>> mutableElements = this.elements.stream()
-            .map(pair -> new Pair<>(pair.getKey(), pair.getValue().asMutable()))
+            .map(pair -> new Pair<>(pair.getKey(), pair.getValue().apply(this).asMutable()))
             .collect(Collectors.toList());
         return new MutableElement(super.margin) {
             @Override
@@ -109,9 +111,39 @@ public class LayoutImmutableContainer extends ImmutableElement {
         };
     }
 
+    @Override
+    public Spacing getPadding() {
+        return this.padding;
+    }
+
+    @Override
+    public Vector2i getSize() {
+        return this.size;
+    }
+
+    @Override
+    public Vector2i getMarginedSize() {
+        return this.size.add(
+            Vector2i.of(
+                super.margin.getLeft() + super.margin.getRight(),
+                super.margin.getBottom() + super.margin.getTop()
+            )
+        );
+    }
+
+    @Override
+    public Vector2i getPaddedSize() {
+        return this.size.sub(
+            Vector2i.of(
+                this.padding.getLeft() + this.padding.getRight(),
+                this.padding.getBottom() + this.padding.getTop()
+            )
+        );
+    }
+
     public static class Builder extends ImmutableElement.Builder<LayoutImmutableContainer, Builder> {
 
-        private final List<Pair<Integer, ImmutableElement>> elements = new ArrayList<>();
+        private final List<Pair<Integer, Function<ImmutableContainer, ImmutableElement>>> elements = new ArrayList<>();
         private Vector2i size;
         private Spacing padding;
         private boolean inline;
@@ -119,7 +151,14 @@ public class LayoutImmutableContainer extends ImmutableElement {
 
         @NotNull
         public Builder add(final int ratio, final ImmutableElement element) {
-            this.elements.add(new Pair<>(ratio, element));
+            this.elements.add(new Pair<>(ratio, page -> element));
+            return this;
+        }
+
+        @NotNull
+        public Builder add(final int ratio,
+                           final Function<ImmutableContainer, ImmutableElement> fn) {
+            this.elements.add(new Pair<>(ratio, fn));
             return this;
         }
 
