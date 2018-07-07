@@ -2,24 +2,34 @@ package me.dylancurzon.nea.gfx.page;
 
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.animation.Animation;
-import me.dylancurzon.nea.gfx.page.elements.MutableElement;
+import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.Tickable;
 
-public class Page extends MutableElement implements Tickable {
+import java.util.Collection;
+import java.util.Collections;
+
+public class Page extends MutableContainer implements Tickable {
 
     private final PageTemplate template;
-    private final MutableElement container;
+    private final MutableContainer container;
 
     private Vector2i position;
     private TransformHandler transform;
 
-    protected Page(final PageTemplate template, final MutableElement container) {
-        super(template.getMargin());
+    protected Page(final PageTemplate template, final MutableContainer container) {
+        super(template.getMargin(), template, Collections.emptyList());
         this.template = template;
         this.container = container;
 
         this.position = this.template.getPosition();
+    }
+
+    @Override
+    public void scroll(final double amount) {
+        this.container.scroll(amount);
     }
 
     public void transform(final Vector2i position) {
@@ -37,6 +47,7 @@ public class Page extends MutableElement implements Tickable {
 
     @Override
     public void tick() {
+        super.tick();
         if (this.transform != null) {
             this.transform.tick();
             this.position = this.transform.getPosition();

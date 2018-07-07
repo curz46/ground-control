@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.gfx.page.elements;
+package me.dylancurzon.nea.gfx.page.elements.container;
 
 import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.page.Spacing;
@@ -24,5 +24,8 @@ public interface ImmutableContainer {
 
     @NotNull
     Vector2i getPaddedSize();
+
+    @NotNull
+    boolean isScrollable();
 
 }

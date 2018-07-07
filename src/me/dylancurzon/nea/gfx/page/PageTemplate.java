@@ -2,13 +2,13 @@ package me.dylancurzon.nea.gfx.page;
 
 import com.sun.istack.internal.NotNull;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import me.dylancurzon.nea.gfx.page.elements.DefaultImmutableContainer;
-import me.dylancurzon.nea.gfx.page.elements.ImmutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.container.DefaultImmutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.ImmutableElement;
-import me.dylancurzon.nea.gfx.page.elements.MutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.gfx.sprite.Sprite;
 import me.dylancurzon.nea.util.Vector2i;
 
@@ -20,8 +20,8 @@ public class PageTemplate extends DefaultImmutableContainer {
     protected PageTemplate(final Spacing margin, final Consumer<MutableElement> tickConsumer,
                            final List<Function<ImmutableContainer, ImmutableElement>> elements,
                            final Vector2i size, final Spacing padding, final boolean inline, final boolean centering,
-                           final Sprite backgroundSprite, final Vector2i position) {
-        super(margin, tickConsumer, elements, size, padding, inline, centering);
+                           final Sprite backgroundSprite, final Vector2i position, final boolean scrollable) {
+        super(margin, tickConsumer, elements, size, padding, inline, centering, scrollable);
         this.backgroundSprite = backgroundSprite;
         this.position = position;
     }
@@ -34,7 +34,7 @@ public class PageTemplate extends DefaultImmutableContainer {
     @Override
     @NotNull
     public Page asMutable() {
-        final MutableElement container = super.asMutable();
+        final MutableContainer container = super.asMutable();
         return new Page(this, container);
     }
 
@@ -97,7 +97,8 @@ public class PageTemplate extends DefaultImmutableContainer {
                 super.inline,
                 super.centering,
                 this.backgroundSprite,
-                this.position
+                this.position,
+                super.scrollable
             );
         }
 

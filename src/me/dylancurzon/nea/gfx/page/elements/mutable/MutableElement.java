@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.gfx.page.elements;
+package me.dylancurzon.nea.gfx.page.elements.mutable;
 
 import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.PixelContainer;

@@ -1,12 +1,14 @@
-package me.dylancurzon.nea.gfx.page.elements;
+package me.dylancurzon.nea.gfx.page.elements.container;
 
 import com.sun.istack.internal.NotNull;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.Spacing;
+import me.dylancurzon.nea.gfx.page.elements.ImmutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.util.Vector2i;
 
-import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -23,11 +25,12 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
     protected final Spacing padding;
     protected final boolean inline;
     protected final boolean centering;
+    private final boolean scrollable;
 
     protected DefaultImmutableContainer(final Spacing margin, final Consumer<MutableElement> tickConsumer,
                                         final List<Function<ImmutableContainer, ImmutableElement>> elements,
                                         final Vector2i size, final Spacing padding, final boolean inline,
-                                        final boolean centering) {
+                                        final boolean centering, final boolean scrollable) {
         super(margin, tickConsumer);
         this.elements = elements;
         this.size = size;
@@ -38,16 +41,17 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
         }
         this.inline = inline;
         this.centering = centering;
+        this.scrollable = scrollable;
     }
 
     @Override
     @NotNull
-    public MutableElement asMutable() {
+    public MutableContainer asMutable() {
         final List<MutableElement> mutableElements = this.elements.stream()
             .map(fn -> fn.apply(this))
             .map(ImmutableElement::asMutable)
             .collect(Collectors.toList());
-        return new MutableElement(super.margin) {
+        return new MutableContainer(super.margin, this, mutableElements) {
             @Override
             public Vector2i getSize() {
                 Vector2i size = DefaultImmutableContainer.this.size;
@@ -81,6 +85,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
 
             @Override
             public void tick() {
+                super.tick();
                 mutableElements.forEach(MutableElement::tick);
                 final Consumer<MutableElement> consumer = DefaultImmutableContainer.super.getTickConsumer();
                 if (consumer != null) {
@@ -141,14 +146,14 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                         mut.render(elementContainer);
                         container.copyPixels(
                             pos.getX(),
-                            pos.getY(),
+                            pos.getY() - (int) Math.floor(super.scroll),
                             elementSize.getX(),
                             elementContainer.getPixels()
                         );
                         if (DefaultImmutableContainer.this.inline) {
-                            pos = pos.add(Vector2i.of(mut.getMarginedSize().getX(), 0));
+                            pos = pos.add(Vector2i.of(mut.getMargin().getRight() + elementSize.getX(), 0));
                         } else {
-                            pos = pos.add(Vector2i.of(0, mut.getMarginedSize().getY()));
+                            pos = pos.add(Vector2i.of(0, mut.getMargin().getBottom() + elementSize.getY()));
                         }
                     }
                 }
@@ -186,6 +191,11 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
         );
     }
 
+    @Override
+    public boolean isScrollable() {
+        return this.scrollable;
+    }
+
     @NotNull
     public Spacing getPadding() {
         return this.padding;
@@ -215,6 +225,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
         protected Spacing padding;
         protected boolean inline;
         protected boolean centering;
+        protected boolean scrollable;
 
         @NotNull
         public T add(final ImmutableElement element) {
@@ -266,6 +277,12 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
             return this.self();
         }
 
+        @NotNull
+        public T setScrollable(final boolean scrollable) {
+            this.scrollable = scrollable;
+            return this.self();
+        }
+
         @Override
         @NotNull
         public DefaultImmutableContainer build() {
@@ -284,8 +301,8 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                 this.size,
                 this.padding,
                 this.inline,
-                this.centering
-            );
+                this.centering,
+                this.scrollable);
         }
 
     }

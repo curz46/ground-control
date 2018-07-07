@@ -10,7 +10,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import me.dylancurzon.nea.gfx.PixelContainer;
-import me.dylancurzon.nea.gfx.page.elements.DefaultImmutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.container.DefaultImmutableContainer;
 import me.dylancurzon.nea.util.Keys;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
@@ -72,6 +72,7 @@ public class Game extends JPanel {
             }
         });
 
+
         final Path homePath = Paths.get(System.getProperty("user.home"));
 //        final Path homePath = Paths.get("P:"); // TODO: this doesn't appear to do what it should but it's ok for now
         this.world = new World("my_world", Generators.ROCKY, homePath.resolve(".groundcontrol"));
@@ -80,6 +81,8 @@ public class Game extends JPanel {
             this.world
         );
         this.camera.transform(Vector2d.of(-5, -5));
+
+        this.frame.addMouseWheelListener(event -> this.camera.scroll(event.getPreciseWheelRotation()));
 
         this.loop();
     }

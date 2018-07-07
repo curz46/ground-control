@@ -1,7 +1,8 @@
-package me.dylancurzon.nea.gfx.page.elements;
+package me.dylancurzon.nea.gfx.page.elements.mutable;
 
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.Spacing;
+import me.dylancurzon.nea.gfx.page.elements.TextImmutableElement;
 import me.dylancurzon.nea.gfx.text.TextType;
 import me.dylancurzon.nea.util.Vector2i;
 
@@ -12,7 +13,7 @@ public class TextMutableElement extends MutableElement {
     private final TextImmutableElement immutableElement;
     private TextType.TextSprite sprite;
 
-    protected TextMutableElement(final Spacing margin, final TextImmutableElement immutableElement) {
+    public TextMutableElement(final Spacing margin, final TextImmutableElement immutableElement) {
         super(margin);
         this.immutableElement = immutableElement;
         this.sprite = this.immutableElement.getSprite();

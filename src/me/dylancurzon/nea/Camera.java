@@ -10,6 +10,10 @@ import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
 import me.dylancurzon.nea.gfx.page.animation.SineEaseOutAnimation;
 import me.dylancurzon.nea.gfx.page.elements.*;
+import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.container.LayoutImmutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.TextImmutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.TextMutableElement;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 import me.dylancurzon.nea.gfx.text.TextTypes;
 import me.dylancurzon.nea.util.Benchmark;
@@ -87,7 +91,7 @@ public class Camera implements Renderable {
     private final PerlinNoise noise2 = new PerlinNoise()
         .seed((long) (Math.random() * 100000));
     private final BiFunction<String, PerlinNoise, Function<ImmutableContainer, ImmutableElement>> CONTAINER =
-        (name, noise)-> page -> ImmutableContainer.builder()
+        (name, noise) -> page -> ImmutableContainer.builder()
             .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
             .setMargin(Spacing.of(0, 10, 0, 0))
             .add(TextImmutableElement.builder()
@@ -116,6 +120,7 @@ public class Camera implements Renderable {
         .setBackground(GUITypes.LARGE)
         .setPosition(Vector2i.of(400, 15))
         .setPadding(Spacing.of(10))
+        .setScrollable(true)
         .add(page -> ImmutableContainer.builder()
             .setSize(Vector2i.of(page.getPaddedSize().getX(), 10))
             .setCentering(true)
@@ -124,6 +129,9 @@ public class Camera implements Renderable {
                 .build())
             .build())
         .add(this.CONTAINER.apply("Wireless Connectivity", this.noise1))
+        .add(this.CONTAINER.apply("CPU Usage", this.noise2))
+        .add(this.CONTAINER.apply("CPU Usage", this.noise2))
+        .add(this.CONTAINER.apply("CPU Usage", this.noise2))
         .add(this.CONTAINER.apply("CPU Usage", this.noise2))
         .build();
     private final Page page = this.TEMPLATE.asMutable();
@@ -139,6 +147,11 @@ public class Camera implements Renderable {
             Vector2i.of(240, 15),
             new QuarticEaseInAnimation(0, 1, 30)
         );
+    }
+
+    // TEMP
+    public void scroll(final double amount) {
+        this.page.scroll(amount);
     }
 
     // temp

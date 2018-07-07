@@ -3,12 +3,12 @@ package me.dylancurzon.nea.gfx.page.elements;
 import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.Spacing;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.util.Vector2i;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class GraphImmutableElement extends ImmutableElement {
@@ -31,7 +31,7 @@ public class GraphImmutableElement extends ImmutableElement {
     @Override
     public MutableElement asMutable() {
         final List<Double> values = new ArrayList<>();
-        final int resolutionX = 1;
+        final int resolutionX = 8;
         return new MutableElement(super.margin) {
             @Override
             public Vector2i getSize() {
@@ -46,6 +46,7 @@ public class GraphImmutableElement extends ImmutableElement {
                 if (consumer != null) {
                     consumer.accept(this);
                 }
+                GraphImmutableElement.this.ticks++;
             }
 
             @Override

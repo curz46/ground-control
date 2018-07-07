@@ -3,9 +3,10 @@ package me.dylancurzon.nea.gfx.page.elements;
 import com.sun.istack.internal.NotNull;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.gfx.page.Spacing;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.TextMutableElement;
 import me.dylancurzon.nea.gfx.text.TextType.TextSprite;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @Immutable

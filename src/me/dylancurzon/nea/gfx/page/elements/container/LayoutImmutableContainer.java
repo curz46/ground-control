@@ -1,8 +1,11 @@
-package me.dylancurzon.nea.gfx.page.elements;
+package me.dylancurzon.nea.gfx.page.elements.container;
 
 import com.sun.istack.internal.NotNull;
 import javafx.util.Pair;
 import me.dylancurzon.nea.gfx.page.Spacing;
+import me.dylancurzon.nea.gfx.page.elements.ImmutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 
@@ -19,11 +22,12 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
     private final Spacing padding;
     private final boolean inline;
     private final boolean centering;
+    private final boolean scrollable;
 
     private LayoutImmutableContainer(final Spacing margin, final Consumer<MutableElement> tickConsumer,
                                      final List<Pair<Integer, Function<ImmutableContainer, ImmutableElement>>> elements,
                                      final Vector2i size, final Spacing padding,
-                                     final boolean inline, final boolean centering) {
+                                     final boolean inline, final boolean centering, final boolean scrollable) {
         super(margin, tickConsumer);
         this.elements = elements;
         this.size = size;
@@ -34,6 +38,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
         } else {
             this.padding = padding;
         }
+        this.scrollable = scrollable;
     }
 
     @NotNull
@@ -43,7 +48,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
 
     @Override
     @NotNull
-    public MutableElement asMutable() {
+    public MutableContainer asMutable() {
         final int total = this.elements.stream()
             .map(Pair::getKey).mapToInt(Integer::intValue).sum();
         final List<ImmutableElement> wrappedElements = this.elements.stream()
@@ -60,6 +65,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
             .setSize(this.size)
             .setPadding(this.padding)
             .setInline(this.inline)
+            .setScrollable(this.scrollable)
             .add(wrappedElements)
             .build()
             .asMutable();
@@ -165,6 +171,12 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
         );
     }
 
+    @Override
+    @NotNull
+    public boolean isScrollable() {
+        return this.scrollable;
+    }
+
     public static class Builder extends ImmutableElement.Builder<LayoutImmutableContainer, Builder> {
 
         private final List<Pair<Integer, Function<ImmutableContainer, ImmutableElement>>> elements = new ArrayList<>();
@@ -172,6 +184,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
         private Spacing padding;
         private boolean inline;
         private boolean centering;
+        private boolean scrollable;
 
         @NotNull
         public Builder add(final int ratio, final ImmutableElement element) {
@@ -210,6 +223,12 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
             return this;
         }
 
+        @NotNull
+        public Builder setScrollable(final boolean scrollable) {
+            this.scrollable = scrollable;
+            return this;
+        }
+
         @Override
         @NotNull
         public Builder self() {
@@ -226,7 +245,8 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
                 this.size,
                 this.padding,
                 this.inline,
-                this.centering
+                this.centering,
+                this.scrollable
             );
         }
 
