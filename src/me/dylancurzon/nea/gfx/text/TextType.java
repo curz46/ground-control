@@ -11,7 +11,7 @@ import me.dylancurzon.nea.util.Vector2i;
 @Immutable
 public class TextType {
 
-    private static final char[] characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ?".toCharArray();
+    private static final char[] characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.".toCharArray();
     @NotNull
     private final int[][] characterData;
     @NotNull

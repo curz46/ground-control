@@ -10,11 +10,13 @@ import me.dylancurzon.nea.gfx.sprite.Sprite;
 import me.dylancurzon.nea.gfx.sprite.StaticSprite;
 import me.dylancurzon.nea.util.Vector2i;
 
+import java.util.function.Consumer;
+
 @Immutable
 public abstract class SpriteImmutableElement extends ImmutableElement {
 
-    public SpriteImmutableElement(final Spacing margin) {
-        super(margin);
+    public SpriteImmutableElement(final Spacing margin, final Consumer<MutableElement> tickConsumer) {
+        super(margin, tickConsumer);
     }
 
     public static Builder builder() {
@@ -25,8 +27,9 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
 
         private final StaticSprite sprite;
 
-        public StaticSpriteImmutableElement(final Spacing margin, final StaticSprite sprite) {
-            super(margin);
+        public StaticSpriteImmutableElement(final Spacing margin, final Consumer<MutableElement> tickConsumer,
+                                            final StaticSprite sprite) {
+            super(margin, tickConsumer);
             this.sprite = sprite;
         }
 
@@ -43,6 +46,14 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
                 }
 
                 @Override
+                public void tick() {
+                    final Consumer<MutableElement> consumer = StaticSpriteImmutableElement.super.getTickConsumer();
+                    if (consumer != null) {
+                        consumer.accept(this);
+                    }
+                }
+
+                @Override
                 public void render(final PixelContainer pixelContainer) {
                     final Sprite sprite = StaticSpriteImmutableElement.this.sprite;
                     sprite.render(pixelContainer, 0, 0);
@@ -56,8 +67,9 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
 
         private final AnimatedSprite sprite;
 
-        public AnimatedSpriteImmutableElement(final Spacing margin, final AnimatedSprite sprite) {
-            super(margin);
+        public AnimatedSpriteImmutableElement(final Spacing margin, final Consumer<MutableElement> tickConsumer,
+                                              final AnimatedSprite sprite) {
+            super(margin, tickConsumer);
             this.sprite = sprite;
         }
 
@@ -67,6 +79,10 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
             return new MutableElement(super.margin) {
                 @Override
                 public void tick() {
+                    final Consumer<MutableElement> consumer = AnimatedSpriteImmutableElement.super.getTickConsumer();
+                    if (consumer != null) {
+                        consumer.accept(this);
+                    }
                     container.tick();
                 }
 
@@ -125,14 +141,14 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
         @NotNull
         public SpriteImmutableElement build() {
             if (this.animatedSprite != null) {
-                return new AnimatedSpriteImmutableElement(super.margin, this.animatedSprite);
+                return new AnimatedSpriteImmutableElement(super.margin, super.tickConsumer, this.animatedSprite);
             }
             if (this.sprite == null) {
                 throw new RuntimeException(
                     "SpriteImmutableElement.Builder requires a Sprite or AnimatedSprite to build!"
                 );
             }
-            return new StaticSpriteImmutableElement(super.margin, this.sprite);
+            return new StaticSpriteImmutableElement(super.margin, super.tickConsumer, this.sprite);
         }
 
     }

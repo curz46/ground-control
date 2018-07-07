@@ -1,15 +1,15 @@
 package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
-import java.util.function.Function;
 import javafx.util.Pair;
-import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class LayoutImmutableContainer extends ImmutableElement implements ImmutableContainer {
@@ -20,11 +20,11 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
     private final boolean inline;
     private final boolean centering;
 
-    private LayoutImmutableContainer(final Spacing margin,
+    private LayoutImmutableContainer(final Spacing margin, final Consumer<MutableElement> tickConsumer,
                                      final List<Pair<Integer, Function<ImmutableContainer, ImmutableElement>>> elements,
                                      final Vector2i size, final Spacing padding,
                                      final boolean inline, final boolean centering) {
-        super(margin);
+        super(margin, tickConsumer);
         this.elements = elements;
         this.size = size;
         this.inline = inline;
@@ -221,6 +221,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
         public LayoutImmutableContainer build() {
             return new LayoutImmutableContainer(
                 super.margin,
+                super.tickConsumer,
                 this.elements,
                 this.size,
                 this.padding,

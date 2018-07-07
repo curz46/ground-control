@@ -2,6 +2,8 @@ package me.dylancurzon.nea.gfx.page;
 
 import com.sun.istack.internal.NotNull;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import me.dylancurzon.nea.gfx.page.elements.DefaultImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.ImmutableContainer;
@@ -15,10 +17,11 @@ public class PageTemplate extends DefaultImmutableContainer {
     private final Sprite backgroundSprite;
     private final Vector2i position;
 
-    protected PageTemplate(final Spacing margin, final List<Function<ImmutableContainer, ImmutableElement>> elements,
+    protected PageTemplate(final Spacing margin, final Consumer<MutableElement> tickConsumer,
+                           final List<Function<ImmutableContainer, ImmutableElement>> elements,
                            final Vector2i size, final Spacing padding, final boolean inline, final boolean centering,
                            final Sprite backgroundSprite, final Vector2i position) {
-        super(margin, elements, size, padding, inline, centering);
+        super(margin, tickConsumer, elements, size, padding, inline, centering);
         this.backgroundSprite = backgroundSprite;
         this.position = position;
     }
@@ -84,6 +87,7 @@ public class PageTemplate extends DefaultImmutableContainer {
 
             return new PageTemplate(
                 super.margin,
+                super.tickConsumer,
                 super.elements,
                 Vector2i.of(
                     this.backgroundSprite.getWidth(),

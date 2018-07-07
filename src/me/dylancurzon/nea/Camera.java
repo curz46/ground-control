@@ -22,6 +22,9 @@ import me.dylancurzon.nea.world.entity.Worker;
 import me.dylancurzon.nea.world.tile.Tile;
 import me.dylancurzon.nea.world.tile.TileTypes;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
 /**
  * This {@link Camera} class represents the view of the world that is drawn by the game's window.
  * {@link Camera#boundA} determines the position. This is because a centered-position enforces
@@ -78,11 +81,38 @@ public class Camera implements Renderable {
 //            .add(3, CONTAINER::apply)
 //            .build())
 //        .build();
-    private static final PerlinNoise noise1  = new PerlinNoise()
+    private int ticks = 0;
+    private final PerlinNoise noise1  = new PerlinNoise()
         .seed((long) (Math.random() * 100000));
-    private static final PerlinNoise noise2 = new PerlinNoise()
+    private final PerlinNoise noise2 = new PerlinNoise()
         .seed((long) (Math.random() * 100000));
-    private static final PageTemplate TEMPLATE = PageTemplate.builder()
+    private final BiFunction<String, PerlinNoise, Function<ImmutableContainer, ImmutableElement>> CONTAINER =
+        (name, noise)-> page -> ImmutableContainer.builder()
+            .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
+            .setMargin(Spacing.of(0, 10, 0, 0))
+            .add(TextImmutableElement.builder()
+                .setText(TextTypes.TINY.getText(name, 1))
+                .setMargin(Spacing.of(0, 0, 0, 5))
+                .build())
+            .add(rt -> LayoutImmutableContainer.builder()
+                .setSize(Vector2i.of(rt.getPaddedSize().getX(), 50))
+                .setInline(true)
+                .setCentering(true)
+                .add(3, ctr -> GraphImmutableElement.builder()
+                    .setSize(Vector2i.of(ctr.getPaddedSize().getX(), 50))
+                    .setSupplier(() -> noise.generateOctaveNoiseValue(this.ticks * 10, 0))
+                    .build())
+                .add(1, TextImmutableElement.builder()
+                    .setText(TextTypes.SMALL.getText("0.00", 1))
+                    .tick(element -> {
+                        final double value = noise.generateOctaveNoiseValue(this.ticks * 10, 0);
+                        final String text = String.format("%3.2f", value);
+                        ((TextMutableElement) element).setSprite(TextTypes.SMALL.getText(text, 1));
+                    })
+                    .build())
+                .build())
+            .build();
+    private final PageTemplate TEMPLATE = PageTemplate.builder()
         .setBackground(GUITypes.LARGE)
         .setPosition(Vector2i.of(400, 15))
         .setPadding(Spacing.of(10))
@@ -93,48 +123,10 @@ public class Camera implements Renderable {
                 .setText(TextTypes.SMALL.getText("COMPUTER", 2))
                 .build())
             .build())
-        .add(page -> ImmutableContainer.builder()
-            .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
-            .setMargin(Spacing.of(0, 10, 0, 0))
-            .add(TextImmutableElement.builder()
-                .setText(TextTypes.TINY.getText("Wireless Connectivity", 1))
-                .setMargin(Spacing.of(0, 0, 0, 5))
-                .build())
-            .add(rt -> LayoutImmutableContainer.builder()
-                .setSize(Vector2i.of(rt.getPaddedSize().getX() , 50))
-                .setInline(true)
-                .setCentering(true)
-                .add(3, ctr -> GraphImmutableElement.builder()
-                    .setSize(Vector2i.of(ctr.getPaddedSize().getX() , 50))
-                    .setSupplier(t -> noise1.generateOctaveNoiseValue(t * 10, 0))
-                    .build())
-                .add(1, TextImmutableElement.builder()
-                    .setText(TextTypes.SMALL.getText("AAA", 1))
-                    .build())
-                .build())
-            .build())
-        .add(page -> ImmutableContainer.builder()
-            .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
-            .setMargin(Spacing.of(0, 10, 0, 0))
-            .add(TextImmutableElement.builder()
-                .setText(TextTypes.TINY.getText("CPU Usage", 1))
-                .setMargin(Spacing.of(0, 0, 0, 5))
-                .build())
-            .add(rt -> LayoutImmutableContainer.builder()
-                .setSize(Vector2i.of(rt.getPaddedSize().getX() , 50))
-                .setInline(true)
-                .setCentering(true)
-                .add(3, ctr -> GraphImmutableElement.builder()
-                    .setSize(Vector2i.of(ctr.getPaddedSize().getX() , 50))
-                    .setSupplier(t -> noise2.generateOctaveNoiseValue(t * 10, 0))
-                    .build())
-                .add(1, TextImmutableElement.builder()
-                    .setText(TextTypes.SMALL.getText("AAA", 1))
-                    .build())
-                .build())
-            .build())
+        .add(this.CONTAINER.apply("Wireless Connectivity", this.noise1))
+        .add(this.CONTAINER.apply("CPU Usage", this.noise2))
         .build();
-    private final Page page = TEMPLATE.asMutable();
+    private final Page page = this.TEMPLATE.asMutable();
 
     private boolean toggle;
 
@@ -151,6 +143,7 @@ public class Camera implements Renderable {
 
     // temp
     public void tick() {
+        this.ticks++;
         this.worker.tick();
         ((AnimatedSprite.TickContainer) TileTypes.WATER.getSprite()).tick();
         this.page.tick();

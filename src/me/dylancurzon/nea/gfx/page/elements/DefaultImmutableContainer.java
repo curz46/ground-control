@@ -1,18 +1,17 @@
 package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
-import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.Spacing;
-import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Immutable
 public class DefaultImmutableContainer extends ImmutableElement implements ImmutableContainer {
@@ -25,11 +24,11 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
     protected final boolean inline;
     protected final boolean centering;
 
-    protected DefaultImmutableContainer(final Spacing margin,
-                                 final List<Function<ImmutableContainer, ImmutableElement>> elements,
-                                 final Vector2i size, final Spacing padding, final boolean inline,
-                                 final boolean centering) {
-        super(margin);
+    protected DefaultImmutableContainer(final Spacing margin, final Consumer<MutableElement> tickConsumer,
+                                        final List<Function<ImmutableContainer, ImmutableElement>> elements,
+                                        final Vector2i size, final Spacing padding, final boolean inline,
+                                        final boolean centering) {
+        super(margin, tickConsumer);
         this.elements = elements;
         this.size = size;
         if (padding == null) {
@@ -83,6 +82,10 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
             @Override
             public void tick() {
                 mutableElements.forEach(MutableElement::tick);
+                final Consumer<MutableElement> consumer = DefaultImmutableContainer.super.getTickConsumer();
+                if (consumer != null) {
+                    consumer.accept(this);
+                }
             }
 
             @Override
@@ -276,6 +279,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
             }
             return new DefaultImmutableContainer(
                 super.margin,
+                super.tickConsumer,
                 this.elements,
                 this.size,
                 this.padding,
