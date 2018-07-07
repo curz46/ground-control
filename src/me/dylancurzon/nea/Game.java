@@ -10,6 +10,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import me.dylancurzon.nea.gfx.PixelContainer;
+import me.dylancurzon.nea.gfx.page.elements.DefaultImmutableContainer;
 import me.dylancurzon.nea.util.Keys;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
@@ -133,6 +134,11 @@ public class Game extends JPanel {
         if (Keys.pressed(KeyEvent.VK_T)) {
             if (System.currentTimeMillis() - 300 < this.lastToggle) return;
             this.camera.toggleTransform();
+            this.lastToggle = System.currentTimeMillis();
+        }
+        if (Keys.pressed(KeyEvent.VK_D)) {
+            if (System.currentTimeMillis() - 300 < this.lastToggle) return;
+            DefaultImmutableContainer.DEBUG = !DefaultImmutableContainer.DEBUG;
             this.lastToggle = System.currentTimeMillis();
         }
 

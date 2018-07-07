@@ -9,10 +9,15 @@ import java.util.stream.Collectors;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.Spacing;
+import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
+
+import javax.xml.bind.annotation.XmlType;
 
 @Immutable
 public class DefaultImmutableContainer extends ImmutableElement implements ImmutableContainer {
+
+    public static boolean DEBUG = false;
 
     protected final List<Function<ImmutableContainer, ImmutableElement>> elements;
     protected final Vector2i size;
@@ -36,11 +41,6 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
         this.centering = centering;
     }
 
-    @NotNull
-    public static Builder builder() {
-        return new ContainerBuilder();
-    }
-
     @Override
     @NotNull
     public MutableElement asMutable() {
@@ -51,20 +51,52 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
         return new MutableElement(super.margin) {
             @Override
             public Vector2i getSize() {
-                if (DefaultImmutableContainer.this.size == null) {
-                    Vector2i size = Vector2i.of(0, 0);
+                Vector2i size = DefaultImmutableContainer.this.size;
+                if (size == null || size.getX() == -1 || size.getY() == -1) {
+                    Vector2i calculatedSize = Vector2i.of(0, 0);
                     for (final MutableElement mut : mutableElements) {
-                        final Vector2i elementSize = mut.getSize();
-                        size = size.add(Vector2i.of(0, elementSize.getY()));
+                        final Vector2i elementSize = mut.getMarginedSize();
+                        calculatedSize = calculatedSize.add(DefaultImmutableContainer.this.inline
+                            ? Vector2i.of(elementSize.getX(), 0)
+                            : Vector2i.of(0, elementSize.getY()));
+                        if (!DefaultImmutableContainer.this.inline && calculatedSize.getX() < elementSize.getX()) {
+                            calculatedSize = calculatedSize.setX(elementSize.getX());
+                        }
+                        if (DefaultImmutableContainer.this.inline && calculatedSize.getY() < elementSize.getY()) {
+                            calculatedSize = calculatedSize.setY(elementSize.getY());
+                        }
                     }
-                    return size;
-                } else {
-                    return DefaultImmutableContainer.this.size;
+
+                    if (size == null) {
+                        return calculatedSize;
+                    }
+                    if (size.getX() == -1) {
+                        size = size.setX(calculatedSize.getX());
+                    }
+                    if (size.getY() == -1) {
+                        size = size.setY(calculatedSize.getY());
+                    }
                 }
+                return size;
+            }
+
+            @Override
+            public void tick() {
+                mutableElements.forEach(MutableElement::tick);
             }
 
             @Override
             public void render(final PixelContainer container) {
+                if (DefaultImmutableContainer.DEBUG) {
+                    for (int x = 0; x < container.getWidth(); x++) {
+                        for (int y = 0; y < container.getHeight(); y++) {
+                            if (x == 0 || x == (container.getWidth() - 1) || y == 0 || y == (container.getHeight() - 1)) {
+                                container.setPixel(x, y, 0xFFFF69B4);
+                            }
+                        }
+                    }
+                }
+
                 if (DefaultImmutableContainer.this.centering) {
                     // standard draw logic
                     final MutableElement mut = mutableElements.get(0);
@@ -89,8 +121,14 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                     );
                 } else {
                     final Spacing padding = DefaultImmutableContainer.this.padding;
-                    Vector2i pos = Vector2i.of(padding.getLeft(), padding.getTop());
+                    Vector2i pos = Vector2i.of(
+                        padding.getLeft(),
+                        padding.getTop()
+                    );
                     for (final MutableElement mut : mutableElements) {
+                        pos = pos.add(
+                            Vector2i.of(mut.getMargin().getLeft(), mut.getMargin().getTop())
+                        );
                         final Vector2i elementSize = mut.getSize();
                         final PixelContainer elementContainer = new PixelContainer(
                             new int[elementSize.getX() * elementSize.getY()],
@@ -127,7 +165,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
 
     @Override
     public Vector2i getMarginedSize() {
-        return this.size.add(
+        return this.getSize().add(
             Vector2i.of(
                 super.margin.getLeft() + super.margin.getRight(),
                 super.margin.getBottom() + super.margin.getTop()
@@ -137,7 +175,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
 
     @Override
     public Vector2i getPaddedSize() {
-        return this.size.sub(
+        return this.getSize().sub(
             Vector2i.of(
                 this.padding.getLeft() + this.padding.getRight(),
                 this.padding.getBottom() + this.padding.getTop()

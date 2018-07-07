@@ -4,6 +4,7 @@ import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.gfx.page.Spacing;
+import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 
 public abstract class MutableElement implements Renderable {
@@ -13,6 +14,11 @@ public abstract class MutableElement implements Renderable {
 
     protected MutableElement(@NotNull final Spacing margin) {
         this.margin = margin;
+    }
+
+    @NotNull
+    public Spacing getMargin() {
+        return this.margin;
     }
 
     @NotNull

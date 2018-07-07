@@ -47,7 +47,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
         final int total = this.elements.stream()
             .map(Pair::getKey).mapToInt(Integer::intValue).sum();
         final List<ImmutableElement> wrappedElements = this.elements.stream()
-            .map(pair -> DefaultImmutableContainer.builder()
+            .map(pair -> ImmutableContainer.builder()
                 .setCentering(this.centering)
                 .setSize((this.inline
                     ? this.size.toDouble().mul(Vector2d.of(((double) pair.getKey()) / total, 1))
@@ -56,7 +56,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
                 .add(pair.getValue())
                 .build())
             .collect(Collectors.toList());
-        return DefaultImmutableContainer.builder()
+        return ImmutableContainer.builder()
             .setSize(this.size)
             .setPadding(this.padding)
             .setInline(this.inline)
@@ -147,7 +147,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
 
     @Override
     public Vector2i getMarginedSize() {
-        return this.size.add(
+        return this.getSize().add(
             Vector2i.of(
                 super.margin.getLeft() + super.margin.getRight(),
                 super.margin.getBottom() + super.margin.getTop()
@@ -157,7 +157,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
 
     @Override
     public Vector2i getPaddedSize() {
-        return this.size.sub(
+        return this.getSize().sub(
             Vector2i.of(
                 this.padding.getLeft() + this.padding.getRight(),
                 this.padding.getBottom() + this.padding.getTop()

@@ -6,6 +6,10 @@ import me.dylancurzon.nea.util.Vector2i;
 
 public interface ImmutableContainer {
 
+    static DefaultImmutableContainer.ContainerBuilder builder() {
+        return new DefaultImmutableContainer.ContainerBuilder();
+    }
+
     @NotNull
     Spacing getMargin();
 

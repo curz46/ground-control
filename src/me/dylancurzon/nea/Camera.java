@@ -1,20 +1,19 @@
 package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
-
-import java.util.function.Function;
 import me.dylancurzon.nea.gfx.PixelContainer;
-import me.dylancurzon.nea.gfx.page.*;
+import me.dylancurzon.nea.gfx.Renderable;
+import me.dylancurzon.nea.gfx.page.GUITypes;
+import me.dylancurzon.nea.gfx.page.Page;
+import me.dylancurzon.nea.gfx.page.PageTemplate;
+import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
 import me.dylancurzon.nea.gfx.page.animation.SineEaseOutAnimation;
-import me.dylancurzon.nea.gfx.page.elements.DefaultImmutableContainer;
-import me.dylancurzon.nea.gfx.page.elements.ImmutableContainer;
-import me.dylancurzon.nea.gfx.page.elements.LayoutImmutableContainer;
-import me.dylancurzon.nea.gfx.page.elements.TextImmutableElement;
+import me.dylancurzon.nea.gfx.page.elements.*;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
-import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.gfx.text.TextTypes;
 import me.dylancurzon.nea.util.Benchmark;
+import me.dylancurzon.nea.util.PerlinNoise;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.World;
@@ -49,27 +48,92 @@ public class Camera implements Renderable {
     private final ComputerCapsule computer;
     private final Worker worker;
 
+//    private static final Function<ImmutableContainer, LayoutImmutableContainer> CONTAINER =
+//        ctr -> LayoutImmutableContainer.builder()
+//            .setSize(ctr.getSize())
+//            .setCentering(true)
+//            .setInline(true)
+//            .add(1, TextImmutableElement.builder()
+//                .setText(TextTypes.SMALL.getText("A", 1))
+//                .build())
+//            .add(1, TextImmutableElement.builder()
+//                .setText(TextTypes.SMALL.getText("B", 1))
+//                .build())
+//            .add(1, TextImmutableElement.builder()
+//                .setText(TextTypes.SMALL.getText("C", 1))
+//                .build())
+//            .add(1, TextImmutableElement.builder()
+//                .setText(TextTypes.SMALL.getText("D", 1))
+//                .build())
+//            .build();
 //    private static final PageTemplate TEMPLATE = PageTemplate.builder()
 //        .setBackground(GUITypes.LARGE)
 //        .setPosition(Vector2i.of(400, 15))
 //        .setPadding(Spacing.of(10))
-//        .add(page -> DefaultImmutableContainer.builder()
+//        .setCentering(true)
+//        .add(page -> LayoutImmutableContainer.builder()
 //            .setSize(page.getPaddedSize())
-//            .setCentering(true)
-//            .add(TextImmutableElement.builder()
-//                .setText(TextTypes.SMALL.getText("Hello", 1))
-//                .build())
+//            .add(1, CONTAINER::apply)
+//            .add(1, CONTAINER::apply)
+//            .add(3, CONTAINER::apply)
 //            .build())
 //        .build();
-private static final PageTemplate TEMPLATE = PageTemplate.builder()
-    .setBackground(GUITypes.LARGE)
-    .setPosition(Vector2i.of(400, 15))
-    .setPadding(Spacing.of(10))
-    .setCentering(true)
-    .add(page -> TextImmutableElement.builder()
-        .setText(TextTypes.SMALL.getText("Hello", 1))
-        .build())
-    .build();
+    private static final PerlinNoise noise1  = new PerlinNoise()
+        .seed((long) (Math.random() * 100000));
+    private static final PerlinNoise noise2 = new PerlinNoise()
+        .seed((long) (Math.random() * 100000));
+    private static final PageTemplate TEMPLATE = PageTemplate.builder()
+        .setBackground(GUITypes.LARGE)
+        .setPosition(Vector2i.of(400, 15))
+        .setPadding(Spacing.of(10))
+        .add(page -> ImmutableContainer.builder()
+            .setSize(Vector2i.of(page.getPaddedSize().getX(), 10))
+            .setCentering(true)
+            .add(TextImmutableElement.builder()
+                .setText(TextTypes.SMALL.getText("COMPUTER", 2))
+                .build())
+            .build())
+        .add(page -> ImmutableContainer.builder()
+            .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
+            .setMargin(Spacing.of(0, 10, 0, 0))
+            .add(TextImmutableElement.builder()
+                .setText(TextTypes.TINY.getText("Wireless Connectivity", 1))
+                .setMargin(Spacing.of(0, 0, 0, 5))
+                .build())
+            .add(rt -> LayoutImmutableContainer.builder()
+                .setSize(Vector2i.of(rt.getPaddedSize().getX() , 50))
+                .setInline(true)
+                .setCentering(true)
+                .add(3, ctr -> GraphImmutableElement.builder()
+                    .setSize(Vector2i.of(ctr.getPaddedSize().getX() , 50))
+                    .setSupplier(t -> noise1.generateOctaveNoiseValue(t * 10, 0))
+                    .build())
+                .add(1, TextImmutableElement.builder()
+                    .setText(TextTypes.SMALL.getText("AAA", 1))
+                    .build())
+                .build())
+            .build())
+        .add(page -> ImmutableContainer.builder()
+            .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
+            .setMargin(Spacing.of(0, 10, 0, 0))
+            .add(TextImmutableElement.builder()
+                .setText(TextTypes.TINY.getText("CPU Usage", 1))
+                .setMargin(Spacing.of(0, 0, 0, 5))
+                .build())
+            .add(rt -> LayoutImmutableContainer.builder()
+                .setSize(Vector2i.of(rt.getPaddedSize().getX() , 50))
+                .setInline(true)
+                .setCentering(true)
+                .add(3, ctr -> GraphImmutableElement.builder()
+                    .setSize(Vector2i.of(ctr.getPaddedSize().getX() , 50))
+                    .setSupplier(t -> noise2.generateOctaveNoiseValue(t * 10, 0))
+                    .build())
+                .add(1, TextImmutableElement.builder()
+                    .setText(TextTypes.SMALL.getText("AAA", 1))
+                    .build())
+                .build())
+            .build())
+        .build();
     private final Page page = TEMPLATE.asMutable();
 
     private boolean toggle;

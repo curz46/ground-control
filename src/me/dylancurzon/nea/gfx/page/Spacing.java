@@ -9,8 +9,7 @@ public class Spacing {
     private final int right;
     private final int bottom;
 
-    private Spacing(final int left, final int top, final int right,
-        final int bottom) {
+    private Spacing(final int left, final int top, final int right, final int bottom) {
         this.left = left;
         this.top = top;
         this.right = right;
@@ -26,7 +25,7 @@ public class Spacing {
     }
 
     public static Spacing of(final int marginLeft, final int marginTop, final int marginRight,
-        final int marginBottom) {
+                             final int marginBottom) {
         return new Spacing(marginLeft, marginTop, marginRight, marginBottom);
     }
 

@@ -22,6 +22,16 @@ public class Vector2i {
     }
 
     @NotNull
+    public Vector2i setX(final int value) {
+        return new Vector2i(value, this.y);
+    }
+
+    @NotNull
+    public Vector2i setY(final int value) {
+        return new Vector2i(this.x, value);
+    }
+
+    @NotNull
     public Vector2i add(@NotNull final Vector2i addend) {
         return new Vector2i(
             this.x + addend.getX(),

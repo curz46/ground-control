@@ -44,6 +44,7 @@ public class Page extends MutableElement implements Tickable {
                 this.transform = null;
             }
         }
+        this.container.tick();
     }
 
     @Override
