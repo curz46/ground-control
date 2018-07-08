@@ -31,7 +31,7 @@ public class GraphImmutableElement extends ImmutableElement {
     @Override
     public MutableElement asMutable() {
         final List<Double> values = new ArrayList<>();
-        final int resolutionX = 8;
+        final int resolutionX = 1;
         return new MutableElement(super.margin) {
             @Override
             public Vector2i getSize() {

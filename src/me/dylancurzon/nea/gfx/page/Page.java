@@ -2,13 +2,10 @@ package me.dylancurzon.nea.gfx.page;
 
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.animation.Animation;
-import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
-import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.Tickable;
 
-import java.util.Collection;
 import java.util.Collections;
 
 public class Page extends MutableContainer implements Tickable {

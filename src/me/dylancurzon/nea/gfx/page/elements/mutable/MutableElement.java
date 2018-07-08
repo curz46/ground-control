@@ -4,7 +4,6 @@ import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.gfx.page.Spacing;
-import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 
 public abstract class MutableElement implements Renderable {
@@ -31,10 +30,15 @@ public abstract class MutableElement implements Renderable {
         );
     }
 
+    public void tick() {}
+
+    public int[] getInteractMask() {
+        final Vector2i size = this.getSize();
+        return new int[size.getX() * size.getY()];
+    }
+
     @NotNull
     public abstract Vector2i getSize();
-
-    public void tick() {}
 
     public abstract void render(@NotNull final PixelContainer container);
 

@@ -9,6 +9,8 @@ public class SpriteSheet {
 
     public static SpriteSheet PRIMARY_SHEET =
         SpriteSheet.loadSheet("spritesheet.png", 16);
+    public static SpriteSheet GUI_SHEET =
+        SpriteSheet.loadSheet("gui-sheet.png", 16);
 
     private final int[] pixels;
     private final int width;

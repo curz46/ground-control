@@ -55,6 +55,18 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
                 }
 
                 @Override
+                public int[] getInteractMask() {
+                    // TODO: make this only evaluate when necessary in future
+                    final StaticSprite sprite = StaticSpriteImmutableElement.this.sprite;
+                    final int[] mask = new int[this.getSize().getX() * this.getSize().getY()];
+                    final int[] pixels = sprite.getPixels();
+                    for (int i = 0; i < pixels.length; i++) {
+                        if (pixels[i] != 0) mask[i] = 1;
+                    }
+                    return mask;
+                }
+
+                @Override
                 public void render(final PixelContainer pixelContainer) {
                     final Sprite sprite = StaticSpriteImmutableElement.this.sprite;
                     sprite.render(pixelContainer, 0, 0);

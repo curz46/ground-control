@@ -1,6 +1,5 @@
 package me.dylancurzon.nea.gfx.page.elements.mutable;
 
-import me.dylancurzon.nea.gfx.page.Page;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.animation.Animation;
 import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
@@ -35,10 +34,6 @@ public abstract class MutableContainer extends MutableElement {
         this.scroll += this.scrollVelocity;
         this.scrollVelocity *= 0.8;
         this.checkBounds();
-        if (this.getMaxScroll() > 0 ) {
-            System.out.println("Scroll:" + this.scroll);
-            System.out.println("Max: " + this.getMaxScroll());
-        }
     }
 
     public void scroll(final double amount) {
