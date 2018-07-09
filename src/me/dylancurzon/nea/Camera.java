@@ -1,6 +1,7 @@
 package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
+import java.util.concurrent.ThreadLocalRandom;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.gfx.page.GUITypes;
@@ -14,7 +15,10 @@ import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.container.LayoutImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.TextImmutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.TextMutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
+import me.dylancurzon.nea.gfx.sprite.Sprite;
+import me.dylancurzon.nea.gfx.sprite.SpriteSheet;
 import me.dylancurzon.nea.gfx.text.TextTypes;
 import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.PerlinNoise;
@@ -86,10 +90,6 @@ public class Camera implements Renderable {
 //            .build())
 //        .build();
     private int ticks = 0;
-    private final PerlinNoise noise1  = new PerlinNoise()
-        .seed((long) (Math.random() * 100000));
-    private final PerlinNoise noise2 = new PerlinNoise()
-        .seed((long) (Math.random() * 100000));
     private final BiFunction<String, PerlinNoise, Function<ImmutableContainer, ImmutableElement>> CONTAINER =
         (name, noise) -> page -> ImmutableContainer.builder()
             .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
@@ -128,11 +128,11 @@ public class Camera implements Renderable {
                 .setText(TextTypes.SMALL.getText("COMPUTER", 2))
                 .build())
             .build())
-        .add(this.CONTAINER.apply("Wireless Connectivity", this.noise1))
-        .add(this.CONTAINER.apply("CPU Usage", this.noise2))
-        .add(this.CONTAINER.apply("CPU Usage", this.noise2))
-        .add(this.CONTAINER.apply("CPU Usage", this.noise2))
-        .add(this.CONTAINER.apply("CPU Usage", this.noise2))
+        .add(this.CONTAINER.apply("Wireless Connectivity", createSeededNoise()))
+        .add(this.CONTAINER.apply("CPU Usage", createSeededNoise()))
+        .add(this.CONTAINER.apply("Network Usage", createSeededNoise()))
+        .add(this.CONTAINER.apply("Atmospheric Pressure", createSeededNoise()))
+        .add(this.CONTAINER.apply("Wind Speed", createSeededNoise()))
         .build();
     private final Page page = this.TEMPLATE.asMutable();
 
@@ -147,6 +147,10 @@ public class Camera implements Renderable {
             Vector2i.of(240, 15),
             new QuarticEaseInAnimation(0, 1, 30)
         );
+    }
+
+    private static PerlinNoise createSeededNoise() {
+        return new PerlinNoise().seed(ThreadLocalRandom.current().nextLong(100000));
     }
 
     // TEMP

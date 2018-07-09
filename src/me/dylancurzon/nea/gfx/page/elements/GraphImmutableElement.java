@@ -1,9 +1,11 @@
 package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
+import java.util.function.Function;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
 import me.dylancurzon.nea.util.Vector2i;
 
 import java.util.ArrayList;
@@ -18,8 +20,9 @@ public class GraphImmutableElement extends ImmutableElement {
     private int ticks = 0;
 
     private GraphImmutableElement(final Spacing margin, final Consumer<MutableElement> tickConsumer,
-                                  final Vector2i size, final Supplier<Double> valueSupplier) {
-        super(margin, tickConsumer);
+                                  final Vector2i size, final Supplier<Double> valueSupplier,
+                                  final Function<MutableElement, WrappingMutableElement> mutator) {
+        super(margin, tickConsumer, mutator);
         this.size = size;
         this.valueSupplier = valueSupplier;
     }
@@ -32,7 +35,7 @@ public class GraphImmutableElement extends ImmutableElement {
     public MutableElement asMutable() {
         final List<Double> values = new ArrayList<>();
         final int resolutionX = 1;
-        return new MutableElement(super.margin) {
+        return super.doMutate(new MutableElement(super.margin) {
             @Override
             public Vector2i getSize() {
                 return GraphImmutableElement.this.size;
@@ -67,7 +70,7 @@ public class GraphImmutableElement extends ImmutableElement {
                     container.setPixel(container.getWidth() - dt, y, 0xFFFFFFFF);
                 }
             }
-        };
+        });
     }
 
     public static class Builder extends ImmutableElement.Builder<GraphImmutableElement, Builder> {
@@ -99,7 +102,13 @@ public class GraphImmutableElement extends ImmutableElement {
             if (this.valueFunction == null) {
                 throw new RuntimeException("GraphImmutableElement.Builder requires ValueSupplier!");
             }
-            return new GraphImmutableElement(super.margin, super.tickConsumer, this.size, this.valueFunction);
+            return new GraphImmutableElement(
+                super.margin,
+                super.tickConsumer,
+                this.size,
+                this.valueFunction,
+                super.mutator
+            );
         }
 
     }

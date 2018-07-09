@@ -42,7 +42,6 @@ public abstract class MutableContainer extends MutableElement {
             this.transform = null;
         }
         this.scrollVelocity += amount * SCROLL_FACTOR;
-        this.checkBounds();
     }
 
     private void checkBounds() {

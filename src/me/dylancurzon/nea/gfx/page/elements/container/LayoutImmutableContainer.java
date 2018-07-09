@@ -6,6 +6,7 @@ import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.elements.ImmutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 
@@ -27,8 +28,10 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
     private LayoutImmutableContainer(final Spacing margin, final Consumer<MutableElement> tickConsumer,
                                      final List<Pair<Integer, Function<ImmutableContainer, ImmutableElement>>> elements,
                                      final Vector2i size, final Spacing padding,
-                                     final boolean inline, final boolean centering, final boolean scrollable) {
-        super(margin, tickConsumer);
+                                     final boolean inline, final boolean centering,
+                                     final boolean scrollable,
+                                     final Function<MutableElement, WrappingMutableElement> mutator) {
+        super(margin, tickConsumer, mutator);
         this.elements = elements;
         this.size = size;
         this.inline = inline;
@@ -246,7 +249,8 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
                 this.padding,
                 this.inline,
                 this.centering,
-                this.scrollable
+                this.scrollable,
+                super.mutator
             );
         }
 

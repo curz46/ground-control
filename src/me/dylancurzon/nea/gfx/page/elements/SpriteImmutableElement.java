@@ -1,10 +1,12 @@
 package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
+import java.util.function.Function;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite.TickContainer;
 import me.dylancurzon.nea.gfx.sprite.Sprite;
@@ -16,8 +18,9 @@ import java.util.function.Consumer;
 @Immutable
 public abstract class SpriteImmutableElement extends ImmutableElement {
 
-    public SpriteImmutableElement(final Spacing margin, final Consumer<MutableElement> tickConsumer) {
-        super(margin, tickConsumer);
+    public SpriteImmutableElement(final Spacing margin, final Consumer<MutableElement> tickConsumer,
+                                  final Function<MutableElement, WrappingMutableElement> mutator) {
+        super(margin, tickConsumer, mutator);
     }
 
     public static Builder builder() {
@@ -29,14 +32,15 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
         private final StaticSprite sprite;
 
         public StaticSpriteImmutableElement(final Spacing margin, final Consumer<MutableElement> tickConsumer,
-                                            final StaticSprite sprite) {
-            super(margin, tickConsumer);
+                                            final StaticSprite sprite,
+                                            final Function<MutableElement, WrappingMutableElement> mutator) {
+            super(margin, tickConsumer, mutator);
             this.sprite = sprite;
         }
 
         @Override
         public MutableElement asMutable() {
-            return new MutableElement(super.margin) {
+            return super.doMutate(new MutableElement(super.margin) {
                 @Override
                 public Vector2i getSize() {
                     final Sprite sprite = StaticSpriteImmutableElement.this.sprite;
@@ -71,7 +75,7 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
                     final Sprite sprite = StaticSpriteImmutableElement.this.sprite;
                     sprite.render(pixelContainer, 0, 0);
                 }
-            };
+            });
         }
 
     }
@@ -81,15 +85,16 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
         private final AnimatedSprite sprite;
 
         public AnimatedSpriteImmutableElement(final Spacing margin, final Consumer<MutableElement> tickConsumer,
-                                              final AnimatedSprite sprite) {
-            super(margin, tickConsumer);
+                                              final AnimatedSprite sprite,
+                                              final Function<MutableElement, WrappingMutableElement> mutator) {
+            super(margin, tickConsumer, mutator);
             this.sprite = sprite;
         }
 
         @Override
         public MutableElement asMutable() {
             final TickContainer container = this.sprite.createContainer();
-            return new MutableElement(super.margin) {
+            return super.doMutate(new MutableElement(super.margin) {
                 @Override
                 public void tick() {
                     final Consumer<MutableElement> consumer = AnimatedSpriteImmutableElement.super.getTickConsumer();
@@ -111,7 +116,7 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
                 public void render(final PixelContainer pixelContainer) {
                     container.render(pixelContainer, 0, 0);
                 }
-            };
+            });
         }
 
     }
@@ -154,14 +159,24 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
         @NotNull
         public SpriteImmutableElement build() {
             if (this.animatedSprite != null) {
-                return new AnimatedSpriteImmutableElement(super.margin, super.tickConsumer, this.animatedSprite);
+                return new AnimatedSpriteImmutableElement(
+                    super.margin,
+                    super.tickConsumer,
+                    this.animatedSprite,
+                    super.mutator
+                );
             }
             if (this.sprite == null) {
                 throw new RuntimeException(
                     "SpriteImmutableElement.Builder requires a Sprite or AnimatedSprite to build!"
                 );
             }
-            return new StaticSpriteImmutableElement(super.margin, super.tickConsumer, this.sprite);
+            return new StaticSpriteImmutableElement(
+                super.margin,
+                super.tickConsumer,
+                this.sprite,
+                super.mutator
+            );
         }
 
     }

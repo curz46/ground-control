@@ -9,6 +9,7 @@ import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.ImmutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
 import me.dylancurzon.nea.gfx.sprite.Sprite;
 import me.dylancurzon.nea.util.Vector2i;
 
@@ -20,8 +21,9 @@ public class PageTemplate extends DefaultImmutableContainer {
     protected PageTemplate(final Spacing margin, final Consumer<MutableElement> tickConsumer,
                            final List<Function<ImmutableContainer, ImmutableElement>> elements,
                            final Vector2i size, final Spacing padding, final boolean inline, final boolean centering,
-                           final Sprite backgroundSprite, final Vector2i position, final boolean scrollable) {
-        super(margin, tickConsumer, elements, size, padding, inline, centering, scrollable);
+                           final Sprite backgroundSprite, final Vector2i position, final boolean scrollable,
+                           final Function<MutableElement, WrappingMutableElement> mutator) {
+        super(margin, tickConsumer, elements, size, padding, inline, centering, scrollable, mutator);
         this.backgroundSprite = backgroundSprite;
         this.position = position;
     }
@@ -98,7 +100,8 @@ public class PageTemplate extends DefaultImmutableContainer {
                 super.centering,
                 this.backgroundSprite,
                 this.position,
-                super.scrollable
+                super.scrollable,
+                super.mutator
             );
         }
 

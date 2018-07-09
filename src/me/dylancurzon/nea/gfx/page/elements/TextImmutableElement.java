@@ -1,10 +1,12 @@
 package me.dylancurzon.nea.gfx.page.elements;
 
 import com.sun.istack.internal.NotNull;
+import java.util.function.Function;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.TextMutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
 import me.dylancurzon.nea.gfx.text.TextType.TextSprite;
 
 import java.util.function.Consumer;
@@ -15,8 +17,9 @@ public class TextImmutableElement extends ImmutableElement {
     private final TextSprite sprite;
 
     protected TextImmutableElement(final Spacing margin, final Consumer<MutableElement> tickConsumer,
-                                   final TextSprite sprite) {
-        super(margin, tickConsumer);
+                                   final TextSprite sprite,
+                                   final Function<MutableElement, WrappingMutableElement> mutator) {
+        super(margin, tickConsumer, mutator);
         this.sprite = sprite;
     }
 
@@ -28,7 +31,7 @@ public class TextImmutableElement extends ImmutableElement {
     @Override
     @NotNull
     public MutableElement asMutable() {
-        return new TextMutableElement(super.margin, this);
+        return super.doMutate(new TextMutableElement(super.margin, this));
     }
 
     @NotNull
@@ -54,7 +57,11 @@ public class TextImmutableElement extends ImmutableElement {
         @Override
         @NotNull
         public TextImmutableElement build() {
-            return new TextImmutableElement(super.margin, super.tickConsumer, this.sprite);
+            return new TextImmutableElement(
+                super.margin,
+                super.tickConsumer,
+                this.sprite,
+                super.mutator);
         }
 
     }

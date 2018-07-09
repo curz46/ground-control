@@ -1,7 +1,10 @@
 package me.dylancurzon.nea.gfx.page;
 
+import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.page.elements.SpriteImmutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
 import me.dylancurzon.nea.gfx.sprite.SpriteSheet;
+import me.dylancurzon.nea.util.Vector2i;
 
 public interface Buttons {
 
@@ -28,6 +31,24 @@ public interface Buttons {
         .build();
     SpriteImmutableElement CHECKBOX_CHECKED = SpriteImmutableElement.builder()
         .setSprite(SpriteSheet.GUI_SHEET.getSprite(1, 1, 16))
+        .mutate(element -> new WrappingMutableElement(element) {
+            // Manual interact-able area for checkboxes, since they are transparent in the centre
+            // but still have a square-based clickable region
+            // TODO: should look into automating this, for example:
+            // SpriteSheet.GUI_INTERACT.getSprite(x, y, 16).getPixels();
+            @Override
+            @NotNull
+            public int[] getInteractMask() {
+                final Vector2i size = super.getSize();
+                final int[] mask = new int[size.getX() * size.getY()];
+                for (int x = 2; x < 14; x++) {
+                    for (int y = 2; y < 14; y++) {
+                        mask[x + y * size.getX()] = 1;
+                    }
+                }
+                return mask;
+            }
+        })
         .build();
     //
     SpriteImmutableElement CIRCLE = SpriteImmutableElement.builder()
