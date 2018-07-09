@@ -118,6 +118,9 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                     );
                     mut.render(elementContainer);
 
+                    // == HIGHLIGHTING ==
+                    this.applyHighlight(elementContainer.getPixels());
+
                     // find centered position based on this container's size
                     final Vector2i centered = DefaultImmutableContainer.this.size
                         .div(2)
@@ -140,17 +143,27 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                             Vector2i.of(mut.getMargin().getLeft(), mut.getMargin().getTop())
                         );
                         final Vector2i elementSize = mut.getSize();
+
+                        final int[] elementPixels = new int[elementSize.getX() * elementSize.getY()];
                         final PixelContainer elementContainer = new PixelContainer(
-                            new int[elementSize.getX() * elementSize.getY()],
+                            elementPixels,
                             elementSize.getX(),
                             elementSize.getY()
                         );
                         mut.render(elementContainer);
+
+                        // == HIGHLIGHTING ==
+                        // This is where we need to apply highlighting to the MutableElement's rendered pixels based on
+                        // the interact-able region specified by MutableElement#getInteractMask.
+                        // They should have a 1:1 ratio, so we can just apply the effect if the mask is not zero, if the
+                        // MutableElement has been marked as currently highlighted.
+                        this.applyHighlight(elementPixels);
+
                         container.copyPixels(
                             pos.getX(),
                             pos.getY() - (int) Math.floor(super.scroll),
                             elementSize.getX(),
-                            elementContainer.getPixels()
+                            elementPixels
                         );
                         if (DefaultImmutableContainer.this.inline) {
                             pos = pos.add(Vector2i.of(mut.getMargin().getRight() + elementSize.getX(), 0));
@@ -158,6 +171,20 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                             pos = pos.add(Vector2i.of(0, mut.getMargin().getBottom() + elementSize.getY()));
                         }
                     }
+                }
+            }
+
+            private void applyHighlight(final int[] pixels) {
+                for (int i = 0; i < pixels.length; i++) {
+                    // In order to darken the pixels, we need to convert them to rgb values first so that they
+                    // can be affected individually.
+                    final double factor = 0.7;
+                    final int value = pixels[i];
+                    final int a = (value >> 24) & 0xFF;
+                    final int nr = (int) ((value >> 16 & 0xFF) * factor);
+                    final int ng = (int) ((value >> 8 & 0xFF) * factor);
+                    final int nb = (int) ((value & 0xFF) * factor);
+                    pixels[i] = (a << 24) | (nr << 16) | (ng << 8) | nb;
                 }
             }
         };

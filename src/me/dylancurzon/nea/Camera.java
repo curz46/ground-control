@@ -4,10 +4,7 @@ import com.sun.istack.internal.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
-import me.dylancurzon.nea.gfx.page.GUITypes;
-import me.dylancurzon.nea.gfx.page.Page;
-import me.dylancurzon.nea.gfx.page.PageTemplate;
-import me.dylancurzon.nea.gfx.page.Spacing;
+import me.dylancurzon.nea.gfx.page.*;
 import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
 import me.dylancurzon.nea.gfx.page.animation.SineEaseOutAnimation;
 import me.dylancurzon.nea.gfx.page.elements.*;
@@ -59,80 +56,12 @@ public class Camera implements Renderable {
     private final ComputerCapsule computer;
     private final Worker worker;
 
-//    private static final Function<ImmutableContainer, LayoutImmutableContainer> CONTAINER =
-//        ctr -> LayoutImmutableContainer.builder()
-//            .setSize(ctr.getSize())
-//            .setCentering(true)
-//            .setInline(true)
-//            .add(1, TextImmutableElement.builder()
-//                .setText(TextTypes.SMALL.getText("A", 1))
-//                .build())
-//            .add(1, TextImmutableElement.builder()
-//                .setText(TextTypes.SMALL.getText("B", 1))
-//                .build())
-//            .add(1, TextImmutableElement.builder()
-//                .setText(TextTypes.SMALL.getText("C", 1))
-//                .build())
-//            .add(1, TextImmutableElement.builder()
-//                .setText(TextTypes.SMALL.getText("D", 1))
-//                .build())
-//            .build();
-//    private static final PageTemplate TEMPLATE = PageTemplate.builder()
-//        .setBackground(GUITypes.LARGE)
-//        .setPosition(Vector2i.of(400, 15))
-//        .setPadding(Spacing.of(10))
-//        .setCentering(true)
-//        .add(page -> LayoutImmutableContainer.builder()
-//            .setSize(page.getPaddedSize())
-//            .add(1, CONTAINER::apply)
-//            .add(1, CONTAINER::apply)
-//            .add(3, CONTAINER::apply)
-//            .build())
-//        .build();
     private int ticks = 0;
-    private final BiFunction<String, PerlinNoise, Function<ImmutableContainer, ImmutableElement>> CONTAINER =
-        (name, noise) -> page -> ImmutableContainer.builder()
-            .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
-            .setMargin(Spacing.of(0, 10, 0, 0))
-            .add(TextImmutableElement.builder()
-                .setText(TextTypes.TINY.getText(name, 1))
-                .setMargin(Spacing.of(0, 0, 0, 5))
-                .build())
-            .add(rt -> LayoutImmutableContainer.builder()
-                .setSize(Vector2i.of(rt.getPaddedSize().getX(), 50))
-                .setInline(true)
-                .setCentering(true)
-                .add(3, ctr -> GraphImmutableElement.builder()
-                    .setSize(Vector2i.of(ctr.getPaddedSize().getX(), 50))
-                    .setSupplier(() -> noise.generateOctaveNoiseValue(this.ticks * 10, 0))
-                    .build())
-                .add(1, TextImmutableElement.builder()
-                    .setText(TextTypes.SMALL.getText("0.00", 1))
-                    .tick(element -> {
-                        final double value = noise.generateOctaveNoiseValue(this.ticks * 10, 0);
-                        final String text = String.format("%3.2f", value);
-                        ((TextMutableElement) element).setSprite(TextTypes.SMALL.getText(text, 1));
-                    })
-                    .build())
-                .build())
-            .build();
     private final PageTemplate TEMPLATE = PageTemplate.builder()
         .setBackground(GUITypes.LARGE)
-        .setPosition(Vector2i.of(400, 15))
-        .setPadding(Spacing.of(10))
-        .setScrollable(true)
-        .add(page -> ImmutableContainer.builder()
-            .setSize(Vector2i.of(page.getPaddedSize().getX(), 10))
-            .setCentering(true)
-            .add(TextImmutableElement.builder()
-                .setText(TextTypes.SMALL.getText("COMPUTER", 2))
-                .build())
-            .build())
-        .add(this.CONTAINER.apply("Wireless Connectivity", createSeededNoise()))
-        .add(this.CONTAINER.apply("CPU Usage", createSeededNoise()))
-        .add(this.CONTAINER.apply("Network Usage", createSeededNoise()))
-        .add(this.CONTAINER.apply("Atmospheric Pressure", createSeededNoise()))
-        .add(this.CONTAINER.apply("Wind Speed", createSeededNoise()))
+        .setPosition(Vector2i.of(240, 15))
+        .setCentering(true)
+        .add(Buttons.CHECKBOX_CHECKED)
         .build();
     private final Page page = this.TEMPLATE.asMutable();
 
@@ -147,10 +76,6 @@ public class Camera implements Renderable {
             Vector2i.of(240, 15),
             new QuarticEaseInAnimation(0, 1, 30)
         );
-    }
-
-    private static PerlinNoise createSeededNoise() {
-        return new PerlinNoise().seed(ThreadLocalRandom.current().nextLong(100000));
     }
 
     // TEMP
