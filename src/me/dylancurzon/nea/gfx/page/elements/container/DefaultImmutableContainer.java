@@ -3,6 +3,7 @@ package me.dylancurzon.nea.gfx.page.elements.container;
 import com.sun.istack.internal.NotNull;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.gfx.PixelContainer;
+import me.dylancurzon.nea.gfx.page.InteractOptions;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.elements.ImmutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
@@ -12,6 +13,7 @@ import me.dylancurzon.nea.util.Vector2i;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -32,8 +34,9 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                                         final List<Function<ImmutableContainer, ImmutableElement>> elements,
                                         final Vector2i size, final Spacing padding, final boolean inline,
                                         final boolean centering, final boolean scrollable,
-                                        final Function<MutableElement, WrappingMutableElement> mutator) {
-        super(margin, tickConsumer, mutator);
+                                        final Function<MutableElement, WrappingMutableElement> mutator,
+                                        final InteractOptions interactOptions) {
+        super(margin, tickConsumer, mutator, interactOptions);
         this.elements = elements;
         this.size = size;
         if (padding == null) {
@@ -53,7 +56,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
             .map(fn -> fn.apply(this))
             .map(ImmutableElement::asMutable)
             .collect(Collectors.toList());
-        return new MutableContainer(super.margin, this, mutableElements) {
+        final MutableContainer container = new MutableContainer(super.margin, this, mutableElements) {
             @Override
             public Vector2i getSize() {
                 Vector2i size = DefaultImmutableContainer.this.size;
@@ -107,71 +110,114 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                     }
                 }
 
-                if (DefaultImmutableContainer.this.centering) {
-                    // standard draw logic
-                    final MutableElement mut = mutableElements.get(0);
+                final Map<MutableElement, Vector2i> positions = super.calculatePositions();
+                positions.forEach((mut, pos) -> {
                     final Vector2i elementSize = mut.getSize();
                     final PixelContainer elementContainer = new PixelContainer(
-                        new int[elementSize.getX() * elementSize.getY()],
-                        elementSize.getX(),
-                        elementSize.getY()
+                            new int[elementSize.getX() * elementSize.getY()],
+                            elementSize.getX(),
+                            elementSize.getY()
                     );
                     mut.render(elementContainer);
 
-                    // == HIGHLIGHTING ==
-                    this.applyHighlight(elementContainer.getPixels());
+                    if (mut.getInteractOptions().shouldHighlight()) {
+                        final int[] mask = mut.getInteractMask();
+                        for (int dx = 0; dx < elementSize.getX(); dx++) {
+                            for (int dy = 0; dy < elementSize.getY(); dy++) {
+                                if (mask[dx + dy * elementSize.getX()] != 0) {
+                                    final Vector2i dpos = Vector2i.of(dx, dy);
+                                    if (dpos.equals(mut.getMousePosition())) {
+                                        this.applyHighlight(elementContainer.getPixels());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
 
-                    // find centered position based on this container's size
-                    final Vector2i centered = DefaultImmutableContainer.this.size
-                        .div(2)
-                        .sub(elementSize.div(2))
-                        .floor().toInt();
                     container.copyPixels(
-                        centered.getX(),
-                        centered.getY(),
+                        pos.getX(),
+                        pos.getY() - ((int) this.scroll),
                         elementSize.getX(),
                         elementContainer.getPixels()
                     );
-                } else {
-                    final Spacing padding = DefaultImmutableContainer.this.padding;
-                    Vector2i pos = Vector2i.of(
-                        padding.getLeft(),
-                        padding.getTop()
-                    );
-                    for (final MutableElement mut : mutableElements) {
-                        pos = pos.add(
-                            Vector2i.of(mut.getMargin().getLeft(), mut.getMargin().getTop())
-                        );
-                        final Vector2i elementSize = mut.getSize();
+                });
 
-                        final int[] elementPixels = new int[elementSize.getX() * elementSize.getY()];
-                        final PixelContainer elementContainer = new PixelContainer(
-                            elementPixels,
-                            elementSize.getX(),
-                            elementSize.getY()
-                        );
-                        mut.render(elementContainer);
+//                if (DefaultImmutableContainer.this.centering) {
+//                    // standard draw logic
+//                    final MutableElement mut = mutableElements.get(0);
+//                    final Vector2i elementSize = mut.getSize();
+//                    final PixelContainer elementContainer = new PixelContainer(
+//                        new int[elementSize.getX() * elementSize.getY()],
+//                        elementSize.getX(),
+//                        elementSize.getY()
+//                    );
+//                    mut.render(elementContainer);
+//
+//                    // == HIGHLIGHTING ==
+//                    this.applyHighlight(elementContainer.getPixels());
+//
+//                    // find centered position based on this container's size
+//                    final Vector2i centered = DefaultImmutableContainer.this.size
+//                        .div(2)
+//                        .sub(elementSize.div(2))
+//                        .floor().toInt();
+//                    container.copyPixels(
+//                        centered.getX(),
+//                        centered.getY(),
+//                        elementSize.getX(),
+//                        elementContainer.getPixels()
+//                    );
+//                } else {
+//                    final Spacing padding = DefaultImmutableContainer.this.padding;
+//                    Vector2i pos = Vector2i.of(
+//                        padding.getLeft(),
+//                        padding.getTop()
+//                    );
+//                    for (final MutableElement mut : mutableElements) {
+//                        pos = pos.add(
+//                            Vector2i.of(mut.getMargin().getLeft(), mut.getMargin().getTop())
+//                        );
+//                        final Vector2i elementSize = mut.getSize();
+//
+//                        final int[] elementPixels = new int[elementSize.getX() * elementSize.getY()];
+//                        final PixelContainer elementContainer = new PixelContainer(
+//                            elementPixels,
+//                            elementSize.getX(),
+//                            elementSize.getY()
+//                        );
+//                        mut.render(elementContainer);
+//
+//                        // == HIGHLIGHTING ==
+//                        // This is where we need to apply highlighting to the MutableElement's rendered pixels based on
+//                        // the interact-able region specified by MutableElement#getInteractMask.
+//                        // They should have a 1:1 ratio, so we can just apply the effect if the mask is not zero, if the
+//                        // MutableElement has been marked as currently highlighted.
+//
+//                        this.applyHighlight(elementPixels);
+//
+//                        container.copyPixels(
+//                            pos.getX(),
+//                            pos.getY() - (int) Math.floor(super.scroll),
+//                            elementSize.getX(),
+//                            elementPixels
+//                        );
+//                        if (DefaultImmutableContainer.this.inline) {
+//                            pos = pos.add(Vector2i.of(mut.getMargin().getRight() + elementSize.getX(), 0));
+//                        } else {
+//                            pos = pos.add(Vector2i.of(0, mut.getMargin().getBottom() + elementSize.getY()));
+//                        }
+//                    }
+//                }
+            }
 
-                        // == HIGHLIGHTING ==
-                        // This is where we need to apply highlighting to the MutableElement's rendered pixels based on
-                        // the interact-able region specified by MutableElement#getInteractMask.
-                        // They should have a 1:1 ratio, so we can just apply the effect if the mask is not zero, if the
-                        // MutableElement has been marked as currently highlighted.
-                        this.applyHighlight(elementPixels);
-
-                        container.copyPixels(
-                            pos.getX(),
-                            pos.getY() - (int) Math.floor(super.scroll),
-                            elementSize.getX(),
-                            elementPixels
-                        );
-                        if (DefaultImmutableContainer.this.inline) {
-                            pos = pos.add(Vector2i.of(mut.getMargin().getRight() + elementSize.getX(), 0));
-                        } else {
-                            pos = pos.add(Vector2i.of(0, mut.getMargin().getBottom() + elementSize.getY()));
-                        }
-                    }
+            @Override
+            public int[] getInteractMask() {
+                final int[] mask = new int[this.getSize().getX() * this.getSize().getY()];
+                for (int i = 0; i < mask.length; i++) {
+                    mask[i] = 1;
                 }
+                return mask;
             }
 
             private void applyHighlight(final int[] pixels) {
@@ -188,6 +234,8 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                 }
             }
         };
+        mutableElements.forEach(mut -> mut.setParent(container));
+        return container;
     }
 
     @NotNull
@@ -332,7 +380,8 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                 this.inline,
                 this.centering,
                 this.scrollable,
-                super.mutator
+                super.mutator,
+                super.interactOptions
             );
         }
 

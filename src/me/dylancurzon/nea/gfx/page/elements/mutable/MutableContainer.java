@@ -1,13 +1,18 @@
 package me.dylancurzon.nea.gfx.page.elements.mutable;
 
+import com.sun.istack.internal.NotNull;
+import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.animation.Animation;
 import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
+import me.dylancurzon.nea.gfx.page.elements.container.DefaultImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class MutableContainer extends MutableElement {
 
@@ -23,9 +28,83 @@ public abstract class MutableContainer extends MutableElement {
 
     protected MutableContainer(final Spacing margin, final ImmutableContainer container,
                                final List<MutableElement> elements) {
-        super(margin);
+        super(margin, container.getInteractOptions());
         this.container = container;
         this.elements = elements;
+    }
+
+    @NotNull
+    public List<MutableElement> getElements() {
+        return this.elements;
+    }
+
+    /**
+     * @return A map of each MutableElement (in {@link this#elements} and its calculated position. It factors in
+     * if the {@link this#container} is centering, inline, padded and includes each MutableElement's margin.
+     */
+    public Map<MutableElement, Vector2i> calculatePositions() {
+        final Map<MutableElement, Vector2i> positions = new HashMap<>();
+        if (this.elements.isEmpty()) return positions;
+
+        if (this.container.isCentering()) {
+            final MutableElement mut = this.elements.get(0);
+            final Vector2i elementSize = mut.getSize();
+
+            // find centered position based on this container's size
+            final Vector2i centered = this.container.getSize()
+                    .div(2)
+                    .sub(elementSize.div(2))
+                    .floor().toInt();
+            positions.put(mut, centered);
+        } else {
+            final Spacing padding = this.container.getPadding();
+            Vector2i pos = Vector2i.of(
+                    padding.getLeft(),
+                    padding.getTop()
+            );
+            for (final MutableElement mut : this.elements) {
+                pos = pos.add(
+                        Vector2i.of(mut.getMargin().getLeft(), mut.getMargin().getTop())
+                );
+                final Vector2i elementSize = mut.getSize();
+
+                positions.put(mut, pos);
+
+                if (this.container.isInline()) {
+                    pos = pos.add(Vector2i.of(mut.getMargin().getRight() + elementSize.getX(), 0));
+                } else {
+                    pos = pos.add(Vector2i.of(0, mut.getMargin().getBottom() + elementSize.getY()));
+                }
+            }
+        }
+        return positions;
+    }
+
+    @Override
+    public void click(@NotNull final Vector2i position) {
+        super.click(position, this.getInteractMask());
+        // for each MutableElement of this container, find the position relative to its position in this
+        // container.
+        final Map<MutableElement, Vector2i> elementPositionMap = this.calculatePositions();
+        elementPositionMap.forEach((mut, elementPos) -> {
+            final Vector2i relative = position.sub(elementPos);
+            final Vector2i size = mut.getSize();
+            // ensure in bounds
+            if (relative.getX() < 0 || relative.getX() >= size.getX() ||
+                relative.getY() < 0 || relative.getY() >= size.getY()) {
+                return;
+            }
+            mut.click(relative);
+        });
+    }
+
+    @Override
+    public Vector2i getMousePosition(final MutableElement element) {
+        final Vector2i position = this.calculatePositions().get(element);
+        if (position == null || this.parent == null) return null;
+        final Vector2i mousePosition = this.parent.getMousePosition(this);
+        if (mousePosition == null) return null;
+        return mousePosition.sub(position);
     }
 
     @Override

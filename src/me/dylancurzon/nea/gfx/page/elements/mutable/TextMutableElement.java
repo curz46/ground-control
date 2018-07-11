@@ -14,7 +14,7 @@ public class TextMutableElement extends MutableElement {
     private TextType.TextSprite sprite;
 
     public TextMutableElement(final Spacing margin, final TextImmutableElement immutableElement) {
-        super(margin);
+        super(margin, immutableElement.getInteractOptions());
         this.immutableElement = immutableElement;
         this.sprite = this.immutableElement.getSprite();
     }
@@ -34,6 +34,23 @@ public class TextMutableElement extends MutableElement {
         if (consumer != null) {
             consumer.accept(this);
         }
+    }
+
+    @Override
+    public int[] getInteractMask() {
+//        final PixelContainer container = new PixelContainer(
+//            new int[this.getSize().getX() * this.getSize().getY()],
+//            this.getSize().getX(),
+//            this.getSize().getY()
+//        );
+//        this.render(container);
+
+        final int[] mask = new int[this.getSize().getX() * this.getSize().getY()];
+        for (int i = 0; i < mask.length; i++) {
+//            mask[i] = container.getPixels()[i];
+            mask[i] = 1;
+        }
+        return mask;
     }
 
     @Override

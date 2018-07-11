@@ -10,7 +10,7 @@ public abstract class WrappingMutableElement extends MutableElement {
     private final MutableElement element;
 
     protected WrappingMutableElement(@NotNull final MutableElement element) {
-        super(element.getMargin());
+        super(element.getMargin(), element.getInteractOptions());
         this.element = element;
     }
 

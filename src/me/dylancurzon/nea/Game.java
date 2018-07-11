@@ -2,6 +2,8 @@ package me.dylancurzon.nea;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.*;
@@ -83,6 +85,28 @@ public class Game extends JPanel {
         this.camera.transform(Vector2d.of(-5, -5));
 
         this.frame.addMouseWheelListener(event -> this.camera.scroll(event.getPreciseWheelRotation()));
+        this.frame.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(final MouseEvent e) {
+                final Point point = e.getPoint();
+                Game.this.camera.click(
+                    Vector2d.of(point.getX() / SCALE, point.getY() / SCALE)
+                        .toInt()
+                );
+            }
+
+            @Override
+            public void mousePressed(final MouseEvent e) {}
+
+            @Override
+            public void mouseReleased(final MouseEvent e) {}
+
+            @Override
+            public void mouseEntered(final MouseEvent e) {}
+
+            @Override
+            public void mouseExited(final MouseEvent e) {}
+        });
 
         this.loop();
     }
@@ -114,6 +138,16 @@ public class Game extends JPanel {
     private long lastToggle;
 
     private void update() {
+        final Point point = this.frame.getMousePosition();
+        if (point == null) {
+            this.camera.setMousePosition(null);
+        } else {
+            this.camera.setMousePosition(
+                Vector2d.of(point.getX() / SCALE, point.getY() / SCALE)
+                    .toInt()
+            );
+        }
+
         this.world.tick();
         this.camera.tick();
 

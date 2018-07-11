@@ -1,6 +1,7 @@
 package me.dylancurzon.nea.gfx.page.elements.container;
 
 import com.sun.istack.internal.NotNull;
+import me.dylancurzon.nea.gfx.page.InteractOptions;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.util.Vector2i;
 
@@ -26,6 +27,15 @@ public interface ImmutableContainer {
     Vector2i getPaddedSize();
 
     @NotNull
+    boolean isCentering();
+
+    @NotNull
+    boolean isInline();
+
+    @NotNull
     boolean isScrollable();
+
+    @NotNull
+    InteractOptions getInteractOptions();
 
 }

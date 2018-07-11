@@ -1,6 +1,8 @@
 package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
+
+import java.awt.*;
 import java.util.concurrent.ThreadLocalRandom;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
@@ -57,13 +59,76 @@ public class Camera implements Renderable {
     private final Worker worker;
 
     private int ticks = 0;
+//    private final PageTemplate TEMPLATE = PageTemplate.builder()
+//        .setBackground(GUITypes.LARGE)
+//        .setPosition(Vector2i.of(240, 15))
+//        .setCentering(true)
+//        .add(SpriteImmutableElement.builder(Buttons.CHECKBOX_CHECKED)
+//            .setInteractOptions(InteractOptions.builder()
+//                .setHighlighting(true)
+//                .click(mut -> System.out.println("Check, please!"))
+//                .builder())
+//            .build())
+//        .build();
+//    private final Page page = this.TEMPLATE.asMutable();
+private final BiFunction<String, PerlinNoise, Function<ImmutableContainer, ImmutableElement>> CONTAINER =
+    (name, noise) -> page -> ImmutableContainer.builder()
+        .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
+        .setMargin(Spacing.of(0, 10, 0, 0))
+        .add(TextImmutableElement.builder()
+            .setText(TextTypes.TINY.getText(name, 1))
+            .setMargin(Spacing.of(0, 0, 0, 5))
+            .build())
+        .add(rt -> LayoutImmutableContainer.builder()
+            .setSize(Vector2i.of(rt.getPaddedSize().getX(), 50))
+            .setInline(true)
+            .setCentering(true)
+            .add(3, ctr -> GraphImmutableElement.builder()
+                .setSize(Vector2i.of(ctr.getPaddedSize().getX(), 50))
+                .setSupplier(() -> noise.generateOctaveNoiseValue(this.ticks * 10, 0))
+                .setInteractOptions(InteractOptions.builder()
+//                    .setHighlighting(true)
+                    .builder())
+                .build())
+            .add(1, TextImmutableElement.builder()
+                .setText(TextTypes.SMALL.getText("0.00", 1))
+                .tick(element -> {
+                    final double value = noise.generateOctaveNoiseValue(this.ticks * 10, 0);
+                    final String text = String.format("%3.2f", value);
+                    ((TextMutableElement) element).setSprite(TextTypes.SMALL.getText(text, 1));
+                })
+                .setInteractOptions(InteractOptions.builder()
+//                    .setHighlighting(true)
+                    .click(mut -> System.out.println("Clicked noise value: " + name))
+                    .builder())
+                .build())
+            .build())
+        .build();
     private final PageTemplate TEMPLATE = PageTemplate.builder()
         .setBackground(GUITypes.LARGE)
-        .setPosition(Vector2i.of(240, 15))
-        .setCentering(true)
-        .add(Buttons.CHECKBOX_CHECKED)
+        .setPosition(Vector2i.of(400, 15))
+        .setPadding(Spacing.of(10))
+        .setScrollable(true)
+        .add(page -> ImmutableContainer.builder()
+            .setSize(Vector2i.of(page.getPaddedSize().getX(), 10))
+            .setCentering(true)
+            .add(TextImmutableElement.builder()
+                .setText(TextTypes.SMALL.getText("COMPUTER", 2))
+                .build())
+            .build())
+        .add(this.CONTAINER.apply("Wireless Connectivity", this.createSeededNoise()))
+        .add(this.CONTAINER.apply("CPU Usage", this.createSeededNoise()))
+        .add(this.CONTAINER.apply("Network Usage", this.createSeededNoise()))
+        .add(this.CONTAINER.apply("Atmospheric Pressure", this.createSeededNoise()))
+        .add(this.CONTAINER.apply("Wind Speed", this.createSeededNoise()))
         .build();
+
+    private PerlinNoise createSeededNoise() {
+        return new PerlinNoise().seed(ThreadLocalRandom.current().nextLong(100000));
+    }
+
     private final Page page = this.TEMPLATE.asMutable();
+
 
     private boolean toggle;
 
@@ -76,6 +141,15 @@ public class Camera implements Renderable {
             Vector2i.of(240, 15),
             new QuarticEaseInAnimation(0, 1, 30)
         );
+    }
+
+    public void setMousePosition(final Vector2i position) {
+        this.page.setMousePosition(position);
+    }
+
+    // even more temp
+    public void click(final Vector2i position) {
+        this.page.click(position);
     }
 
     // TEMP

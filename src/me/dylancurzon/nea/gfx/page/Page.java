@@ -3,6 +3,7 @@ package me.dylancurzon.nea.gfx.page;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.animation.Animation;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.Tickable;
 
@@ -16,12 +17,18 @@ public class Page extends MutableContainer implements Tickable {
     private Vector2i position;
     private TransformHandler transform;
 
+    private Vector2i mousePosition = Vector2i.of(0, 0);
+
     protected Page(final PageTemplate template, final MutableContainer container) {
-        super(template.getMargin(), template, Collections.emptyList());
+        super(template.getMargin(), template, container.getElements());
         this.template = template;
         this.container = container;
 
         this.position = this.template.getPosition();
+    }
+
+    public void setMousePosition(final Vector2i position) {
+        this.mousePosition = position;
     }
 
     @Override
@@ -42,6 +49,15 @@ public class Page extends MutableContainer implements Tickable {
         return this.template.getSize();
     }
 
+    /**
+     * @param position The position of the click event on the screen. Will only fire if within this Page's bounds.
+     */
+    @Override
+    public void click(final Vector2i position) {
+        final Vector2i relative = position.sub(this.position);
+        super.click(relative);
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -53,6 +69,23 @@ public class Page extends MutableContainer implements Tickable {
             }
         }
         this.container.tick();
+    }
+
+    @Override
+    public Vector2i getMousePosition(final MutableElement element) {
+        // A page is a wrapper for a container. The container has the same position.
+        // final Vector2i position = this.calculatePositions().get(element);
+        if (this.mousePosition == null) return null;
+        return this.mousePosition.sub(this.position);
+    }
+
+    @Override
+    public int[] getInteractMask() {
+        final int[] mask = new int[this.getSize().getX() * this.getSize().getY()];
+        for (int i = 0; i < mask.length; i++) {
+            mask[i] = 1;
+        }
+        return mask;
     }
 
     @Override

@@ -158,6 +158,9 @@ public class Vector2i {
 
     @Override
     public boolean equals(final Object object) {
+        if (object == null) {
+            return false;
+        }
         if (object instanceof Vector2i) {
             final Vector2i vector = (Vector2i) object;
             return this.x == vector.getX() && this.y == vector.getY();

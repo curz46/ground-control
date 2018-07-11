@@ -22,8 +22,9 @@ public class PageTemplate extends DefaultImmutableContainer {
                            final List<Function<ImmutableContainer, ImmutableElement>> elements,
                            final Vector2i size, final Spacing padding, final boolean inline, final boolean centering,
                            final Sprite backgroundSprite, final Vector2i position, final boolean scrollable,
-                           final Function<MutableElement, WrappingMutableElement> mutator) {
-        super(margin, tickConsumer, elements, size, padding, inline, centering, scrollable, mutator);
+                           final Function<MutableElement, WrappingMutableElement> mutator,
+                           final InteractOptions interactOptions) {
+        super(margin, tickConsumer, elements, size, padding, inline, centering, scrollable, mutator, interactOptions);
         this.backgroundSprite = backgroundSprite;
         this.position = position;
     }
@@ -37,7 +38,9 @@ public class PageTemplate extends DefaultImmutableContainer {
     @NotNull
     public Page asMutable() {
         final MutableContainer container = super.asMutable();
-        return new Page(this, container);
+        final Page page = new Page(this, container);
+        container.setParent(page);
+        return page;
     }
 
     @NotNull
@@ -101,7 +104,8 @@ public class PageTemplate extends DefaultImmutableContainer {
                 this.backgroundSprite,
                 this.position,
                 super.scrollable,
-                super.mutator
+                super.mutator,
+                super.interactOptions
             );
         }
 

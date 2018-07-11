@@ -2,6 +2,7 @@ package me.dylancurzon.nea.gfx.page.elements.container;
 
 import com.sun.istack.internal.NotNull;
 import javafx.util.Pair;
+import me.dylancurzon.nea.gfx.page.InteractOptions;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.elements.ImmutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
@@ -30,8 +31,9 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
                                      final Vector2i size, final Spacing padding,
                                      final boolean inline, final boolean centering,
                                      final boolean scrollable,
-                                     final Function<MutableElement, WrappingMutableElement> mutator) {
-        super(margin, tickConsumer, mutator);
+                                     final Function<MutableElement, WrappingMutableElement> mutator,
+                                     final InteractOptions interactOptions) {
+        super(margin, tickConsumer, mutator, interactOptions);
         this.elements = elements;
         this.size = size;
         this.inline = inline;
@@ -175,6 +177,16 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
     }
 
     @Override
+    public boolean isCentering() {
+        return this.centering;
+    }
+
+    @Override
+    public boolean isInline() {
+        return this.inline;
+    }
+
+    @Override
     @NotNull
     public boolean isScrollable() {
         return this.scrollable;
@@ -250,7 +262,8 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
                 this.inline,
                 this.centering,
                 this.scrollable,
-                super.mutator
+                super.mutator,
+                super.interactOptions
             );
         }
 

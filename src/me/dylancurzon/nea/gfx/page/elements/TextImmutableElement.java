@@ -3,6 +3,7 @@ package me.dylancurzon.nea.gfx.page.elements;
 import com.sun.istack.internal.NotNull;
 import java.util.function.Function;
 import jdk.nashorn.internal.ir.annotations.Immutable;
+import me.dylancurzon.nea.gfx.page.InteractOptions;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.TextMutableElement;
@@ -18,8 +19,9 @@ public class TextImmutableElement extends ImmutableElement {
 
     protected TextImmutableElement(final Spacing margin, final Consumer<MutableElement> tickConsumer,
                                    final TextSprite sprite,
-                                   final Function<MutableElement, WrappingMutableElement> mutator) {
-        super(margin, tickConsumer, mutator);
+                                   final Function<MutableElement, WrappingMutableElement> mutator,
+                                   final InteractOptions interactOptions) {
+        super(margin, tickConsumer, mutator, interactOptions);
         this.sprite = sprite;
     }
 
@@ -61,7 +63,9 @@ public class TextImmutableElement extends ImmutableElement {
                 super.margin,
                 super.tickConsumer,
                 this.sprite,
-                super.mutator);
+                super.mutator,
+                super.interactOptions
+            );
         }
 
     }

@@ -3,6 +3,7 @@ package me.dylancurzon.nea.gfx.page.elements;
 import com.sun.istack.internal.NotNull;
 import java.util.function.Function;
 import me.dylancurzon.nea.gfx.PixelContainer;
+import me.dylancurzon.nea.gfx.page.InteractOptions;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
@@ -21,8 +22,9 @@ public class GraphImmutableElement extends ImmutableElement {
 
     private GraphImmutableElement(final Spacing margin, final Consumer<MutableElement> tickConsumer,
                                   final Vector2i size, final Supplier<Double> valueSupplier,
-                                  final Function<MutableElement, WrappingMutableElement> mutator) {
-        super(margin, tickConsumer, mutator);
+                                  final Function<MutableElement, WrappingMutableElement> mutator,
+                                  final InteractOptions interactOptions) {
+        super(margin, tickConsumer, mutator, interactOptions);
         this.size = size;
         this.valueSupplier = valueSupplier;
     }
@@ -35,7 +37,7 @@ public class GraphImmutableElement extends ImmutableElement {
     public MutableElement asMutable() {
         final List<Double> values = new ArrayList<>();
         final int resolutionX = 1;
-        return super.doMutate(new MutableElement(super.margin) {
+        return super.doMutate(new MutableElement(super.margin, super.interactOptions) {
             @Override
             public Vector2i getSize() {
                 return GraphImmutableElement.this.size;
@@ -50,6 +52,15 @@ public class GraphImmutableElement extends ImmutableElement {
                     consumer.accept(this);
                 }
                 GraphImmutableElement.this.ticks++;
+            }
+
+            @Override
+            public int[] getInteractMask() {
+                final int[] mask = new int[this.getSize().getX() * this.getSize().getY()];
+                for (int i = 0; i < mask.length; i++) {
+                    mask[i] = 1;
+                }
+                return mask;
             }
 
             @Override
@@ -107,7 +118,8 @@ public class GraphImmutableElement extends ImmutableElement {
                 super.tickConsumer,
                 this.size,
                 this.valueFunction,
-                super.mutator
+                super.mutator,
+                super.interactOptions
             );
         }
 
