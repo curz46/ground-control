@@ -39,7 +39,7 @@ public class GraphImmutableElement extends ImmutableElement {
         final int resolutionX = 1;
         return super.doMutate(new MutableElement(super.margin, super.interactOptions) {
             @Override
-            public Vector2i getSize() {
+            public Vector2i calculateSize() {
                 return GraphImmutableElement.this.size;
             }
 

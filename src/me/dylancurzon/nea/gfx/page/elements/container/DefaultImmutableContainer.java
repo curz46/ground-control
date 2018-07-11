@@ -58,7 +58,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
             .collect(Collectors.toList());
         final MutableContainer container = new MutableContainer(super.margin, this, mutableElements) {
             @Override
-            public Vector2i getSize() {
+            public Vector2i calculateSize() {
                 Vector2i size = DefaultImmutableContainer.this.size;
                 if (size == null || size.getX() == -1 || size.getY() == -1) {
                     Vector2i calculatedSize = Vector2i.of(0, 0);
@@ -110,7 +110,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                     }
                 }
 
-                final Map<MutableElement, Vector2i> positions = super.calculatePositions();
+                final Map<MutableElement, Vector2i> positions = super.getPositions();
                 positions.forEach((mut, pos) -> {
                     final Vector2i elementSize = mut.getSize();
                     final PixelContainer elementContainer = new PixelContainer(
@@ -122,11 +122,12 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
 
                     if (mut.getInteractOptions().shouldHighlight()) {
                         final int[] mask = mut.getInteractMask();
+                        final Vector2i mousePos = mut.getMousePosition();
                         for (int dx = 0; dx < elementSize.getX(); dx++) {
                             for (int dy = 0; dy < elementSize.getY(); dy++) {
                                 if (mask[dx + dy * elementSize.getX()] != 0) {
                                     final Vector2i dpos = Vector2i.of(dx, dy);
-                                    if (dpos.equals(mut.getMousePosition())) {
+                                    if (dpos.equals(mousePos)) {
                                         this.applyHighlight(elementContainer.getPixels());
                                         break;
                                     }
@@ -137,7 +138,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
 
                     container.copyPixels(
                         pos.getX(),
-                        pos.getY() - ((int) this.scroll),
+                        pos.getY(),
                         elementSize.getX(),
                         elementContainer.getPixels()
                     );
@@ -213,7 +214,8 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
 
             @Override
             public int[] getInteractMask() {
-                final int[] mask = new int[this.getSize().getX() * this.getSize().getY()];
+                final Vector2i size = this.getSize();
+                final int[] mask = new int[size.getX() * size.getY()];
                 for (int i = 0; i < mask.length; i++) {
                     mask[i] = 1;
                 }

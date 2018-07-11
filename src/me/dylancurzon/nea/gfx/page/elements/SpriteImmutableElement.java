@@ -63,7 +63,7 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
         public MutableElement asMutable() {
             return super.doMutate(new MutableElement(super.margin, super.interactOptions) {
                 @Override
-                public Vector2i getSize() {
+                public Vector2i calculateSize() {
                     final Sprite sprite = StaticSpriteImmutableElement.this.sprite;
                     return Vector2i.of(
                         sprite.getWidth(),
@@ -144,7 +144,7 @@ public abstract class SpriteImmutableElement extends ImmutableElement {
                 }
 
                 @Override
-                public Vector2i getSize() {
+                public Vector2i calculateSize() {
                     return Vector2i.of(
                         container.getWidth(),
                         container.getHeight()

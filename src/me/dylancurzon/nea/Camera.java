@@ -87,7 +87,7 @@ private final BiFunction<String, PerlinNoise, Function<ImmutableContainer, Immut
                 .setSize(Vector2i.of(ctr.getPaddedSize().getX(), 50))
                 .setSupplier(() -> noise.generateOctaveNoiseValue(this.ticks * 10, 0))
                 .setInteractOptions(InteractOptions.builder()
-//                    .setHighlighting(true)
+                    .setHighlighting(true)
                     .builder())
                 .build())
             .add(1, TextImmutableElement.builder()

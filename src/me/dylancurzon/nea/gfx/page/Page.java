@@ -45,7 +45,7 @@ public class Page extends MutableContainer implements Tickable {
     }
 
     @Override
-    public Vector2i getSize() {
+    public Vector2i calculateSize() {
         return this.template.getSize();
     }
 

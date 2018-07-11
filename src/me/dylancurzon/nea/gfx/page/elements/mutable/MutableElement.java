@@ -5,6 +5,8 @@ import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.gfx.page.InteractOptions;
 import me.dylancurzon.nea.gfx.page.Spacing;
+import me.dylancurzon.nea.util.Benchmark;
+import me.dylancurzon.nea.util.Cached;
 import me.dylancurzon.nea.util.Vector2i;
 
 import java.util.function.Consumer;
@@ -17,6 +19,8 @@ public abstract class MutableElement implements Renderable {
     protected final InteractOptions interactOptions;
 
     protected MutableContainer parent;
+
+    private final Cached<Vector2i> cachedSize = new Cached<>();
 
     protected MutableElement(@NotNull final Spacing margin, final InteractOptions interactOptions) {
         this.margin = margin;
@@ -94,8 +98,17 @@ public abstract class MutableElement implements Renderable {
 
     public abstract int[] getInteractMask();
 
+    public Vector2i getSize() {
+        return this.cachedSize.get()
+            .orElseGet(() -> {
+                final Vector2i size = this.calculateSize();
+                this.cachedSize.set(size);
+                return size;
+            });
+    }
+
     @NotNull
-    public abstract Vector2i getSize();
+    public abstract Vector2i calculateSize();
 
     public abstract void render(@NotNull final PixelContainer container);
 

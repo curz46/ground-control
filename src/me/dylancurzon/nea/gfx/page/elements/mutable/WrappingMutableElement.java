@@ -35,6 +35,11 @@ public abstract class WrappingMutableElement extends MutableElement {
     }
 
     @Override
+    public Vector2i calculateSize() {
+        return this.element.calculateSize();
+    }
+
+    @Override
     public void render(final PixelContainer container) {
         this.element.render(container);
     }

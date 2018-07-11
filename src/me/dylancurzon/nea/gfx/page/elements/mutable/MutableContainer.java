@@ -1,18 +1,16 @@
 package me.dylancurzon.nea.gfx.page.elements.mutable;
 
 import com.sun.istack.internal.NotNull;
-import me.dylancurzon.nea.gfx.PixelContainer;
-import me.dylancurzon.nea.gfx.page.Spacing;
-import me.dylancurzon.nea.gfx.page.animation.Animation;
-import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
-import me.dylancurzon.nea.gfx.page.elements.container.DefaultImmutableContainer;
-import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
-import me.dylancurzon.nea.util.Vector2d;
-import me.dylancurzon.nea.util.Vector2i;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import me.dylancurzon.nea.gfx.page.Spacing;
+import me.dylancurzon.nea.gfx.page.animation.Animation;
+import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
+import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
+import me.dylancurzon.nea.util.Cached;
+import me.dylancurzon.nea.util.Vector2d;
+import me.dylancurzon.nea.util.Vector2i;
 
 public abstract class MutableContainer extends MutableElement {
 
@@ -21,6 +19,8 @@ public abstract class MutableContainer extends MutableElement {
     private final ImmutableContainer container;
 
     private final List<MutableElement> elements;
+    private final Cached<Map<MutableElement, Vector2i>> positions = new Cached<>();
+
     protected double scroll;
     protected double scrollVelocity;
 
@@ -38,11 +38,20 @@ public abstract class MutableContainer extends MutableElement {
         return this.elements;
     }
 
+    public Map<MutableElement, Vector2i> getPositions() {
+        return this.positions.get()
+            .orElseGet(() -> {
+                final Map<MutableElement, Vector2i> positions = this.calculatePositions();
+                this.positions.set(positions);
+                return positions;
+            });
+    }
+
     /**
      * @return A map of each MutableElement (in {@link this#elements} and its calculated position. It factors in
      * if the {@link this#container} is centering, inline, padded and includes each MutableElement's margin.
      */
-    public Map<MutableElement, Vector2i> calculatePositions() {
+    private Map<MutableElement, Vector2i> calculatePositions() {
         final Map<MutableElement, Vector2i> positions = new HashMap<>();
         if (this.elements.isEmpty()) return positions;
 
@@ -55,7 +64,7 @@ public abstract class MutableContainer extends MutableElement {
                     .div(2)
                     .sub(elementSize.div(2))
                     .floor().toInt();
-            positions.put(mut, centered);
+            positions.put(mut, centered.sub(Vector2i.of(0, (int) this.scroll)));
         } else {
             final Spacing padding = this.container.getPadding();
             Vector2i pos = Vector2i.of(
@@ -68,7 +77,7 @@ public abstract class MutableContainer extends MutableElement {
                 );
                 final Vector2i elementSize = mut.getSize();
 
-                positions.put(mut, pos);
+                positions.put(mut, pos.sub(Vector2i.of(0, (int) this.scroll)));
 
                 if (this.container.isInline()) {
                     pos = pos.add(Vector2i.of(mut.getMargin().getRight() + elementSize.getX(), 0));
@@ -85,7 +94,7 @@ public abstract class MutableContainer extends MutableElement {
         super.click(position, this.getInteractMask());
         // for each MutableElement of this container, find the position relative to its position in this
         // container.
-        final Map<MutableElement, Vector2i> elementPositionMap = this.calculatePositions();
+        final Map<MutableElement, Vector2i> elementPositionMap = this.getPositions();
         elementPositionMap.forEach((mut, elementPos) -> {
             final Vector2i relative = position.sub(elementPos);
             final Vector2i size = mut.getSize();
@@ -100,7 +109,7 @@ public abstract class MutableContainer extends MutableElement {
 
     @Override
     public Vector2i getMousePosition(final MutableElement element) {
-        final Vector2i position = this.calculatePositions().get(element);
+        final Vector2i position = this.getPositions().get(element);
         if (position == null || this.parent == null) return null;
         final Vector2i mousePosition = this.parent.getMousePosition(this);
         if (mousePosition == null) return null;
@@ -110,9 +119,13 @@ public abstract class MutableContainer extends MutableElement {
     @Override
     public void tick() {
         if (!this.container.isScrollable()) return;
+        final double originalScroll = this.scroll;
         this.scroll += this.scrollVelocity;
         this.scrollVelocity *= 0.8;
         this.checkBounds();
+        if (originalScroll != this.scroll) {
+            this.positions.clear();
+        }
     }
 
     public void scroll(final double amount) {
