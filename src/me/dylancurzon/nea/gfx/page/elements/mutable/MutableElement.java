@@ -1,15 +1,13 @@
 package me.dylancurzon.nea.gfx.page.elements.mutable;
 
 import com.sun.istack.internal.NotNull;
+import java.util.function.Consumer;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.gfx.page.InteractOptions;
 import me.dylancurzon.nea.gfx.page.Spacing;
-import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.Cached;
 import me.dylancurzon.nea.util.Vector2i;
-
-import java.util.function.Consumer;
 
 public abstract class MutableElement implements Renderable {
 

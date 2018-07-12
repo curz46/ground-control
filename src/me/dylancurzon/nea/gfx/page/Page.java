@@ -55,7 +55,7 @@ public class Page extends MutableContainer implements Tickable {
     @Override
     public void click(final Vector2i position) {
         final Vector2i relative = position.sub(this.position);
-        super.click(relative);
+        this.container.click(relative);
     }
 
     @Override
