@@ -121,8 +121,8 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                     mut.render(elementContainer);
 
                     if (mut.getInteractOptions().shouldHighlight()) {
-                        final int[] mask = mut.getInteractMask();
                         final Vector2i mousePos = mut.getMousePosition();
+                        final int[] mask = mut.getInteractMask();
                         for (int dx = 0; dx < elementSize.getX(); dx++) {
                             for (int dy = 0; dy < elementSize.getY(); dy++) {
                                 if (mask[dx + dy * elementSize.getX()] != 0) {

@@ -51,7 +51,7 @@ public class InteractOptions {
         }
 
         @NotNull
-        public InteractOptions builder() {
+        public InteractOptions build() {
             return new InteractOptions(this.highlighting, this.clickConsumer);
         }
 

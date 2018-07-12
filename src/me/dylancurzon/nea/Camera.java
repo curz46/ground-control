@@ -1,23 +1,28 @@
 package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
-
-import java.awt.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
-import me.dylancurzon.nea.gfx.page.*;
+import me.dylancurzon.nea.gfx.page.Buttons;
+import me.dylancurzon.nea.gfx.page.GUITypes;
+import me.dylancurzon.nea.gfx.page.InteractOptions;
+import me.dylancurzon.nea.gfx.page.Page;
+import me.dylancurzon.nea.gfx.page.PageTemplate;
+import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
 import me.dylancurzon.nea.gfx.page.animation.SineEaseOutAnimation;
-import me.dylancurzon.nea.gfx.page.elements.*;
+import me.dylancurzon.nea.gfx.page.elements.GraphImmutableElement;
+import me.dylancurzon.nea.gfx.page.elements.ImmutableElement;
+import me.dylancurzon.nea.gfx.page.elements.SpriteImmutableElement;
+import me.dylancurzon.nea.gfx.page.elements.TextImmutableElement;
 import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.container.LayoutImmutableContainer;
-import me.dylancurzon.nea.gfx.page.elements.TextImmutableElement;
+import me.dylancurzon.nea.gfx.page.elements.mutable.GraphMutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.TextMutableElement;
-import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
-import me.dylancurzon.nea.gfx.sprite.Sprite;
-import me.dylancurzon.nea.gfx.sprite.SpriteSheet;
 import me.dylancurzon.nea.gfx.text.TextTypes;
 import me.dylancurzon.nea.util.Benchmark;
 import me.dylancurzon.nea.util.PerlinNoise;
@@ -28,9 +33,6 @@ import me.dylancurzon.nea.world.entity.ComputerCapsule;
 import me.dylancurzon.nea.world.entity.Worker;
 import me.dylancurzon.nea.world.tile.Tile;
 import me.dylancurzon.nea.world.tile.TileTypes;
-
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * This {@link Camera} class represents the view of the world that is drawn by the game's window.
@@ -59,51 +61,61 @@ public class Camera implements Renderable {
     private final Worker worker;
 
     private int ticks = 0;
-//    private final PageTemplate TEMPLATE = PageTemplate.builder()
+//    private final PageTemplate TEMPLATE = PageTemplate.build()
 //        .setBackground(GUITypes.LARGE)
 //        .setPosition(Vector2i.of(240, 15))
 //        .setCentering(true)
-//        .add(SpriteImmutableElement.builder(Buttons.CHECKBOX_CHECKED)
-//            .setInteractOptions(InteractOptions.builder()
+//        .add(SpriteImmutableElement.build(Buttons.CHECKBOX_CHECKED)
+//            .setInteractOptions(InteractOptions.build()
 //                .setHighlighting(true)
 //                .click(mut -> System.out.println("Check, please!"))
-//                .builder())
+//                .build())
 //            .build())
 //        .build();
 //    private final Page page = this.TEMPLATE.asMutable();
-private final BiFunction<String, PerlinNoise, Function<ImmutableContainer, ImmutableElement>> CONTAINER =
-    (name, noise) -> page -> ImmutableContainer.builder()
-        .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
-        .setMargin(Spacing.of(0, 10, 0, 0))
-        .add(TextImmutableElement.builder()
-            .setText(TextTypes.TINY.getText(name, 1))
-            .setMargin(Spacing.of(0, 0, 0, 5))
-            .build())
-        .add(rt -> LayoutImmutableContainer.builder()
-            .setSize(Vector2i.of(rt.getPaddedSize().getX(), 50))
-            .setInline(true)
-            .setCentering(true)
-            .add(3, ctr -> GraphImmutableElement.builder()
-                .setSize(Vector2i.of(ctr.getPaddedSize().getX(), 50))
-                .setSupplier(() -> noise.generateOctaveNoiseValue(this.ticks * 10, 0))
-                .setInteractOptions(InteractOptions.builder()
-                    .setHighlighting(true)
-                    .builder())
+    private int resolution = 1;
+    private final BiFunction<String, PerlinNoise, Function<ImmutableContainer, ImmutableElement>> CONTAINER =
+        (name, noise) -> page -> ImmutableContainer.builder()
+            .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
+            .setMargin(Spacing.of(0, 10, 0, 0))
+            .add(TextImmutableElement.builder()
+                .setText(TextTypes.TINY.getText(name, 1))
+                .setMargin(Spacing.of(0, 0, 0, 5))
                 .build())
-            .add(1, TextImmutableElement.builder()
-                .setText(TextTypes.SMALL.getText("0.00", 1))
-                .tick(element -> {
-                    final double value = noise.generateOctaveNoiseValue(this.ticks * 10, 0);
-                    final String text = String.format("%3.2f", value);
-                    ((TextMutableElement) element).setSprite(TextTypes.SMALL.getText(text, 1));
-                })
-                .setInteractOptions(InteractOptions.builder()
-//                    .setHighlighting(true)
-                    .click(mut -> System.out.println("Clicked noise value: " + name))
-                    .builder())
+            .add(rt -> LayoutImmutableContainer.builder()
+                .setSize(Vector2i.of(rt.getPaddedSize().getX(), 50))
+                .setInline(true)
+                .setCentering(true)
+                .add(1, ctr -> GraphImmutableElement.builder()
+                    .setSize(Vector2i.of(ctr.getPaddedSize().getX(), 50))
+                    .setSupplier(() -> noise.generateOctaveNoiseValue(this.ticks * 10, 0))
+                    .setInteractOptions(InteractOptions.builder()
+                        .setHighlighting(true)
+                        .click(mut ->
+                            ((GraphMutableElement) mut).setResolution((this.resolution++ % 10) + 1))
+                        .build())
+                    .build())
+                .add(1, ctr -> LayoutImmutableContainer.builder()
+                    .setSize(ctr.getSize())
+                    .setInline(true)
+                    .setCentering(true)
+                    .add(3, TextImmutableElement.builder()
+                        .setText(TextTypes.SMALL.getText("0.00", 1))
+                        .tick(element -> {
+                            final double value = noise.generateOctaveNoiseValue(this.ticks * 10, 0);
+                            final String text = String.format("%3.2f", value);
+                            ((TextMutableElement) element).setSprite(TextTypes.SMALL.getText(text, 1));
+                        })
+                        .build())
+                    .add(2, SpriteImmutableElement.builder(Buttons.CIRCLE)
+                        .setInteractOptions(InteractOptions.builder()
+                            .setHighlighting(true)
+                            .click(mut -> System.out.println("Hello!"))
+                            .build())
+                        .build())
+                    .build())
                 .build())
-            .build())
-        .build();
+            .build();
     private final PageTemplate TEMPLATE = PageTemplate.builder()
         .setBackground(GUITypes.LARGE)
         .setPosition(Vector2i.of(400, 15))

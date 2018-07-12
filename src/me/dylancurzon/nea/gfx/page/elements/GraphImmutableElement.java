@@ -5,8 +5,10 @@ import java.util.function.Function;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.InteractOptions;
 import me.dylancurzon.nea.gfx.page.Spacing;
+import me.dylancurzon.nea.gfx.page.elements.mutable.GraphMutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
+import me.dylancurzon.nea.util.Cached;
 import me.dylancurzon.nea.util.Vector2i;
 
 import java.util.ArrayList;
@@ -33,55 +35,19 @@ public class GraphImmutableElement extends ImmutableElement {
         return new Builder();
     }
 
+    public Supplier<Double> getValueSupplier() {
+        return this.valueSupplier;
+    }
+
+    public Vector2i getSize() {
+        return this.size;
+    }
+
     @Override
     public MutableElement asMutable() {
         final List<Double> values = new ArrayList<>();
         final int resolutionX = 1;
-        return super.doMutate(new MutableElement(super.margin, super.interactOptions) {
-            @Override
-            public Vector2i calculateSize() {
-                return GraphImmutableElement.this.size;
-            }
-
-            @Override
-            public void tick() {
-                final double value = GraphImmutableElement.this.valueSupplier.get();
-                values.add(value);
-                final Consumer<MutableElement> consumer = GraphImmutableElement.super.getTickConsumer();
-                if (consumer != null) {
-                    consumer.accept(this);
-                }
-                GraphImmutableElement.this.ticks++;
-            }
-
-            @Override
-            public int[] getInteractMask() {
-                final int[] mask = new int[this.getSize().getX() * this.getSize().getY()];
-                for (int i = 0; i < mask.length; i++) {
-                    mask[i] = 1;
-                }
-                return mask;
-            }
-
-            @Override
-            public void render(final PixelContainer container) {
-                final int ticks = GraphImmutableElement.this.ticks;
-                for (int dt = 0; dt < container.getWidth(); dt++) {
-                    final int index = (int) Math.floor(values.size() - (dt * resolutionX)) - (ticks % resolutionX);
-                    for (int y = 0; y < container.getHeight(); y++) {
-                        if ((container.getWidth() - 1 - dt) == 0 || y == (container.getHeight() - 1)) {
-                            container.setPixel(container.getWidth() - dt, y, 0xFFBBBBBB);
-                        } else if (index % 5 == 0 && y % 5 == 0) {
-                            container.setPixel(container.getWidth() - dt, y, 0xFFAAAAAA);
-                        }
-                    }
-                    if (index < 0 || index >= values.size()) continue;
-                    final double value = values.get(index);
-                    final int y = container.getHeight() - (int) Math.floor(value * container.getHeight());
-                    container.setPixel(container.getWidth() - dt, y, 0xFFFFFFFF);
-                }
-            }
-        });
+        return super.doMutate(new GraphMutableElement(super.margin, super.interactOptions, this));
     }
 
     public static class Builder extends ImmutableElement.Builder<GraphImmutableElement, Builder> {
