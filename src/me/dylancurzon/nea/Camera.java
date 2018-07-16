@@ -1,36 +1,32 @@
 package me.dylancurzon.nea;
 
 import com.sun.istack.internal.NotNull;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import javafx.geometry.Pos;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
-import me.dylancurzon.nea.gfx.page.Buttons;
-import me.dylancurzon.nea.gfx.page.GUITypes;
+import me.dylancurzon.nea.gfx.page.Elements;
 import me.dylancurzon.nea.gfx.page.InteractOptions;
 import me.dylancurzon.nea.gfx.page.Page;
 import me.dylancurzon.nea.gfx.page.PageTemplate;
-import me.dylancurzon.nea.gfx.page.Spacing;
-import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
-import me.dylancurzon.nea.gfx.page.animation.SineEaseOutAnimation;
-import me.dylancurzon.nea.gfx.page.elements.GraphImmutableElement;
 import me.dylancurzon.nea.gfx.page.elements.ImmutableElement;
 import me.dylancurzon.nea.gfx.page.elements.SpriteImmutableElement;
 import me.dylancurzon.nea.gfx.page.elements.TextImmutableElement;
 import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.container.LayoutImmutableContainer;
-import me.dylancurzon.nea.gfx.page.elements.mutable.GraphMutableElement;
+import me.dylancurzon.nea.gfx.page.elements.container.Positioning;
+import me.dylancurzon.nea.gfx.page.elements.mutable.Key;
+import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.TextMutableElement;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
+import me.dylancurzon.nea.gfx.text.TextType;
 import me.dylancurzon.nea.gfx.text.TextTypes;
 import me.dylancurzon.nea.util.Benchmark;
-import me.dylancurzon.nea.util.PerlinNoise;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 import me.dylancurzon.nea.world.World;
-import me.dylancurzon.nea.world.entity.ComputerCapsule;
-import me.dylancurzon.nea.world.entity.Worker;
 import me.dylancurzon.nea.world.tile.Tile;
 import me.dylancurzon.nea.world.tile.TileTypes;
 
@@ -40,7 +36,7 @@ import me.dylancurzon.nea.world.tile.TileTypes;
  * restrictions on the possible window sizes - a size where either dimension is not divisible by
  * two would cause rendering inconsistent with the actual window size, given that in the current
  * implementation of the game equates one pixel in the window with one pixel, and positional unit,
- * in the game's world. Note that a Camera is attached to a {@link World}, and this insatnce should
+ * in the game's world. Note that a Camera is attached to a {@link World}, and this instance should
  * be destroyed and re-created when unloading the game world or loading another one.
  */
 public class Camera implements Renderable {
@@ -57,139 +53,60 @@ public class Camera implements Renderable {
     @NotNull
     private Vector2d boundA = Vector2d.of(0, 0);
 
-    private final ComputerCapsule computer;
-    private final Worker worker;
-
-    private int ticks = 0;
-//    private final PageTemplate TEMPLATE = PageTemplate.build()
-//        .setBackground(GUITypes.LARGE)
-//        .setPosition(Vector2i.of(240, 15))
-//        .setCentering(true)
-//        .add(SpriteImmutableElement.build(Buttons.CHECKBOX_CHECKED)
-//            .setInteractOptions(InteractOptions.build()
-//                .setHighlighting(true)
-//                .click(mut -> System.out.println("Check, please!"))
-//                .build())
-//            .build())
-//        .build();
-//    private final Page page = this.TEMPLATE.asMutable();
-    private int resolution = 1;
-    private final BiFunction<String, PerlinNoise, Function<ImmutableContainer, ImmutableElement>> CONTAINER =
-        (name, noise) -> page -> ImmutableContainer.builder()
-            .setSize(Vector2i.of(page.getPaddedSize().getX(), -1))
-            .setMargin(Spacing.of(0, 10, 0, 0))
-            .add(TextImmutableElement.builder()
-                .setText(TextTypes.TINY.getText(name, 1))
-                .setMargin(Spacing.of(0, 0, 0, 5))
-                .build())
-            .add(rt -> LayoutImmutableContainer.builder()
-                .setSize(Vector2i.of(rt.getPaddedSize().getX(), 50))
-                .setInline(true)
+    private final BiFunction<String, Consumer<MutableElement>, Function<ImmutableContainer, ImmutableElement>> BUTTON =
+        (string, consumer) -> ctr -> ImmutableContainer.builder()
+            .setSize(ctr.getSize())
+            .setCentering(true)
+            .add(ImmutableContainer.builder()
+                .setSize(Vector2i.of(
+                    Elements.LARGE_BUTTON.getSprite().getWidth(),
+                    Elements.LARGE_BUTTON.getSprite().getHeight()
+                ))
+                .setPositioning(Positioning.OVERLAY)
                 .setCentering(true)
-                .add(1, ctr -> GraphImmutableElement.builder()
-                    .setSize(Vector2i.of(ctr.getPaddedSize().getX(), 50))
-                    .setSupplier(() -> noise.generateOctaveNoiseValue(this.ticks * 10, 0))
-                    .setInteractOptions(InteractOptions.builder()
-                        .setHighlighting(true)
-                        .click(mut ->
-                            ((GraphMutableElement) mut).setResolution((this.resolution++ % 10) + 1))
-                        .build())
+                .setInteractOptions(InteractOptions.builder()
+                    .setHighlighting(true)
+                    .click(consumer)
                     .build())
-                .add(1, ctr -> LayoutImmutableContainer.builder()
-                    .setSize(ctr.getSize())
-                    .setInline(true)
-                    .setCentering(true)
-                    .add(3, TextImmutableElement.builder()
-                        .setText(TextTypes.SMALL.getText("0.00", 1))
-                        .tick(element -> {
-                            final double value = noise.generateOctaveNoiseValue(this.ticks * 10, 0);
-                            final String text = String.format("%3.2f", value);
-                            ((TextMutableElement) element).setSprite(TextTypes.SMALL.getText(text, 1));
-                        })
-                        .build())
-                    .add(2, SpriteImmutableElement.builder(Buttons.CIRCLE)
-                        .setInteractOptions(InteractOptions.builder()
-                            .setHighlighting(true)
-                            .click(mut -> System.out.println("Hello!"))
-                            .build())
-                        .build())
+                .add(Elements.LARGE_BUTTON)
+                .add(TextImmutableElement.builder()
+                    .setText(TextTypes.SMALL.getText(string, 2))
                     .build())
                 .build())
             .build();
     private final PageTemplate TEMPLATE = PageTemplate.builder()
-        .setBackground(GUITypes.LARGE)
-        .setPosition(Vector2i.of(400, 15))
-        .setPadding(Spacing.of(10))
-        .setScrollable(true)
+        .setPosition(Vector2i.of(1, 8))
+        .setSize(Vector2i.of(398, 231))
         .add(page -> ImmutableContainer.builder()
-            .setSize(Vector2i.of(page.getPaddedSize().getX(), 10))
+            .setSize(page.getSize())
             .setCentering(true)
-            .add(TextImmutableElement.builder()
-                .setText(TextTypes.SMALL.getText("COMPUTER", 2))
+            .add(ctr -> LayoutImmutableContainer.builder()
+                .setSize(Vector2i.of(ctr.getSize().getX() / 3, ctr.getSize().getY() - 50))
+                .setCentering(true)
+                .add(1, this.BUTTON.apply("play", mut -> System.out.println("playegd")))
+                .add(1, this.BUTTON.apply("options", mut -> System.out.println("options")))
+                .add(1, this.BUTTON.apply("quit", mut -> System.out.println("just quit")))
                 .build())
             .build())
-        .add(this.CONTAINER.apply("Wireless Connectivity", this.createSeededNoise()))
-        .add(this.CONTAINER.apply("CPU Usage", this.createSeededNoise()))
-        .add(this.CONTAINER.apply("Network Usage", this.createSeededNoise()))
-        .add(this.CONTAINER.apply("Atmospheric Pressure", this.createSeededNoise()))
-        .add(this.CONTAINER.apply("Wind Speed", this.createSeededNoise()))
         .build();
-
-    private PerlinNoise createSeededNoise() {
-        return new PerlinNoise().seed(ThreadLocalRandom.current().nextLong(100000));
-    }
-
     private final Page page = this.TEMPLATE.asMutable();
-
-
-    private boolean toggle;
 
     public Camera(final Vector2i size, final World world) {
         this.size = size;
         this.world = world;
-        this.computer = new ComputerCapsule(world, Vector2i.of(0, 0));
-        this.worker = new Worker(world, Vector2i.of(3, 3));
-        this.page.transform(
-            Vector2i.of(240, 15),
-            new QuarticEaseInAnimation(0, 1, 30)
-        );
+    }
+
+    // temp
+    public void tick() {
+        ((AnimatedSprite.TickContainer) TileTypes.WATER.getSprite()).tick();
     }
 
     public void setMousePosition(final Vector2i position) {
         this.page.setMousePosition(position);
     }
 
-    // even more temp
     public void click(final Vector2i position) {
         this.page.click(position);
-    }
-
-    // TEMP
-    public void scroll(final double amount) {
-        this.page.scroll(amount);
-    }
-
-    // temp
-    public void tick() {
-        this.ticks++;
-        this.worker.tick();
-        ((AnimatedSprite.TickContainer) TileTypes.WATER.getSprite()).tick();
-        this.page.tick();
-    }
-
-    public void toggleTransform() {
-        this.toggle = !this.toggle;
-        if (this.toggle) {
-            this.page.transform(
-                Vector2i.of(240, 15),
-                new QuarticEaseInAnimation(0, 1, 30)
-            );
-        } else {
-            this.page.transform(
-                Vector2i.of(400, 15),
-                new SineEaseOutAnimation(0, 1, 30)
-            );
-        }
     }
 
     @Override
@@ -211,50 +128,7 @@ public class Camera implements Renderable {
             }
         }
 
-        // render entities
-        final Vector2i pos1 = this.computer.getPosition();
-        this.computer.render(
-            window,
-            pos1.getX() - (int) (this.boundA.getX() * Tile.TILE_WIDTH),
-             window.getHeight() - 1 - (pos1.getY() - (int) (this.boundA.getY() * Tile.TILE_WIDTH))
-        );
-        final Vector2i pos2 = this.worker.getPosition();
-        this.worker.render(
-            window,
-            (int) ((pos2.getX() - this.boundA.getX()) * Tile.TILE_WIDTH),
-            window.getHeight() - 1 - ((int) ((pos2.getY() - this.boundA.getY()) * Tile.TILE_WIDTH))
-        );
-
         this.page.render(window);
-
-//        TextTypes.TINY
-//            .getText("look emma its tiny and small", 2)
-//            .render(
-//                window,
-//                pos1.getX() - (int) (this.boundA.getX() * Tile.TILE_WIDTH),
-//                window.getHeight() - 1 - (pos1.getY() - (int) (this.boundA.getY() * Tile.TILE_WIDTH))
-//            );
-//
-//        GUITypes.LARGE.render(window, 240, 15);
-
-
-//        this.activeGUI.render(window, 0, 0);
-
-        // render GUI
-//        final int minX = pos1.getX() * Tile.TILE_WIDTH - 3;
-//        final int minY = pos1.getY() * Tile.TILE_WIDTH - 3;
-//        final int maxX = (minX + 3) + (2 * Tile.TILE_WIDTH) + 3;
-//        final int maxY = (minY + 3) + (2 * Tile.TILE_WIDTH) + 3;
-//        for (int x = minX; x <= maxX; x++) {
-//            for (int y = minY; y <= maxY; y++) {
-//                if (x != minX && x != maxX && y != minY && y != maxY) continue;
-//                window.setPixel(
-//                    x - (int) (this.boundA.getX() * Tile.TILE_WIDTH),
-//                    window.getHeight() - 1 - (y - (int) (this.boundA.getY() * Tile.TILE_WIDTH)),
-//                    0xDDAAAA
-//                );
-//            }
-//        }
     }
 
     /**

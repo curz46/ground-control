@@ -1,6 +1,15 @@
 package me.dylancurzon.nea.gfx.page.elements.container;
 
+import static me.dylancurzon.nea.gfx.page.elements.container.Positioning.INLINE;
+import static me.dylancurzon.nea.gfx.page.elements.container.Positioning.OVERLAY;
+
 import com.sun.istack.internal.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.page.InteractOptions;
@@ -11,13 +20,6 @@ import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
 import me.dylancurzon.nea.util.Vector2i;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 @Immutable
 public class DefaultImmutableContainer extends ImmutableElement implements ImmutableContainer {
 
@@ -26,14 +28,15 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
     protected final List<Function<ImmutableContainer, ImmutableElement>> elements;
     protected final Vector2i size;
     protected final Spacing padding;
-    protected final boolean inline;
+    protected final Positioning positioning;
     protected final boolean centering;
     private final boolean scrollable;
 
     protected DefaultImmutableContainer(final Spacing margin, final Consumer<MutableElement> tickConsumer,
                                         final List<Function<ImmutableContainer, ImmutableElement>> elements,
-                                        final Vector2i size, final Spacing padding, final boolean inline,
-                                        final boolean centering, final boolean scrollable,
+                                        final Vector2i size, final Spacing padding,
+                                        final Positioning positioning, final boolean centering,
+                                        final boolean scrollable,
                                         final Function<MutableElement, WrappingMutableElement> mutator,
                                         final InteractOptions interactOptions) {
         super(margin, tickConsumer, mutator, interactOptions);
@@ -44,7 +47,11 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
         } else {
             this.padding = padding;
         }
-        this.inline = inline;
+        if (positioning == null) {
+            this.positioning = Positioning.DEFAULT;
+        } else {
+            this.positioning = positioning;
+        }
         this.centering = centering;
         this.scrollable = scrollable;
     }
@@ -64,13 +71,17 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                     Vector2i calculatedSize = Vector2i.of(0, 0);
                     for (final MutableElement mut : mutableElements) {
                         final Vector2i elementSize = mut.getMarginedSize();
-                        calculatedSize = calculatedSize.add(DefaultImmutableContainer.this.inline
-                            ? Vector2i.of(elementSize.getX(), 0)
-                            : Vector2i.of(0, elementSize.getY()));
-                        if (!DefaultImmutableContainer.this.inline && calculatedSize.getX() < elementSize.getX()) {
+                        calculatedSize = calculatedSize.add(
+                            DefaultImmutableContainer.this.positioning == INLINE
+                                ? Vector2i.of(elementSize.getX(), 0)
+                                : Vector2i.of(0, elementSize.getY())
+                        );
+                        if (DefaultImmutableContainer.this.positioning != INLINE
+                            && calculatedSize.getX() < elementSize.getX()) {
                             calculatedSize = calculatedSize.setX(elementSize.getX());
                         }
-                        if (DefaultImmutableContainer.this.inline && calculatedSize.getY() < elementSize.getY()) {
+                        if (DefaultImmutableContainer.this.positioning == INLINE
+                            && calculatedSize.getY() < elementSize.getY()) {
                             calculatedSize = calculatedSize.setY(elementSize.getY());
                         }
                     }
@@ -100,16 +111,6 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
 
             @Override
             public void render(final PixelContainer container) {
-                if (DefaultImmutableContainer.DEBUG) {
-                    for (int x = 0; x < container.getWidth(); x++) {
-                        for (int y = 0; y < container.getHeight(); y++) {
-                            if (x == 0 || x == (container.getWidth() - 1) || y == 0 || y == (container.getHeight() - 1)) {
-                                container.setPixel(x, y, 0xFFFF69B4);
-                            }
-                        }
-                    }
-                }
-
                 final Map<MutableElement, Vector2i> positions = super.getPositions();
                 positions.forEach((mut, pos) -> {
                     final Vector2i elementSize = mut.getSize();
@@ -143,6 +144,16 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                         elementContainer.getPixels()
                     );
                 });
+
+                if (DefaultImmutableContainer.DEBUG) {
+                    for (int x = 0; x < container.getWidth(); x++) {
+                        for (int y = 0; y < container.getHeight(); y++) {
+                            if (x == 0 || x == (container.getWidth() - 1) || y == 0 || y == (container.getHeight() - 1)) {
+                                container.setPixel(x, y, 0xFFFF69B4);
+                            }
+                        }
+                    }
+                }
 
 //                if (DefaultImmutableContainer.this.centering) {
 //                    // standard draw logic
@@ -280,12 +291,13 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
         return this.padding;
     }
 
-    public boolean isInline() {
-        return this.inline;
-    }
-
     public boolean isCentering() {
         return this.centering;
+    }
+
+    @Override
+    public Positioning getPositioning() {
+        return this.positioning;
     }
 
     public static class ContainerBuilder extends Builder<ContainerBuilder> {
@@ -302,7 +314,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
         protected final List<Function<ImmutableContainer, ImmutableElement>> elements = new ArrayList<>();
         protected Vector2i size;
         protected Spacing padding;
-        protected boolean inline;
+        protected Positioning positioning;
         protected boolean centering;
         protected boolean scrollable;
 
@@ -345,8 +357,8 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
         }
 
         @NotNull
-        public T setInline(final boolean inline) {
-            this.inline = inline;
+        public T setPositioning(final Positioning positioning) {
+            this.positioning = positioning;
             return this.self();
         }
 
@@ -365,7 +377,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
         @Override
         @NotNull
         public DefaultImmutableContainer build() {
-            if (this.centering && this.elements.size() > 1) {
+            if (this.centering && this.elements.size() > 1 && this.positioning != OVERLAY) {
                 throw new RuntimeException(
                     "A centering ImmutableContainer may only contain a single ImmutableElement!"
                 );
@@ -379,7 +391,7 @@ public class DefaultImmutableContainer extends ImmutableElement implements Immut
                 this.elements,
                 this.size,
                 this.padding,
-                this.inline,
+                this.positioning,
                 this.centering,
                 this.scrollable,
                 super.mutator,

@@ -7,6 +7,7 @@ import java.util.function.Function;
 import me.dylancurzon.nea.gfx.page.elements.container.DefaultImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.ImmutableElement;
+import me.dylancurzon.nea.gfx.page.elements.container.Positioning;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.gfx.page.elements.mutable.WrappingMutableElement;
@@ -20,11 +21,11 @@ public class PageTemplate extends DefaultImmutableContainer {
 
     protected PageTemplate(final Spacing margin, final Consumer<MutableElement> tickConsumer,
                            final List<Function<ImmutableContainer, ImmutableElement>> elements,
-                           final Vector2i size, final Spacing padding, final boolean inline, final boolean centering,
+                           final Vector2i size, final Spacing padding, final Positioning positioning, final boolean centering,
                            final Sprite backgroundSprite, final Vector2i position, final boolean scrollable,
                            final Function<MutableElement, WrappingMutableElement> mutator,
                            final InteractOptions interactOptions) {
-        super(margin, tickConsumer, elements, size, padding, inline, centering, scrollable, mutator, interactOptions);
+        super(margin, tickConsumer, elements, size, padding, positioning, centering, scrollable, mutator, interactOptions);
         this.backgroundSprite = backgroundSprite;
         this.position = position;
     }
@@ -86,8 +87,8 @@ public class PageTemplate extends DefaultImmutableContainer {
             if (super.elements.size() == 0) {
                 throw new RuntimeException("Empty PageTemplate is not permitted!");
             }
-            if (this.backgroundSprite == null || this.position == null) {
-                throw new RuntimeException("BackgroundSprite and Position are required attributes!");
+            if (this.position == null) {
+                throw new RuntimeException("Position is a required attributea!");
             }
 
             return new PageTemplate(
@@ -95,11 +96,11 @@ public class PageTemplate extends DefaultImmutableContainer {
                 super.tickConsumer,
                 super.elements,
                 Vector2i.of(
-                    this.backgroundSprite.getWidth(),
-                    this.backgroundSprite.getHeight()
+                    super.size == null ? this.backgroundSprite.getWidth() : super.size.getX(),
+                    super.size == null ? this.backgroundSprite.getHeight() : super.size.getY()
                 ),
                 super.padding,
-                super.inline,
+                super.positioning,
                 super.centering,
                 this.backgroundSprite,
                 this.position,

@@ -1,13 +1,19 @@
 package me.dylancurzon.nea.gfx.page.elements.mutable;
 
+import static me.dylancurzon.nea.gfx.page.elements.container.Positioning.DEFAULT;
+import static me.dylancurzon.nea.gfx.page.elements.container.Positioning.INLINE;
+import static me.dylancurzon.nea.gfx.page.elements.container.Positioning.OVERLAY;
+
 import com.sun.istack.internal.NotNull;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import me.dylancurzon.nea.gfx.page.Spacing;
 import me.dylancurzon.nea.gfx.page.animation.Animation;
 import me.dylancurzon.nea.gfx.page.animation.QuarticEaseInAnimation;
 import me.dylancurzon.nea.gfx.page.elements.container.ImmutableContainer;
+import me.dylancurzon.nea.gfx.page.elements.container.Positioning;
 import me.dylancurzon.nea.util.Cached;
 import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
@@ -52,19 +58,20 @@ public abstract class MutableContainer extends MutableElement {
      * if the {@link this#container} is centering, inline, padded and includes each MutableElement's margin.
      */
     private Map<MutableElement, Vector2i> calculatePositions() {
-        final Map<MutableElement, Vector2i> positions = new HashMap<>();
+        final Map<MutableElement, Vector2i> positions = new LinkedHashMap<>();
         if (this.elements.isEmpty()) return positions;
 
         if (this.container.isCentering()) {
-            final MutableElement mut = this.elements.get(0);
-            final Vector2i elementSize = mut.getSize();
+            for (final MutableElement mut : this.elements) {
+                final Vector2i elementSize = mut.getSize();
 
-            // find centered position based on this container's size
-            final Vector2i centered = this.container.getSize()
+                // find centered position based on this container's size
+                final Vector2i centered = this.container.getSize()
                     .div(2)
                     .sub(elementSize.div(2))
                     .floor().toInt();
-            positions.put(mut, centered.sub(Vector2i.of(0, (int) this.scroll)));
+                positions.put(mut, centered.sub(Vector2i.of(0, (int) this.scroll)));
+            }
         } else {
             final Spacing padding = this.container.getPadding();
             Vector2i pos = Vector2i.of(
@@ -72,16 +79,22 @@ public abstract class MutableContainer extends MutableElement {
                     padding.getTop()
             );
             for (final MutableElement mut : this.elements) {
-                pos = pos.add(
+                final Vector2i delta =
+                    Vector2i.of(mut.getMargin().getLeft(), mut.getMargin().getTop());
+                if (this.container.getPositioning() != OVERLAY) {
+                    pos = pos.add(
                         Vector2i.of(mut.getMargin().getLeft(), mut.getMargin().getTop())
-                );
+                    );
+                } else {
+                    pos = delta;
+                }
                 final Vector2i elementSize = mut.getSize();
 
                 positions.put(mut, pos.sub(Vector2i.of(0, (int) this.scroll)));
 
-                if (this.container.isInline()) {
+                if (this.container.getPositioning() == INLINE) {
                     pos = pos.add(Vector2i.of(mut.getMargin().getRight() + elementSize.getX(), 0));
-                } else {
+                } else if (this.container.getPositioning() == DEFAULT){
                     pos = pos.add(Vector2i.of(0, mut.getMargin().getBottom() + elementSize.getY()));
                 }
             }

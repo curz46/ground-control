@@ -29,7 +29,6 @@ public class World implements Tickable {
 
     public static final int CHUNK_WIDTH = 16;
     private final Map<Vector2i, Map<Vector2i, Tile>> chunks = new HashMap<>();
-//    private final Chunk[][] chunks = new Chunk[][]
 
     @NotNull
     private final WorldLoader loader;
@@ -56,11 +55,7 @@ public class World implements Tickable {
      * entities.
      */
     @Override
-    public void tick() {
-//        this.chunks.forEach((cpos, chunk) -> {
-//            chunk.forEach((relpos, tile) -> tile.tick());
-//        });
-    }
+    public void tick() {}
 
     /**
      * Load a Chunk given its Chunk position. If the Chunk position is not yet generated,
@@ -105,9 +100,6 @@ public class World implements Tickable {
         this.chunks.clear();
     }
 
-    private final Tile defaultGrass = new Tile(this, TileTypes.GRASS);
-    private final Tile defaultStone = new Tile(this, TileTypes.STONE);
-
     /**
      * Fetches a Tile given its World position.
      *
@@ -117,15 +109,8 @@ public class World implements Tickable {
      */
     @NotNull
     public Tile getTile(final Vector2i position) {
-//        if ((position.getX() + position.getY()) % 2 == 0) {
-//            return this.defaultGrass;
-//        } else {
-//            return this.defaultStone;
-//        }
-
         final Vector2i chunkPosition = position.div(CHUNK_WIDTH).floor().toInt();
         final Map<Vector2i, Tile> chunk = this.chunks.get(chunkPosition);
-//        System.out.println("CHK" + chunkPosition);
         if (chunk == null) {
             // return an Unloaded, blank tile
             // TODO:

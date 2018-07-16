@@ -91,11 +91,13 @@ public class Page extends MutableContainer implements Tickable {
     @Override
     public void render(final PixelContainer window) {
         final Vector2i size = this.getSize();
-        this.template.getBackgroundSprite().render(
-            window,
-            this.position.getX(),
-            this.position.getY()
-        );
+        if (this.template.getBackgroundSprite() != null) {
+            this.template.getBackgroundSprite().render(
+                window,
+                this.position.getX(),
+                this.position.getY()
+            );
+        }
         final PixelContainer pixelContainer = new PixelContainer(
             new int[size.getX() * size.getY()],
             size.getX(),

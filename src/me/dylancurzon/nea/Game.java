@@ -84,7 +84,7 @@ public class Game extends JPanel {
         );
         this.camera.transform(Vector2d.of(-5, -5));
 
-        this.frame.addMouseWheelListener(event -> this.camera.scroll(event.getPreciseWheelRotation()));
+//        this.frame.addMouseWheelListener(event -> this.camera.scroll(event.getPreciseWheelRotation()));
         this.frame.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(final MouseEvent e) {
@@ -170,7 +170,7 @@ public class Game extends JPanel {
         }
         if (Keys.pressed(KeyEvent.VK_T)) {
             if (System.currentTimeMillis() - 300 < this.lastToggle) return;
-            this.camera.toggleTransform();
+//            this.camera.toggleTransform();
             this.lastToggle = System.currentTimeMillis();
         }
         if (Keys.pressed(KeyEvent.VK_D)) {

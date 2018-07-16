@@ -1,6 +1,9 @@
 package me.dylancurzon.nea.gfx.page.elements.container;
 
+import static me.dylancurzon.nea.gfx.page.elements.container.Positioning.INLINE;
+
 import com.sun.istack.internal.NotNull;
+import javafx.geometry.Pos;
 import javafx.util.Pair;
 import me.dylancurzon.nea.gfx.page.InteractOptions;
 import me.dylancurzon.nea.gfx.page.Spacing;
@@ -22,21 +25,21 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
     private final List<Pair<Integer, Function<ImmutableContainer, ImmutableElement>>> elements;
     private final Vector2i size;
     private final Spacing padding;
-    private final boolean inline;
+    private final Positioning positioning;
     private final boolean centering;
     private final boolean scrollable;
 
     private LayoutImmutableContainer(final Spacing margin, final Consumer<MutableElement> tickConsumer,
                                      final List<Pair<Integer, Function<ImmutableContainer, ImmutableElement>>> elements,
                                      final Vector2i size, final Spacing padding,
-                                     final boolean inline, final boolean centering,
+                                     final Positioning positioning, final boolean centering,
                                      final boolean scrollable,
                                      final Function<MutableElement, WrappingMutableElement> mutator,
                                      final InteractOptions interactOptions) {
         super(margin, tickConsumer, mutator, interactOptions);
         this.elements = elements;
         this.size = size;
-        this.inline = inline;
+        this.positioning = positioning;
         this.centering = centering;
         if (padding == null) {
             this.padding = Spacing.ZERO;
@@ -59,7 +62,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
         final List<ImmutableElement> wrappedElements = this.elements.stream()
             .map(pair -> ImmutableContainer.builder()
                 .setCentering(this.centering)
-                .setSize((this.inline
+                .setSize((this.positioning == INLINE
                     ? this.size.toDouble().mul(Vector2d.of(((double) pair.getKey()) / total, 1))
                     : this.size.toDouble().mul(Vector2d.of(1, ((double) pair.getKey()) / total)))
                     .ceil().toInt())
@@ -69,7 +72,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
         return ImmutableContainer.builder()
             .setSize(this.size)
             .setPadding(this.padding)
-            .setInline(this.inline)
+            .setPositioning(this.positioning)
             .setScrollable(this.scrollable)
             .add(wrappedElements)
             .build()
@@ -182,8 +185,8 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
     }
 
     @Override
-    public boolean isInline() {
-        return this.inline;
+    public Positioning getPositioning() {
+        return this.positioning;
     }
 
     @Override
@@ -197,7 +200,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
         private final List<Pair<Integer, Function<ImmutableContainer, ImmutableElement>>> elements = new ArrayList<>();
         private Vector2i size;
         private Spacing padding;
-        private boolean inline;
+        private Positioning positioning;
         private boolean centering;
         private boolean scrollable;
 
@@ -227,8 +230,8 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
         }
 
         @NotNull
-        public Builder setInline(final boolean inline) {
-            this.inline = inline;
+        public Builder setPositioning(final Positioning positioning) {
+            this.positioning = positioning;
             return this;
         }
 
@@ -259,7 +262,7 @@ public class LayoutImmutableContainer extends ImmutableElement implements Immuta
                 this.elements,
                 this.size,
                 this.padding,
-                this.inline,
+                this.positioning,
                 this.centering,
                 this.scrollable,
                 super.mutator,

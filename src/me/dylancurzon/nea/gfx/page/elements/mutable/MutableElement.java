@@ -1,6 +1,9 @@
 package me.dylancurzon.nea.gfx.page.elements.mutable;
 
 import com.sun.istack.internal.NotNull;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
@@ -18,12 +21,30 @@ public abstract class MutableElement implements Renderable {
 
     protected MutableContainer parent;
 
+//    private final Map<Key, Object> state = new HashMap<>();
+
     private final Cached<Vector2i> cachedSize = new Cached<>();
 
     protected MutableElement(@NotNull final Spacing margin, final InteractOptions interactOptions) {
         this.margin = margin;
         this.interactOptions = interactOptions;
     }
+
+//    public <T> Optional<T> get(final Key<T> key) {
+//        try {
+//            if (!this.state.containsKey(key)) return Optional.empty();
+//            //noinspection unchecked
+//            return Optional.ofNullable((T) this.state.get(key));
+//        } catch (final ClassCastException e) {
+//            throw new RuntimeException(
+//                "I have no idea how this happened, but I was unable to cast to the Key type."
+//            );
+//        }
+//    }
+//
+//    public <T> void set(final Key<T> key, final T value) {
+//        this.state.put(key, value);
+//    }
 
     @NotNull
     public Spacing getMargin() {
