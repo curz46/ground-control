@@ -32,6 +32,9 @@ public class Planet implements Tickable, Renderable {
     private static int rotationY;
 
     public Planet(final int width, final int height) {
+        System.out.println(PolarCoord.of(10, (float) (Math.PI - 0.1), 10).toVector3d());
+        System.out.println(PolarCoord.of(10, (float) (Math.PI + 0.1), 10).toVector3d());
+
         this.spherePositions = this.calculateSpherePositions(width, height);
         this.polarCoordinates = new PolarCoord[width][height];
         for (int x = 0; x < width; x++) {
@@ -45,8 +48,15 @@ public class Planet implements Tickable, Renderable {
     }
 
     public static void rotate(final int x, final int y) {
-        rotationX = Math.abs((rotationX + x) % ROTATION_INCREMENTS);
-        rotationY = Math.abs((rotationY + y) % ROTATION_INCREMENTS);
+        rotationX = (rotationX + x) % ROTATION_INCREMENTS;
+        rotationY = (rotationY + y) % ROTATION_INCREMENTS;
+
+        if (rotationX < 0) {
+            rotationX = ROTATION_INCREMENTS + rotationX;
+        }
+        if (rotationY < 0) {
+            rotationY = ROTATION_INCREMENTS + rotationY;
+        }
     }
 
     @Override
@@ -62,15 +72,16 @@ public class Planet implements Tickable, Renderable {
                 }
 //                final PolarCoord coord = position.rotateY(this.rotation / 100.0).toSpherical();
                 final PolarCoord coord = this.polarCoordinates[x][y];
-                final int tinc = ((int) ((coord.getTheta() / (Math.PI * 2)) * ROTATION_INCREMENTS) + rotationX) % ROTATION_INCREMENTS;
+                final int tinc = (int) (((coord.getTheta() / (Math.PI * 2)) * ROTATION_INCREMENTS) + rotationX) % ROTATION_INCREMENTS;
                 final int pinc = (int) (((coord.getPhi() / (Math.PI * 2)) * ROTATION_INCREMENTS) + rotationY) % ROTATION_INCREMENTS;
                 final double noise = this.noiseMap[tinc][pinc] + 1;
                 final int n = (int) (noise * 255 / 2);
                 final int argb = 0xFF000000 | (n << 16) | (n << 8) | n;
                 ctr.setPixel(x, ctr.getHeight() - 1 - y, argb);
                 if (x == centreX && y == centreY) {
-                    System.out.println("PHI: " + coord.getPhi() + ((rotationX / ROTATION_INCREMENTS) * Math.PI * 2));
-                    System.out.println("THETA: " + coord.getTheta() + ((rotationY / ROTATION_INCREMENTS) * Math.PI * 2));
+//                    System.out.println("PHI: " + (coord.getTheta() + ((((double) rotationX) / ROTATION_INCREMENTS) * Math.PI * 2)));
+//                    System.out.println("PHI: " + (coord.getPhi() + ((((float) rotationY) / ROTATION_INCREMENTS) * Math.PI * 2)));
+//                    System.out.println(pinc);
                 }
             }
         }
@@ -94,6 +105,10 @@ public class Planet implements Tickable, Renderable {
             for (int pinc = 0; pinc < ROTATION_INCREMENTS; pinc++) {
                 final float phi = (float) ((Math.PI * 2) / ROTATION_INCREMENTS) * pinc;
                 final PolarCoord coord = PolarCoord.of(5, theta, phi);
+                if (pinc < 5 || pinc > 495) {
+                    System.out.println("generate, pinc:" + pinc + ", PHI: " + phi + ", vec: " + coord.toVector3d());
+                    System.out.println("tinc: " + tinc + ", THETA: " + theta);
+                }
                 values[tinc][pinc] = this.generateNoise(coord.toVector3d());
             }
         }
