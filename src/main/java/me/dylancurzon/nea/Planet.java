@@ -15,9 +15,9 @@ public class Planet implements Tickable, Renderable {
 
     private static final int ROTATION_INCREMENTS = 500;
 
-    private final Vector3d eyePosition = Vector3d.of(111, 0, 0);
-    private final Vector3d viewPositionA = Vector3d.of(100, 0.5, 0.5);
-    private final Vector3d viewPositionB = Vector3d.of(100, -0.5, -0.5);
+    private final Vector3d eyePosition = Vector3d.of(11.5, 0, 0);
+    private final Vector3d viewPositionA = Vector3d.of(10.5, 0.5, 0.5);
+    private final Vector3d viewPositionB = Vector3d.of(10.5, -0.5, -0.5);
     private final Vector3d sphereCentre = Vector3d.of(0, 0, 0);
     private final double radius = 5;
 
@@ -51,6 +51,8 @@ public class Planet implements Tickable, Renderable {
 
     @Override
     public void render(final PixelContainer ctr) {
+        final int centreX = ctr.getWidth() / 2;
+        final int centreY = ctr.getHeight() / 2;
         for (int x = 0; x < ctr.getWidth(); x++) {
             for (int y = 0; y < ctr.getHeight(); y++) {
                 final Vector3d position = this.spherePositions[x][y];
@@ -62,8 +64,14 @@ public class Planet implements Tickable, Renderable {
                 final PolarCoord coord = this.polarCoordinates[x][y];
                 final int tinc = ((int) ((coord.getTheta() / (Math.PI * 2)) * ROTATION_INCREMENTS) + rotationX) % ROTATION_INCREMENTS;
                 final int pinc = (int) (((coord.getPhi() / (Math.PI * 2)) * ROTATION_INCREMENTS) + rotationY) % ROTATION_INCREMENTS;
-                final double noise = this.noiseMap[tinc][pinc];
-                ctr.setPixel(x, ctr.getHeight() - 1 - y, (int) (0xFFFF * noise));
+                final double noise = this.noiseMap[tinc][pinc] + 1;
+                final int n = (int) (noise * 255 / 2);
+                final int argb = 0xFF000000 | (n << 16) | (n << 8) | n;
+                ctr.setPixel(x, ctr.getHeight() - 1 - y, argb);
+                if (x == centreX && y == centreY) {
+                    System.out.println("PHI: " + coord.getPhi() + ((rotationX / ROTATION_INCREMENTS) * Math.PI * 2));
+                    System.out.println("THETA: " + coord.getTheta() + ((rotationY / ROTATION_INCREMENTS) * Math.PI * 2));
+                }
             }
         }
     }
