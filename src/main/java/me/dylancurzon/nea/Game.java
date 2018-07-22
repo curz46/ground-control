@@ -156,23 +156,23 @@ public class Game extends JPanel {
         this.scene.tick();
 
 //        final double speed = 0.1;
-//        if (Keys.pressed(KeyEvent.VK_W)) {
-//            Planet.move(Vector3d.of(speed, 0, 0));
-//        }
-//        if (Keys.pressed(KeyEvent.VK_S)) {
-//            Planet.move(Vector3d.of(-speed, 0, 0));
-//        }
-//        if (Keys.pressed(KeyEvent.VK_LEFT)) {
-//            Planet.move(Vector3d.of(0, 0, -speed));
-//        }
-//        if (Keys.pressed(KeyEvent.VK_RIGHT)) {
-//            Planet.move(Vector3d.of(0, 0, speed));
-//        }
+        if (Keys.pressed(KeyEvent.VK_W)) {
+            Planet.rotate(0, 1);
+        }
+        if (Keys.pressed(KeyEvent.VK_S)) {
+            Planet.rotate(0, -1);
+        }
+        if (Keys.pressed(KeyEvent.VK_A)) {
+            Planet.rotate(-1, 0);
+        }
+        if (Keys.pressed(KeyEvent.VK_D)) {
+            Planet.rotate(1, 0);
+        }
 //        if (Keys.pressed(KeyEvent.VK_UP)) {
-//            Planet.move(Vector3d.of(0, speed, 0));
+//            Planet.rotate(Vector3d.of(0, speed, 0));
 //        }
 //        if (Keys.pressed(KeyEvent.VK_DOWN)) {
-//            Planet.move(Vector3d.of(0, -speed, 0));
+//            Planet.rotate(Vector3d.of(0, -speed, 0));
 //        }
 
 //        this.camera.tick();

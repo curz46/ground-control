@@ -190,6 +190,20 @@ public class Vector3d {
         );
     }
 
+    /**
+     * @return {@link PolarCoord} representing the spherical coordinate of this position. If this {@link Vector3d}
+     * has an absolute value equal to zero, returns <code>null</code>.
+     */
+    public PolarCoord toSpherical() {
+        // http://tutorial.math.lamar.edu/Classes/CalcIII/SphericalCoords.aspx
+        final double radius = this.abs();
+        if (radius == 0) return null;
+        final float phi = (float) Math.acos(this.z / radius);
+        final float theta = (float) Math.asin(this.x / (radius * Math.sin(phi)));
+        final float signedTheta = this.y > 0 ? theta : (float) Math.PI - theta;
+        return PolarCoord.of(radius, phi, signedTheta);
+    }
+
     public double getX() {
         return this.x;
     }

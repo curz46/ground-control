@@ -4,16 +4,16 @@ import com.flowpowered.noise.Noise;
 import com.flowpowered.noise.NoiseQuality;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
+import me.dylancurzon.nea.util.PolarCoord;
 import me.dylancurzon.nea.util.Vector3d;
 import me.dylancurzon.nea.world.Tickable;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Planet implements Tickable, Renderable {
+
+    private static final int ROTATION_INCREMENTS = 500;
 
     private final Vector3d eyePosition = Vector3d.of(111, 0, 0);
     private final Vector3d viewPositionA = Vector3d.of(100, 0.5, 0.5);
@@ -24,15 +24,29 @@ public class Planet implements Tickable, Renderable {
     private final int seed = ThreadLocalRandom.current().nextInt(100000);
     
     private final Vector3d[][] spherePositions;
+    private final PolarCoord[][] polarCoordinates;
+//    private final double[][][] rotatedNoiseValues;
+    private final double[][] noiseMap; // theta, pi, noise
     private int ticks;
+    private static int rotationX;
+    private static int rotationY;
 
     public Planet(final int width, final int height) {
         this.spherePositions = this.calculateSpherePositions(width, height);
+        this.polarCoordinates = new PolarCoord[width][height];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (this.spherePositions[x][y] == null) continue;
+                this.polarCoordinates[x][y] = this.spherePositions[x][y].toSpherical();
+//                System.out.println(this.polarCoordinates[x][y]);
+            }
+        }
+        this.noiseMap = this.calculateNoiseValues();
     }
-    
-    @Override
-    public void tick() {
-        this.ticks++;
+
+    public static void rotate(final int x, final int y) {
+        rotationX = Math.abs((rotationX + x) % ROTATION_INCREMENTS);
+        rotationY = Math.abs((rotationY + y) % ROTATION_INCREMENTS);
     }
 
     @Override
@@ -44,18 +58,45 @@ public class Planet implements Tickable, Renderable {
                     ctr.setPixel(x, ctr.getHeight() - 1 - y, 0xFF);
                     continue;
                 }
-                final Vector3d rotated = position.rotateY((this.ticks / 100.0) % Math.PI * 2);
-                final double noise = this.generateNoise(rotated);
+//                final PolarCoord coord = position.rotateY(this.rotation / 100.0).toSpherical();
+                final PolarCoord coord = this.polarCoordinates[x][y];
+                final int tinc = ((int) ((coord.getTheta() / (Math.PI * 2)) * ROTATION_INCREMENTS) + rotationX) % ROTATION_INCREMENTS;
+                final int pinc = (int) (((coord.getPhi() / (Math.PI * 2)) * ROTATION_INCREMENTS) + rotationY) % ROTATION_INCREMENTS;
+                final double noise = this.noiseMap[tinc][pinc];
                 ctr.setPixel(x, ctr.getHeight() - 1 - y, (int) (0xFFFF * noise));
             }
         }
     }
 
-    private double generateNoise(final Vector3d vector) {
+    private double[][] calculateNoiseValues() {
+        final double[][] values = new double[ROTATION_INCREMENTS][ROTATION_INCREMENTS];
+//        for (int i = 0; i < increments; i++) {
+//            for (int x = 0; x < width; x++) {
+//                for (int y = 0; y < height; y++) {
+//                    final Vector3d position = spherePositions[x][y];
+//                    if (position == null) continue;
+//                    final double angle = ((Math.PI * 2) / increments) * i;
+//                    final Vector3d rotated = position.rotateY(angle);
+//                    values[i][x][y] = this.generateNoise(rotated);
+//                }
+//            }
+//        }
+        for (int tinc = 0; tinc < ROTATION_INCREMENTS; tinc++) {
+            final float theta = (float) ((Math.PI * 2) / ROTATION_INCREMENTS) * tinc;
+            for (int pinc = 0; pinc < ROTATION_INCREMENTS; pinc++) {
+                final float phi = (float) ((Math.PI * 2) / ROTATION_INCREMENTS) * pinc;
+                final PolarCoord coord = PolarCoord.of(5, theta, phi);
+                values[tinc][pinc] = this.generateNoise(coord.toVector3d());
+            }
+        }
+        return values;
+    }
+
+    private double generateNoise(final Vector3d pos) {
         return Noise.valueCoherentNoise3D(
-            vector.getX(),
-            vector.getY(),
-            vector.getZ(),
+            pos.getX(),
+            pos.getY(),
+            pos.getZ(),
             this.seed,
             NoiseQuality.BEST
         );
@@ -79,14 +120,6 @@ public class Planet implements Tickable, Renderable {
                 if (!closestIntersection.isPresent()) continue;
                 final Vector3d vector = closestIntersection.get();
                 positions[x][y] = vector;
-//                final Vector3d rotated = vector.rotateY(this.ticks / 100.0);
-//                final double noise = Noise.valueCoherentNoise3D(
-//                    rotated.getX(),
-//                    rotated.getY(),
-//                    rotated.getZ(),
-//                    this.seed,
-//                    NoiseQuality.FAST
-//                );
             }
         }
         return positions;
@@ -105,7 +138,7 @@ public class Planet implements Tickable, Renderable {
      * @return A set containing all intersections of the sphere and this line. This will be an empty
      * {@link Set} if there are no solutions, a set containing one {@link Vector3d} if the line
      * meets the sphere at a tangent, or two positions if it passes through the sphere. This method will not return
-     * intersections which are "behind" the <code>to</code> parameter.
+     * intersections which are "behind" the <code>from</code> parameter.
      */
     private Set<Vector3d> findIntersections(final Vector3d from, final Vector3d to) {
         final double xf = from.getX();
@@ -154,4 +187,8 @@ public class Planet implements Tickable, Renderable {
         return intersections;
     }
 
+    @Override
+    public void tick() {
+
+    }
 }
