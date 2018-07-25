@@ -32,8 +32,29 @@ public class Planet implements Tickable, Renderable {
     private static int rotationY;
 
     public Planet(final int width, final int height) {
-        System.out.println(PolarCoord.of(10, (float) (Math.PI - 0.1), 10).toVector3d());
-        System.out.println(PolarCoord.of(10, (float) (Math.PI + 0.1), 10).toVector3d());
+//        System.out.println( // PolarCoord{5.000000,3.759064,3.141593}
+////            Vector3d.of(1.4148, Math.PI, Math.PI)
+////                .toSpherical()
+//            PolarCoord.of(5, (float) 0.5, (float) Math.PI)
+//                .toVector3d()
+//        );
+//        System.out.println(Vector3d.of(5, 5, 5).toSpherical());
+
+        System.out.println(Vector3d.of(1, 0, 0).toSpherical());
+        System.out.println(Vector3d.of(1, 0, 0).toSpherical().toVector3d());
+        System.out.println(Vector3d.of(0, 1, 0).toSpherical());
+        System.out.println(Vector3d.of(0, 1, 0).toSpherical().toVector3d());
+        System.out.println(Vector3d.of(0, 0, 1).toSpherical());
+        System.out.println(Vector3d.of(0, 0, 1).toSpherical().toVector3d());
+
+        System.out.println(Vector3d.of(-1, 0, 0).toSpherical());
+        System.out.println(Vector3d.of(-1, 0, 0).toSpherical().toVector3d());
+        System.out.println(Vector3d.of(0, -1, 0).toSpherical());
+        System.out.println(Vector3d.of(0, -1, 0).toSpherical().toVector3d());
+        System.out.println(Vector3d.of(0, 0, -1).toSpherical());
+        System.out.println(Vector3d.of(0, 0, -1).toSpherical().toVector3d());
+
+//        System.out.println(PolarCoord.of(5, (float) Math.PI - 0.1f, (float) Math.PI - 0.5f).toVector3d());
 
         this.spherePositions = this.calculateSpherePositions(width, height);
         this.polarCoordinates = new PolarCoord[width][height];
@@ -72,8 +93,8 @@ public class Planet implements Tickable, Renderable {
                 }
 //                final PolarCoord coord = position.rotateY(this.rotation / 100.0).toSpherical();
                 final PolarCoord coord = this.polarCoordinates[x][y];
-                final int tinc = (int) (((coord.getTheta() / (Math.PI * 2)) * ROTATION_INCREMENTS) + rotationX) % ROTATION_INCREMENTS;
-                final int pinc = (int) (((coord.getPhi() / (Math.PI * 2)) * ROTATION_INCREMENTS) + rotationY) % ROTATION_INCREMENTS;
+                final int tinc = (int) (((coord.getTheta() / Math.PI) * ROTATION_INCREMENTS) + rotationX) % ROTATION_INCREMENTS;
+                final int pinc = (int) (((coord.getUnsignedPhi() / (Math.PI * 2)) * ROTATION_INCREMENTS) + rotationY) % ROTATION_INCREMENTS;
                 final double noise = this.noiseMap[tinc][pinc] + 1;
                 final int n = (int) (noise * 255 / 2);
                 final int argb = 0xFF000000 | (n << 16) | (n << 8) | n;
@@ -101,15 +122,17 @@ public class Planet implements Tickable, Renderable {
 //            }
 //        }
         for (int tinc = 0; tinc < ROTATION_INCREMENTS; tinc++) {
-            final float theta = (float) ((Math.PI * 2) / ROTATION_INCREMENTS) * tinc;
+            final float theta = (float) (Math.PI / ROTATION_INCREMENTS) * tinc;
             for (int pinc = 0; pinc < ROTATION_INCREMENTS; pinc++) {
-                final float phi = (float) ((Math.PI * 2) / ROTATION_INCREMENTS) * pinc;
-                final PolarCoord coord = PolarCoord.of(5, theta, phi);
+                final float unsignedPhi = (float) ((Math.PI * 2) / ROTATION_INCREMENTS) * pinc;
+                final PolarCoord coord = PolarCoord.of(5, theta, unsignedPhi - (float) Math.PI);
                 if (pinc < 5 || pinc > 495) {
-                    System.out.println("generate, pinc:" + pinc + ", PHI: " + phi + ", vec: " + coord.toVector3d());
+                    System.out.println("generate, pinc:" + pinc + ", PHI: " + (unsignedPhi - (float) Math.PI) + ", vec: " + coord.toVector3d());
                     System.out.println("tinc: " + tinc + ", THETA: " + theta);
                 }
-                values[tinc][pinc] = this.generateNoise(coord.toVector3d());
+//                values[tinc][pinc] = this.generateNoise(coord.toVector3d());
+                final Vector3d vector = coord.toVector3d();
+                values[tinc][pinc] = (Math.floor(vector.getX()) + Math.floor(vector.getY()) + Math.floor(vector.getZ())) % 2 == 0 ? -1 : 1;
             }
         }
         return values;

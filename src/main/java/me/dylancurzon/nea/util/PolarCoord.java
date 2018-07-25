@@ -24,9 +24,9 @@ public class PolarCoord {
     // http://tutorial.math.lamar.edu/Classes/CalcIII/SphericalCoords.aspx
     public Vector3d toVector3d() {
         return Vector3d.of(
-            this.radius * Math.sin(this.phi) * Math.cos(this.theta),
-            this.radius * Math.sin(this.phi) * Math.sin(this.theta),
-            this.radius * Math.cos(this.phi)
+            this.radius * Math.sin(this.theta) * Math.cos(this.phi),
+            this.radius * Math.sin(this.theta) * Math.sin(this.phi),
+            this.radius * Math.cos(this.theta)
         );
     }
 
@@ -36,6 +36,10 @@ public class PolarCoord {
 
     public float getTheta() {
         return this.theta;
+    }
+
+    public float getUnsignedPhi() {
+        return this.phi + (float) Math.PI;
     }
 
     public float getPhi() {
