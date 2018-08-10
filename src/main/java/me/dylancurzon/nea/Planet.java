@@ -27,6 +27,7 @@ public class Planet implements Tickable, Renderable {
     private final PolarCoord[][] polarCoordinates;
 //    private final double[][][] rotatedNoiseValues;
     private final double[][] noiseMap; // theta, pi, noise
+    private final PolarCoord[][] actualPolar = new PolarCoord[ROTATION_INCREMENTS][ROTATION_INCREMENTS];
     private int ticks;
     private static int rotationX;
     private static int rotationY;
@@ -100,9 +101,12 @@ public class Planet implements Tickable, Renderable {
                 final int argb = 0xFF000000 | (n << 16) | (n << 8) | n;
                 ctr.setPixel(x, ctr.getHeight() - 1 - y, argb);
                 if (x == centreX && y == centreY) {
-//                    System.out.println("PHI: " + (coord.getTheta() + ((((double) rotationX) / ROTATION_INCREMENTS) * Math.PI * 2)));
-//                    System.out.println("PHI: " + (coord.getPhi() + ((((float) rotationY) / ROTATION_INCREMENTS) * Math.PI * 2)));
-//                    System.out.println(pinc);
+                    System.out.println("THETA: " + (coord.getTheta() + ((((double) rotationX) / ROTATION_INCREMENTS) * Math.PI)));
+                    System.out.println("PHI: " + (coord.getPhi() + ((((float) rotationY) / ROTATION_INCREMENTS) * Math.PI * 2)));
+                    System.out.println("actual: " + this.actualPolar[tinc][pinc]);
+                    System.out.println(pinc);
+                    final PolarCoord actualPolarValue = this.actualPolar[tinc][pinc];
+                    Game.frame.setTitle(actualPolarValue + ", " + actualPolarValue.toVector3d());
                 }
             }
         }
@@ -124,15 +128,12 @@ public class Planet implements Tickable, Renderable {
         for (int tinc = 0; tinc < ROTATION_INCREMENTS; tinc++) {
             final float theta = (float) (Math.PI / ROTATION_INCREMENTS) * tinc;
             for (int pinc = 0; pinc < ROTATION_INCREMENTS; pinc++) {
-                final float unsignedPhi = (float) ((Math.PI * 2) / ROTATION_INCREMENTS) * pinc;
-                final PolarCoord coord = PolarCoord.of(5, theta, unsignedPhi - (float) Math.PI);
-                if (pinc < 5 || pinc > 495) {
-                    System.out.println("generate, pinc:" + pinc + ", PHI: " + (unsignedPhi - (float) Math.PI) + ", vec: " + coord.toVector3d());
-                    System.out.println("tinc: " + tinc + ", THETA: " + theta);
-                }
+                final float phi = (float) ((Math.PI * 2) / ROTATION_INCREMENTS) * pinc - (float) Math.PI;
+                final PolarCoord coord = PolarCoord.of(5, theta, phi);
 //                values[tinc][pinc] = this.generateNoise(coord.toVector3d());
                 final Vector3d vector = coord.toVector3d();
-                values[tinc][pinc] = (Math.floor(vector.getX()) + Math.floor(vector.getY()) + Math.floor(vector.getZ())) % 2 == 0 ? -1 : 1;
+                values[tinc][pinc] = (Math.floor(vector.getX()) + Math.floor(vector.getY()) + Math.floor(vector.getZ())) % 2 == 0 ? -1 : (tinc);
+                actualPolar[tinc][pinc] = coord;
             }
         }
         return values;

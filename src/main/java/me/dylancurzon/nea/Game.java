@@ -40,7 +40,7 @@ public class Game extends JPanel {
     private Scene scene;
     private World world;
 
-    private JFrame frame;
+    public static JFrame frame;
 
     private void start() {
         this.running = true;
@@ -124,7 +124,7 @@ public class Game extends JPanel {
         while (this.running) {
             if (lastSecond + 1000 < System.currentTimeMillis()) {
                 lastSecond = System.currentTimeMillis();
-                this.frame.setTitle("Game | Ticks: " + updates + ", Frames: " + frames);
+//                this.frame.setTitle("Game | Ticks: " + updates + ", Frames: " + frames);
                 frames = 0;
                 updates = 0;
             }

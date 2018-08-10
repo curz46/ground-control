@@ -198,7 +198,8 @@ public class Vector3d {
         // http://tutorial.math.lamar.edu/Classes/CalcIII/SphericalCoords.aspx
         final double radius = this.abs();
         if (radius == 0) return null;
-        final float theta = (float) Math.acos(this.z / radius);
+//        final float theta = (float) Math.acos(this.z / radius);
+        final float theta = (float) Math.atan2(Math.sqrt(this.x * this.x + this.y * this.y), this.z);
         final float phi = (float) Math.atan2(this.y, this.x);
         return PolarCoord.of(radius, theta, phi);
     }
