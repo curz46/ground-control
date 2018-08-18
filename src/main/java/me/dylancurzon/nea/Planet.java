@@ -15,6 +15,9 @@ public class Planet implements Tickable, Renderable {
 
     private static final int ROTATION_INCREMENTS = 500;
 
+    private static int width;
+    private static int height;
+
     private final Vector3d eyePosition = Vector3d.of(11.5, 0, 0);
     private final Vector3d viewPositionA = Vector3d.of(10.5, 0.5, 0.5);
     private final Vector3d viewPositionB = Vector3d.of(10.5, -0.5, -0.5);
@@ -23,8 +26,10 @@ public class Planet implements Tickable, Renderable {
 
     private final int seed = ThreadLocalRandom.current().nextInt(100000);
     
-    private final Vector3d[][] spherePositions;
-    private final PolarCoord[][] polarCoordinates;
+    private static Vector3d[][] baseSpherePositions;
+    private static PolarCoord[][] basePolarCoordinates;
+    private static Vector3d[][] rotatedSpherePositions;
+    private static PolarCoord[][] rotatedPolarCoordinates;
 //    private final double[][][] rotatedNoiseValues;
     private final double[][] noiseMap; // theta, pi, noise
     private final PolarCoord[][] actualPolar = new PolarCoord[ROTATION_INCREMENTS][ROTATION_INCREMENTS];
@@ -33,6 +38,8 @@ public class Planet implements Tickable, Renderable {
     private static int rotationY;
 
     public Planet(final int width, final int height) {
+        this.width = width;
+        this.height = height;
 //        System.out.println( // PolarCoord{5.000000,3.759064,3.141593}
 ////            Vector3d.of(1.4148, Math.PI, Math.PI)
 ////                .toSpherical()
@@ -57,27 +64,51 @@ public class Planet implements Tickable, Renderable {
 
 //        System.out.println(PolarCoord.of(5, (float) Math.PI - 0.1f, (float) Math.PI - 0.5f).toVector3d());
 
-        this.spherePositions = this.calculateSpherePositions(width, height);
-        this.polarCoordinates = new PolarCoord[width][height];
+        baseSpherePositions = this.calculateSpherePositions(width, height);
+        rotatedSpherePositions = new Vector3d[width][height];
+        basePolarCoordinates = new PolarCoord[width][height];
+        rotatedPolarCoordinates = new PolarCoord[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                if (this.spherePositions[x][y] == null) continue;
-                this.polarCoordinates[x][y] = this.spherePositions[x][y].toSpherical();
-//                System.out.println(this.polarCoordinates[x][y]);
+                if (baseSpherePositions[x][y] == null) continue;
+                rotatedSpherePositions[x][y] = baseSpherePositions[x][y];
+                final PolarCoord polar = baseSpherePositions[x][y].toSpherical();
+                basePolarCoordinates[x][y] = polar;
+                rotatedPolarCoordinates[x][y] = polar;
+//                System.out.println(this.basePolarCoordinates[x][y]);
             }
         }
         this.noiseMap = this.calculateNoiseValues();
     }
 
     public static void rotate(final int x, final int y) {
-        rotationX = (rotationX + x) % ROTATION_INCREMENTS;
-        rotationY = (rotationY + y) % ROTATION_INCREMENTS;
+        rotationX = (rotationX + x) % ROTATION_INCREMENTS; // 0->2PI
+        rotationY = (rotationY + y) % ROTATION_INCREMENTS; // half because only 0->PI
 
         if (rotationX < 0) {
             rotationX = ROTATION_INCREMENTS + rotationX;
         }
         if (rotationY < 0) {
             rotationY = ROTATION_INCREMENTS + rotationY;
+        }
+
+        // rotationX should affect phi
+        // rotationY should affect theta
+
+        // first determine angle given min=0 max=ROTATION_INCREMENTS
+        final double angleX = (((double) rotationX) / ROTATION_INCREMENTS) * (Math.PI * 2);
+        final double angleY = (((double) rotationY) /ROTATION_INCREMENTS) * (Math.PI * 2);
+
+//        Game.frame.setTitle(rotationX + ", " + rotationY + ", " + angleX + ", " + angleY);
+
+        for (int xd = 0; xd < width; xd++) {
+            for (int yd = 0; yd < height; yd++) {
+                final Vector3d basePosition = baseSpherePositions[xd][yd];
+                if (basePosition == null) continue;
+                final Vector3d rotatedPosition = basePosition.rotateY(angleX).rotateZ(angleY);
+                rotatedSpherePositions[xd][yd] = rotatedPosition;
+                rotatedPolarCoordinates[xd][yd] = rotatedPosition.toSpherical();
+            }
         }
     }
 
@@ -87,24 +118,20 @@ public class Planet implements Tickable, Renderable {
         final int centreY = ctr.getHeight() / 2;
         for (int x = 0; x < ctr.getWidth(); x++) {
             for (int y = 0; y < ctr.getHeight(); y++) {
-                final Vector3d position = this.spherePositions[x][y];
+                final Vector3d position = baseSpherePositions[x][y];
                 if (position == null) {
                     ctr.setPixel(x, ctr.getHeight() - 1 - y, 0xFF);
                     continue;
                 }
 //                final PolarCoord coord = position.rotateY(this.rotation / 100.0).toSpherical();
-                final PolarCoord coord = this.polarCoordinates[x][y];
-                final int tinc = (int) (((coord.getTheta() / Math.PI) * ROTATION_INCREMENTS) + rotationX) % ROTATION_INCREMENTS;
-                final int pinc = (int) (((coord.getUnsignedPhi() / (Math.PI * 2)) * ROTATION_INCREMENTS) + rotationY) % ROTATION_INCREMENTS;
+                final PolarCoord coord = rotatedPolarCoordinates[x][y];
+                final int tinc = (int) (coord.getTheta() / (Math.PI * 2) * ROTATION_INCREMENTS);
+                final int pinc = (int) (coord.getUnsignedPhi() / Math.PI * (ROTATION_INCREMENTS / 2));
                 final double noise = this.noiseMap[tinc][pinc] + 1;
                 final int n = (int) (noise * 255 / 2);
                 final int argb = 0xFF000000 | (n << 16) | (n << 8) | n;
                 ctr.setPixel(x, ctr.getHeight() - 1 - y, argb);
                 if (x == centreX && y == centreY) {
-                    System.out.println("THETA: " + (coord.getTheta() + ((((double) rotationX) / ROTATION_INCREMENTS) * Math.PI)));
-                    System.out.println("PHI: " + (coord.getPhi() + ((((float) rotationY) / ROTATION_INCREMENTS) * Math.PI * 2)));
-                    System.out.println("actual: " + this.actualPolar[tinc][pinc]);
-                    System.out.println(pinc);
                     final PolarCoord actualPolarValue = this.actualPolar[tinc][pinc];
                     Game.frame.setTitle(actualPolarValue + ", " + actualPolarValue.toVector3d());
                 }
@@ -117,7 +144,7 @@ public class Planet implements Tickable, Renderable {
 //        for (int i = 0; i < increments; i++) {
 //            for (int x = 0; x < width; x++) {
 //                for (int y = 0; y < height; y++) {
-//                    final Vector3d position = spherePositions[x][y];
+//                    final Vector3d position = baseSpherePositions[x][y];
 //                    if (position == null) continue;
 //                    final double angle = ((Math.PI * 2) / increments) * i;
 //                    final Vector3d rotated = position.rotateY(angle);
@@ -126,13 +153,14 @@ public class Planet implements Tickable, Renderable {
 //            }
 //        }
         for (int tinc = 0; tinc < ROTATION_INCREMENTS; tinc++) {
-            final float theta = (float) (Math.PI / ROTATION_INCREMENTS) * tinc;
+            final float theta = (float) ((Math.PI * 2) / ROTATION_INCREMENTS) * tinc;
             for (int pinc = 0; pinc < ROTATION_INCREMENTS; pinc++) {
                 final float phi = (float) ((Math.PI * 2) / ROTATION_INCREMENTS) * pinc - (float) Math.PI;
                 final PolarCoord coord = PolarCoord.of(5, theta, phi);
-//                values[tinc][pinc] = this.generateNoise(coord.toVector3d());
                 final Vector3d vector = coord.toVector3d();
-                values[tinc][pinc] = (Math.floor(vector.getX()) + Math.floor(vector.getY()) + Math.floor(vector.getZ())) % 2 == 0 ? -1 : (tinc);
+                final double k = 2;
+//                values[tinc][pinc] = (Math.floor(vector.getX() * k) + Math.floor(vector.getY() * k) + Math.floor(vector.getZ() * k)) % 2 == 0 ? -1 : (tinc);
+                values[tinc][pinc] = generateNoise(vector);
                 actualPolar[tinc][pinc] = coord;
             }
         }
@@ -141,9 +169,9 @@ public class Planet implements Tickable, Renderable {
 
     private double generateNoise(final Vector3d pos) {
         return Noise.valueCoherentNoise3D(
-            pos.getX(),
-            pos.getY(),
-            pos.getZ(),
+            pos.getX() / 1.2,
+            pos.getY() / 1.2,
+            pos.getZ() / 1.2,
             this.seed,
             NoiseQuality.BEST
         );

@@ -1,9 +1,14 @@
 package me.dylancurzon.nea;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import me.dylancurzon.nea.gfx.PixelContainer;
+import me.dylancurzon.nea.util.Keys;
+import me.dylancurzon.nea.util.Vector2d;
+import me.dylancurzon.nea.util.Vector2i;
+import me.dylancurzon.nea.world.World;
+import me.dylancurzon.nea.world.gen.Generators;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -13,16 +18,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
-import me.dylancurzon.nea.gfx.PixelContainer;
-import me.dylancurzon.nea.util.Keys;
-import me.dylancurzon.nea.util.Vector2d;
-import me.dylancurzon.nea.util.Vector2i;
-import me.dylancurzon.nea.util.Vector3d;
-import me.dylancurzon.nea.world.World;
-import me.dylancurzon.nea.world.gen.Generators;
 
 public class Game extends JPanel {
 
@@ -48,22 +43,22 @@ public class Game extends JPanel {
     }
 
     private void initialize() {
-        this.frame = new JFrame("Game");
+        frame = new JFrame("Game");
 
         final Dimension dim = new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
 //        this.frame.setSize(dim);
-        this.frame.setMinimumSize(dim);
-        this.frame.setPreferredSize(dim);
-        this.frame.setMaximumSize(dim);
-        this.frame.pack();
-        this.frame.setResizable(false);
-        this.frame.setLocationRelativeTo(null);
+        frame.setMinimumSize(dim);
+        frame.setPreferredSize(dim);
+        frame.setMaximumSize(dim);
+        frame.pack();
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
 
-        this.frame.add(this);
-        this.frame.setVisible(true);
-        this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.add(this);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        this.frame.addKeyListener(new KeyListener() {
+        frame.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(final KeyEvent e) {}
 
@@ -89,8 +84,8 @@ public class Game extends JPanel {
 //        );
 //        this.camera.transform(Vector2d.of(-5, -5));
 
-        this.frame.addMouseWheelListener(event -> this.scene.scroll(event.getPreciseWheelRotation()));
-        this.frame.addMouseListener(new MouseListener() {
+        frame.addMouseWheelListener(event -> this.scene.scroll(event.getPreciseWheelRotation()));
+        frame.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(final MouseEvent e) {
                 final Point point = e.getPoint();
@@ -142,7 +137,7 @@ public class Game extends JPanel {
     private long lastToggle;
 
     private void update() {
-        final Point point = this.frame.getMousePosition();
+        final Point point = frame.getMousePosition();
         if (point == null) {
             this.scene.setMousePosition(null);
         } else {
@@ -156,17 +151,26 @@ public class Game extends JPanel {
         this.scene.tick();
 
 //        final double speed = 0.1;
+        int rotateX = 0;
+        int rotateY = 0;
         if (Keys.pressed(KeyEvent.VK_W)) {
-            Planet.rotate(0, 1);
+//            Planet.rotate(0, 1);
+            rotateY += 1;
         }
         if (Keys.pressed(KeyEvent.VK_S)) {
-            Planet.rotate(0, -1);
+//            Planet.rotate(0, -1);
+            rotateY -= 1;
         }
         if (Keys.pressed(KeyEvent.VK_A)) {
-            Planet.rotate(-1, 0);
+//            Planet.rotate(-1, 0);
+            rotateX -= 1;
         }
         if (Keys.pressed(KeyEvent.VK_D)) {
-            Planet.rotate(1, 0);
+//            Planet.rotate(1, 0);
+            rotateX += 1;
+        }
+        if (rotateX != 0 || rotateY != 0) {
+            Planet.rotate(rotateX, rotateY);
         }
 //        if (Keys.pressed(KeyEvent.VK_UP)) {
 //            Planet.rotate(Vector3d.of(0, speed, 0));
@@ -207,10 +211,10 @@ public class Game extends JPanel {
     }
 
     private void render() {
-        BufferStrategy bs = this.frame.getBufferStrategy();
+        BufferStrategy bs = frame.getBufferStrategy();
         if (bs == null) {
-            this.frame.createBufferStrategy(2);
-            bs = this.frame.getBufferStrategy();
+            frame.createBufferStrategy(2);
+            bs = frame.getBufferStrategy();
         }
 
         for (int i = 0; i < this.pixels.length; i++) {
