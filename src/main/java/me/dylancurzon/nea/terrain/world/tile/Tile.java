@@ -1,21 +1,18 @@
-package me.dylancurzon.nea.world.tile;
+package me.dylancurzon.nea.terrain.world.tile;
 
 import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.OffsetRenderable;
 import me.dylancurzon.nea.gfx.PixelContainer;
-import me.dylancurzon.nea.world.World;
+import me.dylancurzon.nea.terrain.world.World;
 
 public class Tile implements OffsetRenderable {
 
     public static final int TILE_WIDTH = 16;
 
     @NotNull
-    private final World world;
-    @NotNull
     private TileType type;
 
-    public Tile(final World world, final TileType type) {
-        this.world = world;
+    public Tile(final TileType type) {
         this.type = type;
     }
 
@@ -29,11 +26,6 @@ public class Tile implements OffsetRenderable {
             throw new RuntimeException("Cannot set TileType to null on Tile!");
         }
         this.type = type;
-    }
-
-    @NotNull
-    public World getWorld() {
-        return this.world;
     }
 
     @NotNull

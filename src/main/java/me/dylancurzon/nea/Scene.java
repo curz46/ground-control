@@ -2,7 +2,7 @@ package me.dylancurzon.nea;
 
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.util.Vector2i;
-import me.dylancurzon.nea.world.Tickable;
+import me.dylancurzon.nea.terrain.world.Tickable;
 
 public interface Scene extends Tickable, Renderable {
 

@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.world;
+package me.dylancurzon.nea.terrain.world;
 
 import com.sun.istack.internal.NotNull;
 import java.io.BufferedInputStream;
@@ -17,9 +17,9 @@ import java.util.Optional;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import me.dylancurzon.nea.util.ByteBuf;
 import me.dylancurzon.nea.util.Vector2i;
-import me.dylancurzon.nea.world.tile.Tile;
-import me.dylancurzon.nea.world.tile.TileType;
-import me.dylancurzon.nea.world.tile.TileTypes;
+import me.dylancurzon.nea.terrain.world.tile.Tile;
+import me.dylancurzon.nea.terrain.world.tile.TileType;
+import me.dylancurzon.nea.terrain.world.tile.TileTypes;
 
 @Immutable
 public class WorldLoader {
@@ -111,7 +111,7 @@ public class WorldLoader {
                 // TODO:
                 // for now, every tile consists of:
                 // - byte; tile type id
-                final Tile tile = new Tile(this.world, TileTypes.UNLOADED);
+                final Tile tile = new Tile(TileTypes.UNLOADED);
 
                 final int typeId = buf.readByte();
                 final Optional<TileType> tileType = TileTypes.getType(typeId);

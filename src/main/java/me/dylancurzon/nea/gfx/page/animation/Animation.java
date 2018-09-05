@@ -1,6 +1,6 @@
 package me.dylancurzon.nea.gfx.page.animation;
 
-import me.dylancurzon.nea.world.Tickable;
+import me.dylancurzon.nea.terrain.world.Tickable;
 
 public abstract class Animation implements Tickable {
 

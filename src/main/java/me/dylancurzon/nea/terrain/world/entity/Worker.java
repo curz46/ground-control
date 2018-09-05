@@ -1,10 +1,10 @@
-package me.dylancurzon.nea.world.entity;
+package me.dylancurzon.nea.terrain.world.entity;
 
 import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 import me.dylancurzon.nea.util.Vector2i;
-import me.dylancurzon.nea.world.World;
+import me.dylancurzon.nea.terrain.world.World;
 
 public class Worker extends Entity {
 

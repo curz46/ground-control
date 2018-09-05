@@ -1,15 +1,11 @@
 package me.dylancurzon.nea;
 
-import java.util.LinkedHashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite;
 import me.dylancurzon.nea.gfx.sprite.AnimatedSprite.TickContainer;
 import me.dylancurzon.nea.util.Vector2i;
-import me.dylancurzon.nea.world.Tickable;
+import me.dylancurzon.nea.terrain.world.Tickable;
 
 public class MenuBackground implements Tickable, Renderable {
 

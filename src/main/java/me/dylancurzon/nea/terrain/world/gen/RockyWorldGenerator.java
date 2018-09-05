@@ -1,13 +1,13 @@
-package me.dylancurzon.nea.world.gen;
+package me.dylancurzon.nea.terrain.world.gen;
 
 import java.util.HashMap;
 import java.util.Map;
 import me.dylancurzon.nea.util.PerlinNoise;
 import me.dylancurzon.nea.util.Vector2i;
-import me.dylancurzon.nea.world.World;
-import me.dylancurzon.nea.world.tile.Tile;
-import me.dylancurzon.nea.world.tile.TileType;
-import me.dylancurzon.nea.world.tile.TileTypes;
+import me.dylancurzon.nea.terrain.world.World;
+import me.dylancurzon.nea.terrain.world.tile.Tile;
+import me.dylancurzon.nea.terrain.world.tile.TileType;
+import me.dylancurzon.nea.terrain.world.tile.TileTypes;
 
 public class RockyWorldGenerator implements ChunkGenerator {
 
@@ -41,7 +41,7 @@ public class RockyWorldGenerator implements ChunkGenerator {
                     type = TileTypes.WATER;
                 }
 
-                final Tile tile = new Tile(world, type);
+                final Tile tile = new Tile(type);
                 tiles.put(Vector2i.of(cx, cy), tile);
             }
         }

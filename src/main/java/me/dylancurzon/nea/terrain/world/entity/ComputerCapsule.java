@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.world.entity;
+package me.dylancurzon.nea.terrain.world.entity;
 
 import static me.dylancurzon.nea.gfx.sprite.SpriteSheet.PRIMARY_SHEET;
 
@@ -6,7 +6,7 @@ import com.sun.istack.internal.NotNull;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.sprite.StaticSprite;
 import me.dylancurzon.nea.util.Vector2i;
-import me.dylancurzon.nea.world.World;
+import me.dylancurzon.nea.terrain.world.World;
 
 public class ComputerCapsule extends Entity {
 

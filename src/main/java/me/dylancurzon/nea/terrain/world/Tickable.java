@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.world;
+package me.dylancurzon.nea.terrain.world;
 
 public interface Tickable {
 

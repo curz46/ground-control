@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.world;
+package me.dylancurzon.nea.terrain.world;
 
 import com.sun.istack.internal.NotNull;
 import java.nio.file.Path;
@@ -6,11 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import jdk.nashorn.internal.ir.annotations.Immutable;
+import me.dylancurzon.nea.terrain.Terrain;
 import me.dylancurzon.nea.util.Vector2i;
-import me.dylancurzon.nea.world.entity.Entity;
-import me.dylancurzon.nea.world.gen.ChunkGenerator;
-import me.dylancurzon.nea.world.tile.Tile;
-import me.dylancurzon.nea.world.tile.TileTypes;
+import me.dylancurzon.nea.terrain.world.entity.Entity;
+import me.dylancurzon.nea.terrain.world.gen.ChunkGenerator;
+import me.dylancurzon.nea.terrain.world.tile.Tile;
+import me.dylancurzon.nea.terrain.world.tile.TileTypes;
 
 /**
  * This {@link World} class contains and oversees the {@link Tile} and {@link Entity} instances and
@@ -25,7 +26,7 @@ import me.dylancurzon.nea.world.tile.TileTypes;
  * |- /...
  */
 @Immutable
-public class World implements Tickable {
+public class World implements Terrain, Tickable {
 
     public static final int CHUNK_WIDTH = 16;
     private final Map<Vector2i, Map<Vector2i, Tile>> chunks = new HashMap<>();
@@ -108,7 +109,8 @@ public class World implements Tickable {
      * a new Tile of type {@link TileTypes#UNLOADED}.
      */
     @NotNull
-    public Tile getTile(final Vector2i position) {
+    @Override
+    public Optional<Tile> getTile(final Vector2i position) {
         final Vector2i chunkPosition = position.div(CHUNK_WIDTH).floor().toInt();
         final Map<Vector2i, Tile> chunk = this.chunks.get(chunkPosition);
         if (chunk == null) {
@@ -116,8 +118,9 @@ public class World implements Tickable {
             // TODO:
             // instead, we should add it to a "loading queue" on a separate thread so it doesn't
             // affect rendering
-            this.loadOrGenerateChunk(chunkPosition);
-            return new Tile(this, TileTypes.UNLOADED);
+//            this.loadOrGenerateChunk(chunkPosition);
+//            return new Tile(this, TileTypes.UNLOADED);
+            return Optional.empty();
         }
         final Vector2i relativePosition = position
             .sub(chunkPosition.mul(CHUNK_WIDTH))
@@ -129,7 +132,7 @@ public class World implements Tickable {
             throw new RuntimeException(
                 "The chunk that contains this position is only partially loaded.");
         }
-        return chunk.get(relativePosition);
+        return Optional.of(chunk.get(relativePosition));
     }
 
     public String getId() {

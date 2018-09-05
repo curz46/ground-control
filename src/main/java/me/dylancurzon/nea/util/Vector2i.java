@@ -173,6 +173,7 @@ public class Vector2i {
         return this.x < this.y
             ? this.y * this.y + this.x
             : this.x * this.x + this.x + this.y;
+
     }
 
     @Override

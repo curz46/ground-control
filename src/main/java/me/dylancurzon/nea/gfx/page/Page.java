@@ -5,9 +5,7 @@ import me.dylancurzon.nea.gfx.page.animation.Animation;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableContainer;
 import me.dylancurzon.nea.gfx.page.elements.mutable.MutableElement;
 import me.dylancurzon.nea.util.Vector2i;
-import me.dylancurzon.nea.world.Tickable;
-
-import java.util.Collections;
+import me.dylancurzon.nea.terrain.world.Tickable;
 
 public class Page extends MutableContainer implements Tickable {
 

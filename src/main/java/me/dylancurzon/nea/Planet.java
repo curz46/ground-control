@@ -6,7 +6,7 @@ import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.gfx.Renderable;
 import me.dylancurzon.nea.util.PolarCoord;
 import me.dylancurzon.nea.util.Vector3d;
-import me.dylancurzon.nea.world.Tickable;
+import me.dylancurzon.nea.terrain.world.Tickable;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -133,7 +133,7 @@ public class Planet implements Tickable, Renderable {
                 ctr.setPixel(x, ctr.getHeight() - 1 - y, argb);
                 if (x == centreX && y == centreY) {
                     final PolarCoord actualPolarValue = this.actualPolar[tinc][pinc];
-                    Game.frame.setTitle(actualPolarValue + ", " + actualPolarValue.toVector3d());
+//                    Game.frame.setTitle(actualPolarValue + ", " + actualPolarValue.toVector3d());
                 }
             }
         }
@@ -161,7 +161,7 @@ public class Planet implements Tickable, Renderable {
                 final double k = 2;
 //                values[tinc][pinc] = (Math.floor(vector.getX() * k) + Math.floor(vector.getY() * k) + Math.floor(vector.getZ() * k)) % 2 == 0 ? -1 : (tinc);
                 values[tinc][pinc] = generateNoise(vector);
-                actualPolar[tinc][pinc] = coord;
+                this.actualPolar[tinc][pinc] = coord;
             }
         }
         return values;

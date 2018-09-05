@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.world.gen;
+package me.dylancurzon.nea.terrain.world.gen;
 
 public interface Generators {
 

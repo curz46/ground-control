@@ -1,4 +1,4 @@
-package me.dylancurzon.nea.world.tile;
+package me.dylancurzon.nea.terrain.world.tile;
 
 import static me.dylancurzon.nea.gfx.sprite.SpriteSheet.PRIMARY_SHEET;
 
