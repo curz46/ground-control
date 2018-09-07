@@ -1,5 +1,6 @@
 package me.dylancurzon.nea;
 
+import javax.swing.text.DefaultEditorKit.InsertContentAction;
 import me.dylancurzon.nea.gfx.PixelContainer;
 import me.dylancurzon.nea.util.Keys;
 import me.dylancurzon.nea.util.Vector2d;
@@ -19,6 +20,7 @@ public abstract class AbstractGame extends JPanel implements MouseListener, Runn
     public static final int SCALE = 3;
     public static final int WIDTH = 1200 / SCALE;
     public static final int HEIGHT = 720 / SCALE;
+    private static final Dimension DIMENSION = new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
 
     protected final BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     protected final int[] pixels = ((DataBufferInt) this.image.getRaster().getDataBuffer()).getData();
@@ -31,6 +33,11 @@ public abstract class AbstractGame extends JPanel implements MouseListener, Runn
 
     public AbstractGame(final String windowTitle) {
         this.windowTitle = windowTitle;
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return DIMENSION;
     }
 
     public void start() {
@@ -53,15 +60,17 @@ public abstract class AbstractGame extends JPanel implements MouseListener, Runn
     private void initialize() {
         this.frame = new JFrame(this.windowTitle);
 
-        final Dimension dim = new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
-        this.frame.setMinimumSize(dim);
-        this.frame.setPreferredSize(dim);
-        this.frame.setMaximumSize(dim);
-        this.frame.pack();
+        this.frame.add(this);
         this.frame.setResizable(false);
-        this.frame.setLocationRelativeTo(null);
+        this.frame.pack();
 
-        this.frame.getContentPane().add(this);
+        final Insets insets = this.frame.getInsets();
+        this.frame.setSize(new Dimension(
+            insets.left + WIDTH * SCALE + insets.right,
+            insets.bottom + HEIGHT * SCALE + insets.top
+        ));
+
+        this.frame.setLocationRelativeTo(null);
         this.frame.setVisible(true);
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -133,11 +142,11 @@ public abstract class AbstractGame extends JPanel implements MouseListener, Runn
     }
 
     private void doRender() {
-        BufferStrategy bs = this.frame.getBufferStrategy();
-        if (bs == null) {
-            this.frame.createBufferStrategy(2);
-            bs = this.frame.getBufferStrategy();
-        }
+//        BufferStrategy bs = this.frame.getBufferStrategy();
+//        if (bs == null) {
+//            this.frame.createBufferStrategy(2);
+//            bs = this.frame.getBufferStrategy();
+//        }
 
         for (int i = 0; i < this.pixels.length; i++) {
             this.pixels[i] = 0;
@@ -145,15 +154,16 @@ public abstract class AbstractGame extends JPanel implements MouseListener, Runn
 
         this.render();
 
-        final Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+//        final Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+        final Graphics2D g = (Graphics2D) this.getGraphics();
 
         g.scale(SCALE, SCALE);
 
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
+//        g.setColor(Color.BLACK);
+//        g.fillRect(0, 0, WIDTH, HEIGHT);
         g.drawImage(this.image, 0, 0, WIDTH, HEIGHT, null);
-        bs.show();
-        g.dispose();
+//        bs.show();
+//        g.dispose();
     }
 
     protected abstract void render();

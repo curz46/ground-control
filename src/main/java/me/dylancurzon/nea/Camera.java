@@ -81,10 +81,8 @@ public class Camera implements Renderable {
 
     public Vector2d getTilePosition(@NotNull final PixelContainer window, @NotNull final Vector2i screenPosition) {
         final Vector2i pixelPos = screenPosition
-            .sub(Vector2i.of(0, window.getHeight()))
-            .mul(Vector2i.of(1, -1))
-            .sub(Vector2i.of(0, 12));
-        System.out.println(pixelPos);
+            .sub(Vector2i.of(0, window.getHeight() - 2))
+            .mul(Vector2i.of(1, -1));
         return this.boundA.add(pixelPos.div(Tile.TILE_WIDTH));
     }
 

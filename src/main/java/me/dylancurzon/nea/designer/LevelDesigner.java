@@ -12,6 +12,7 @@ import me.dylancurzon.nea.util.Vector2d;
 import me.dylancurzon.nea.util.Vector2i;
 
 import java.awt.event.KeyEvent;
+import me.dylancurzon.nea.util.Vector3d;
 
 public class LevelDesigner extends AbstractGame {
 
@@ -24,7 +25,9 @@ public class LevelDesigner extends AbstractGame {
         super("Level Designer");
         this.level = level;
 
-        final Vector2i size = Vector2i.of(AbstractGame.WIDTH, AbstractGame.HEIGHT).integerDiv(Tile.TILE_WIDTH);
+        final Vector2i size = Vector2i.of(AbstractGame.WIDTH, AbstractGame.HEIGHT)
+            .div(Tile.TILE_WIDTH)
+            .ceil().toInt();
         this.camera = new Camera(size, level);
     }
 
@@ -35,7 +38,11 @@ public class LevelDesigner extends AbstractGame {
         final Vector2i mousePosition = this.getScaledMousePosition();
         if (mousePosition == null) return;
         final Vector2d tilePos = this.camera.getTilePosition(this.window, mousePosition);
-        final Vector2i tileStart = tilePos.floor().sub(this.camera.getBoundA()).mul(Tile.TILE_WIDTH).toInt();
+        final Vector2i tileStart = tilePos.floor()
+            .sub(this.camera.getBoundA())
+            .add(Vector2d.of(0, 1))
+            .mul(Tile.TILE_WIDTH)
+            .toInt();
         this.type.getSprite().render(this.window, tileStart.getX(), this.window.getHeight() - 1 - tileStart.getY());
     }
 
